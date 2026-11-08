@@ -16,7 +16,9 @@ export function render(ctx) {
     .sort((a, b) => b.s.score - a.s.score);
   const labels = CRITERIA_BY_KIND[t.kind]; const w = Object.assign({}, DEFAULT_WEIGHTS[t.kind], t.weights || {});
   const zones = [...new Set(ctx.dests.map(d => d.zone))];
-  return `${noDates}
+  const picked = t.chosen && ctx.dests.find(d => d.id === t.chosen);
+  const nextBar = picked ? `<section class="card alert ok row between nextbar"><span>Chosen: <strong>${esc(picked.name)}</strong></span><a href="#build" role="button" class="next-step small">Next: build the days →</a></section>` : "";
+  return `${nextBar}${noDates}
   <section class="card toolbar">
     <input type="search" id="q" placeholder="Search a country, a region, a place, a hut…" value="${esc(f.q)}" data-ui="q" aria-label="Search destinations">
     <label class="chk"><input type="checkbox" data-ui="fit" ${f.fit ? "checked" : ""}> Within budget</label>
@@ -74,7 +76,7 @@ function card({ d, c, s, cl }, t, ctx) {
     </div>
     <footer class="row">
       <button type="button" data-act="choose" data-id="${d.id}" ${chosen ? 'class="secondary"' : ""}>${chosen ? "Chosen ✓ (unchoose)" : "Choose this destination"}</button>
-      <button type="button" class="outline" data-act="build" data-id="${d.id}">Build the days →</button>
+      ${chosen ? `<a href="#build" role="button" class="next-step">Next: build the days →</a>` : `<button type="button" class="outline" data-act="build" data-id="${d.id}">Preview the days →</button>`}
       ${(d.guides || []).map(g => `<a href="${esc(g.url)}" target="_blank" rel="noopener" class="small">${esc(g.name)}</a>`).join(" · ")}
     </footer>
     <p class="muted small">${provenance(d)}</p>
@@ -91,7 +93,7 @@ function compareTable(rows, t) {
 
 export const actions = {
   "preset": (el, ctx) => { const d = ctx.dests.find(x => x.id === el.dataset.id); const { applyPreset } = ctx.compute; ctx.trip.plans[d.id] = applyPreset(d, +el.dataset.i); ctx.commit(); },
-  "choose": (el, ctx) => { ctx.trip.chosen = ctx.trip.chosen === el.dataset.id ? null : el.dataset.id; ctx.commit(); },
+  "choose": (el, ctx) => { const t = ctx.trip; t.chosen = t.chosen === el.dataset.id ? null : el.dataset.id; t._ui = t._ui || {}; if (t.chosen) t._ui.buildId = t.chosen; ctx.commit(); },
   "build": (el, ctx) => { ctx.trip._ui = ctx.trip._ui || {}; ctx.trip._ui.buildId = el.dataset.id; ctx.commit(false); ctx.nav("build"); },
   "remove-idea": (el, ctx) => { ctx.trip.ideas = ctx.trip.ideas.filter(i => i.id !== el.dataset.id); ctx.commit(); }
 };

@@ -21,11 +21,13 @@ const app = document.getElementById("app");
 const HEAD = `<header class="apphead"><a class="brand" href="#home">Trip<span>Planner</span></a><span class="muted small">Saved in this browser · share by link</span></header>`;
 const store = state.load();
 for (const id of Object.keys(store.trips)) state.migrate(store.trips[id]);
-let destsLite = [], dests = [], destsKind = null;
+let destsLite = [], dests = [], destsKind = null, templates = [];
 const lz = window.LZString;
 
 const ctx = {
-  store, compute, get trip() { return store.trips[store.current]; }, get dests() { return dests; }, get destsLite() { return destsLite; }, get names() { return Object.fromEntries(destsLite.map(d => [d.id, d.name])); },
+  store, compute, get templates() { return templates; },
+  loadTemplate: async file => { try { const r = await fetch(new URL("../data/trips/" + file, import.meta.url)); if (!r.ok) return null; const t = await r.json(); t.id = state.uid(); t.createdAt = t.updatedAt = new Date().toISOString(); return importTrip(t); } catch (e) { return null; } },
+  get trip() { return store.trips[store.current]; }, get dests() { return dests; }, get destsLite() { return destsLite; }, get names() { return Object.fromEntries(destsLite.map(d => [d.id, d.name])); },
   save: () => state.save(store),
   commit: (rerender = true) => { if (ctx.trip) state.touch(ctx.trip); state.save(store); if (rerender) render(); },
   rerender: () => render(),
@@ -109,4 +111,4 @@ document.addEventListener("submit", e => {
 });
 window.addEventListener("hashchange", render);
 
-data.loadIndex().then(idx => { destsLite = idx; render(); }).catch(e => { app.innerHTML = `<section class="card"><h2>Could not load the destination library</h2><p>${esc(e.message)}. If you opened this file directly, serve the folder over HTTP (for example <code>python3 -m http.server</code>).</p></section>`; });
+data.loadIndex().then(async idx => { destsLite = idx; try { const r = await fetch(new URL("../data/trips/index.json", import.meta.url)); if (r.ok) templates = await r.json(); } catch (e) { templates = []; } render(); }).catch(e => { app.innerHTML = `<section class="card"><h2>Could not load the destination library</h2><p>${esc(e.message)}. If you opened this file directly, serve the folder over HTTP (for example <code>python3 -m http.server</code>).</p></section>`; });

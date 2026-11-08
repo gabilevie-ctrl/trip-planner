@@ -1,0 +1,110 @@
+{
+  "schema": 1,
+  "id": "tpl_family_2027",
+  "name": "Parents’ 30th anniversary trip",
+  "owner": "Gabriel",
+  "kind": "explore",
+  "createdAt": "2026-11-08T00:00:00Z",
+  "updatedAt": "2026-11-08T00:00:00Z",
+  "origin": {
+    "city": "Brussels",
+    "region": "europe-west"
+  },
+  "travel": {
+    "mode": "any"
+  },
+  "travellers": [
+    {
+      "id": "p_mom",
+      "name": "Mom",
+      "limits": {
+        "maxAltitudeM": 4200,
+        "maxDayHighC": 33,
+        "crowds": "avoid"
+      }
+    },
+    {
+      "id": "p_dad",
+      "name": "Dad",
+      "limits": {}
+    },
+    {
+      "id": "p_gabriel",
+      "name": "Gabriel",
+      "limits": {}
+    },
+    {
+      "id": "p_antoine",
+      "name": "Antoine",
+      "limits": {
+        "maxHikeShare": 60
+      }
+    },
+    {
+      "id": "p_sib",
+      "name": "Sibling",
+      "limits": {}
+    }
+  ],
+  "dates": {
+    "start": "2027-07-12",
+    "end": "2027-07-26"
+  },
+  "budget": {
+    "total": 15000,
+    "currency": "EUR"
+  },
+  "lodging": "bnb",
+  "type": {
+    "cities": 2,
+    "hike": 2,
+    "coast": 0,
+    "wildlife": 0,
+    "history": 2,
+    "food": 1,
+    "festival": 0
+  },
+  "pace": "normal",
+  "visited": [
+    "slovenia",
+    "scotland",
+    "tatras"
+  ],
+  "weights": {},
+  "plans": {},
+  "chosen": null,
+  "ideas": [
+    {
+      "id": "i_timor",
+      "name": "Timor-Leste",
+      "region": "Southeast Asia",
+      "pp": 0,
+      "note": "Dry in July–August, mountains to 2,986 m, independence history; awkward flights via Bali or Darwin."
+    }
+  ],
+  "steps": {},
+  "expenses": [],
+  "decisions": [
+    {
+      "id": "d_dates",
+      "title": "Which window: 12–26 July or 19 July–1 August?",
+      "options": "12–26 Jul, 19 Jul–1 Aug",
+      "owner": "p_antoine",
+      "due": "2026-12-15",
+      "status": "open",
+      "created": "2026-11-08"
+    },
+    {
+      "id": "d_dest",
+      "title": "Shortlist to vote on: Georgia+Armenia, Norway, Kyrgyzstan (Mom unsure about Central Asia), Canada (over budget)",
+      "options": "",
+      "owner": "p_gabriel",
+      "due": "2026-12-31",
+      "status": "open",
+      "created": "2026-11-08"
+    }
+  ],
+  "dayNotes": {},
+  "log": [],
+  "notes": "Criteria from the family: nowhere we have been; a trip we would not do otherwise; outdoors + culture/history/museums; Colombia (road trip + Ciudad Perdida) is the template. Mom: no crowds, altitude ceiling ~4,200 m with slow acclimatisation, no Balkans/Baltics/Central Asia; her picks Canada, Norway, Iceland. Antoine: not a full-hike trip. Budget max €15,000 for five, no need to spend it all. Hard limits on dates: 12 July – 20 August 2027."
+}

@@ -27,14 +27,14 @@ export function render(ctx) {
   </section>
   <section class="card">
     <h3>Daily log</h3>
-    ${days.length ? `<table class="log"><thead><tr><th>Day</th><th>Plan</th>${skitour ? "<th>Danger</th>" : ""}<th>Weather</th><th>Decision</th><th>Note</th></tr></thead><tbody>
+    ${days.length ? `<div class="scroller"><table class="log"><thead><tr><th>Day</th><th>Plan</th>${skitour ? "<th>Danger</th>" : ""}<th>Weather</th><th>Decision</th><th>Note</th></tr></thead><tbody>
       ${days.filter(x => x.kind !== "travel").map(x => { const l = logByDate[x.date] || {}; const bad = skitour && maxDanger && l.danger && +l.danger >= maxDanger;
         return `<tr class="${bad ? "nogo" : ""}"><td class="small">${fmtDate(x.date)}</td><td class="small">${esc(x.label)}</td>
           ${skitour ? `<td><select data-log="${x.date}" data-k="danger"><option value="">—</option>${[1, 2, 3, 4, 5].map(v => `<option value="${v}" ${String(l.danger) === String(v) ? "selected" : ""}>${DANGER[v]}</option>`).join("")}</select>${bad ? `<br><span class="pill crit">at or above the group limit</span>` : ""}</td>` : ""}
           <td><input type="text" data-log="${x.date}" data-k="weather" value="${esc(l.weather || "")}" placeholder="wind, temp, visibility"></td>
           <td><select data-log="${x.date}" data-k="decision"><option value="">—</option>${["go", "modified", "rest day", "no-go"].map(v => `<option ${l.decision === v ? "selected" : ""}>${v}</option>`).join("")}</select></td>
           <td><input type="text" data-log="${x.date}" data-k="note" value="${esc(l.note || "")}" placeholder="aspects avoided, who decided"></td></tr>`; }).join("")}
-    </tbody></table>` : empty("No dates yet", "Set the dates to get one row per day.")}
+    </tbody></table></div>` : empty("No dates yet", "Set the dates to get one row per day.")}
   </section>`;
 }
 const list = arr => arr.length ? `<ul class="small">${arr.map(b => `<li><a href="${esc(b.url)}" target="_blank" rel="noopener">${esc(b.name)}</a></li>`).join("")}</ul>` : `<p class="muted small">None recorded for this destination.</p>`;

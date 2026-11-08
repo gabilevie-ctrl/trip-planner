@@ -23,6 +23,7 @@ export function render(ctx) {
     <h2>Basics</h2>
     <div class="grid2">
       ${field("Trip name", `<input type="text" data-bind="name" value="${esc(t.name)}" placeholder="e.g. Parents' 30th, Écrins week, January train trip">`)}
+      ${field("Trip owner", `<input type="text" data-bind="owner" value="${esc(t.owner || "")}" placeholder="Who keeps this plan (e.g. Gabriel)">`, "Shown on the trip card and in the shared summary.")}
       ${field("Kind of trip", `<input type="text" value="${esc(kind.label)}" disabled>`, "Set when the trip was created. Start a new trip to change it.")}
       ${field("Leaving from", sel("origin", t.origin.city, ORIGINS.map(([c]) => [c, c]), `data-bind="origin.city" data-after="origin"`), "Access routes and costs are held per origin; Brussels and London are covered best.")}
       ${field("How we travel", sel("travel", t.travel.mode, Object.entries(TRAVEL_MODES).map(([k, v]) => [k, v.label]), `data-bind="travel.mode"`), esc(TRAVEL_MODES[t.travel.mode]?.blurb || ""))}

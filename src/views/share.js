@@ -22,7 +22,7 @@ export function render(ctx) {
 
 export function summary(t, d) {
   const lines = [];
-  lines.push(`${t.name || "Trip"} (${t.kind})`);
+  lines.push(`${t.name || "Trip"} (${t.kind})${t.owner ? " · owner " + t.owner : ""}`);
   lines.push(`${t.travellers.map(p => p.name || "?").join(", ")} · from ${t.origin.city} · ${t.travel.mode}`);
   if (t.dates.start) lines.push(`${fmtDateY(t.dates.start)} → ${fmtDateY(t.dates.end)} (${tripLength(t)} days)`);
   if (t.budget.total) lines.push(`Budget ${fmtMoney(t.budget.total, t.budget.currency)} for the group`);

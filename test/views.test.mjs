@@ -8,7 +8,7 @@ for (const v of ["home", "setup", "destinations", "build", "itinerary", "plan", 
 const all = allDests();
 function ctxFor(trip) {
   const dests = all.filter(d => d.kind === trip.kind);
-  return { store: { trips: { [trip.id]: trip }, current: trip.id }, trip, dests, destsLite: all.map(d => ({ id: d.id, kind: d.kind, name: d.name })), names: Object.fromEntries(all.map(d => [d.id, d.name])), compute, commit() {}, save() {}, nav() {}, shareLink: () => "https://example.test/#s-abc", copy() {}, toast() {}, confirm: () => true };
+  return { store: { trips: { [trip.id]: trip }, current: trip.id }, trip, dests, destsLite: all.map(d => ({ id: d.id, kind: d.kind, name: d.name })), names: Object.fromEntries(all.map(d => [d.id, d.name])), compute, templates: [], loadTemplate: async () => null, commit() {}, save() {}, nav() {}, shareLink: () => "https://example.test/#s-abc", copy() {}, toast() {}, confirm: () => true };
 }
 const trips = {
   family: familyTrip(),

@@ -43,5 +43,8 @@ test("end to end: create a ski trip, set it up, pick a destination, build, book,
   window.location.hash = link.split("#")[1]; await tick(120);
   assert.equal(window.location.hash, "#setup");
   const store = JSON.parse(window.localStorage.getItem("tripplanner.v1")); assert.equal(Object.keys(store.trips).length, 2, "imported copy added");
-  await go("#home"); assert.equal(window.document.querySelectorAll(".tripcard").length, 2);
+  await go("#home"); assert.equal(window.document.querySelectorAll(".tripcard:not([data-act=use-template])").length, 2);
+  click($('[data-act="delete-trip"]')); await tick(60); assert.ok($('[data-act="delete-trip-confirm"]'), "in-page confirm appears");
+  click($('[data-act="delete-trip-confirm"]')); await tick(60); assert.equal(window.document.querySelectorAll(".tripcard:not([data-act=use-template])").length, 1, "trip deleted without window.confirm");
+  click($('[data-act="use-template"]')); await tick(150); assert.equal(window.location.hash, "#setup"); assert.ok(/Parents/.test($(".triphead").textContent), "family template opened");
 });

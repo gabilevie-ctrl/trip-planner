@@ -158,6 +158,21 @@ ul.decisions{list-style:none;padding:0}ul.decisions li{padding:8px 0;border-top:
 pre.summary{white-space:pre-wrap;font-size:.82rem;background:var(--bg);padding:10px;border-radius:8px;color:var(--ink)}
 #toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:999px;font-size:.88rem;opacity:0;transition:.2s;pointer-events:none;z-index:50}
 #toast.show{opacity:1;transform:translateX(-50%)}
+/* phones */
+@media (max-width:600px){
+  #app{padding:0 12px 60px}
+  h1{font-size:1.25rem}h2{font-size:1.08rem}
+  .apphead .muted{display:none}
+  .toolbar{gap:8px}.toolbar input[type=search]{flex-basis:100%}
+  .desthead{flex-direction:column}.scorebox{text-align:left;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;min-width:0}.scorebox .pp{margin:0}
+  .blockrow{grid-template-columns:auto 1fr;grid-template-rows:auto auto}.blockrow .step,.blockrow > .row{grid-column:2;justify-self:start}
+  .splitctl{gap:6px 10px}
+  table{font-size:.84rem}td,th{padding:.35rem .4rem}
+  table.itin input,table.log input{min-width:120px}
+  .card{padding:12px}
+  .tripcard footer{margin-top:6px}
+  .grid4 button[type=submit],.grid4 input,.grid4 select{width:100%}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none !important}}
 </style>
 </head>

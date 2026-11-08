@@ -8,7 +8,7 @@ export function uid(prefix = "t") { return prefix + "_" + Date.now().toString(36
 export function newTrip(kind = "explore") {
   const now = new Date().toISOString();
   return {
-    schema: SCHEMA, id: uid(), name: "", kind, createdAt: now, updatedAt: now,
+    schema: SCHEMA, id: uid(), name: "", owner: "", kind, createdAt: now, updatedAt: now,
     origin: { city: "Brussels", region: "europe-west" },
     travel: { mode: "any" },
     travellers: [{ id: uid("p"), name: "", limits: {} }],

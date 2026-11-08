@@ -11,9 +11,9 @@ export function render(ctx) {
     return `<article class="tripcard" data-act="open-trip" data-id="${t.id}" tabindex="0" role="button">
       <header><span class="kind">${esc(KINDS[t.kind]?.label || t.kind)}</span><h3>${esc(t.name || "Untitled trip")}</h3></header>
       <p>${esc(when)}</p>
-      <p class="muted">${n} traveller${n === 1 ? "" : "s"} · ${t.budget?.total ? fmtMoney(t.budget.total, t.budget.currency) + " budget" : "no budget set"} · from ${esc(t.origin?.city || "?")}</p>
+      <p class="muted">${t.owner ? "Owner " + esc(t.owner) + " · " : ""}${n} traveller${n === 1 ? "" : "s"} · ${t.budget?.total ? fmtMoney(t.budget.total, t.budget.currency) + " budget" : "no budget set"} · from ${esc(t.origin?.city || "?")}</p>
       <p><strong>${esc(chosen)}</strong></p>
-      <footer><button type="button" class="outline secondary small" data-act="delete-trip" data-id="${t.id}">Delete</button></footer>
+      <footer>${t._ui?.confirmDelete ? `<span class="small">Delete this trip? </span><button type="button" class="small" data-act="delete-trip-confirm" data-id="${t.id}">Yes, delete</button> <button type="button" class="outline secondary small" data-act="delete-trip-cancel" data-id="${t.id}">Keep</button>` : `<button type="button" class="outline secondary small" data-act="delete-trip" data-id="${t.id}">Delete</button>`}</footer>
     </article>`;
   }).join("");
   return `
@@ -27,6 +27,10 @@ export function render(ctx) {
     <div id="importBox" class="hidden"><label>Paste a share link or JSON<textarea id="importText" rows="3" placeholder="https://…#s-… or {…}"></textarea></label><button type="button" data-act="import-go">Import</button></div>
   </section>
   <section>
+    <h2>Start from a prepared trip</h2>
+    <div class="grid3">${ctx.templates.map(tp => `<article class="tripcard" data-act="use-template" data-file="${esc(tp.file)}" tabindex="0" role="button"><header><span class="kind">${esc(tp.kindLabel)}</span><h3>${esc(tp.name)}</h3></header><p class="muted">${esc(tp.blurb)}</p><p><strong>Open a copy →</strong></p></article>`).join("")}</div>
+  </section>
+  <section>
     <h2>Your trips</h2>
     ${trips.length ? `<div class="grid3">${cards}</div>` : empty("No trips yet", "Pick a kind of trip above to start. Everything is saved in this browser; share a link to move it elsewhere.")}
   </section>`;
@@ -35,7 +39,10 @@ export function render(ctx) {
 export const actions = {
   "new-trip": (el, ctx) => { const t = ctx.createTrip(el.dataset.kind); ctx.open(t.id, "setup"); },
   "open-trip": (el, ctx) => ctx.open(el.dataset.id, "setup"),
-  "delete-trip": (el, ctx, ev) => { ev.stopPropagation(); if (!ctx.confirm("Delete this trip? This cannot be undone.")) return; delete ctx.store.trips[el.dataset.id]; if (ctx.store.current === el.dataset.id) ctx.store.current = null; ctx.save(); ctx.rerender(); },
+  "delete-trip": (el, ctx, ev) => { ev.stopPropagation(); const t = ctx.store.trips[el.dataset.id]; t._ui = t._ui || {}; t._ui.confirmDelete = true; ctx.rerender(); },
+  "delete-trip-cancel": (el, ctx, ev) => { ev.stopPropagation(); const t = ctx.store.trips[el.dataset.id]; if (t && t._ui) delete t._ui.confirmDelete; ctx.rerender(); },
+  "delete-trip-confirm": (el, ctx, ev) => { ev.stopPropagation(); delete ctx.store.trips[el.dataset.id]; if (ctx.store.current === el.dataset.id) ctx.store.current = null; ctx.save(); ctx.rerender(); ctx.toast("Trip deleted."); },
+  "use-template": async (el, ctx) => { const t = await ctx.loadTemplate(el.dataset.file); if (t) ctx.open(t.id, "setup"); else ctx.toast("Could not load that template."); },
   "import-prompt": () => document.getElementById("importBox").classList.toggle("hidden"),
   "import-go": (el, ctx) => { const txt = document.getElementById("importText").value.trim(); const t = ctx.importText(txt); if (t) ctx.open(t.id, "setup"); else ctx.toast("Could not read that link or JSON."); }
 };

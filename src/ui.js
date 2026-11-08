@@ -15,3 +15,10 @@ export const sel = (name, value, options, attrs = "") => `<select name="${name}"
 export const empty = (title, body, action) => `<div class="empty"><h3>${esc(title)}</h3><p>${body}</p>${action || ""}</div>`;
 export function splitBar(c, len) { const L = Math.max(len || c.len || 1, 1); const w = v => Math.max(0, v) / L * 100; return `<div class="split"><i class="ci" style="width:${w(c.city)}%"></i><i class="hi" style="width:${w(c.outdoor)}%"></i><i class="re" style="width:${w(c.rest)}%"></i><i class="fr" style="width:${w(c.free)}%"></i></div>`; }
 export const step = (act, data, value, minus, plus, label) => `<span class="step"><button type="button" class="outline secondary" data-act="${act}" data-d="-1" ${data} ${minus ? "" : "disabled"} aria-label="${esc(label)} fewer">−</button><span class="n num">${value}</span><button type="button" class="outline secondary" data-act="${act}" data-d="1" ${data} ${plus ? "" : "disabled"} aria-label="${esc(label)} more">+</button></span>`;
+// Copies each column's header onto its cells (data-label) so CSS can stack rows as cards on phones.
+export function labelCells(root) {
+  for (const table of root.querySelectorAll("table.itin, table.ledger, table.log, table.people")) {
+    const heads = [...table.querySelectorAll("thead th")].map(th => th.textContent.trim());
+    for (const tr of table.querySelectorAll("tbody tr")) [...tr.children].forEach((td, i) => { if (heads[i]) td.dataset.label = heads[i]; });
+  }
+}

@@ -103,7 +103,7 @@ details.card summary{cursor:pointer;font-weight:600}
 .split i{display:block;height:100%}.split .ci{background:var(--city)}.split .hi{background:var(--hike)}.split .re{background:var(--rest)}.split .fr{background:var(--free)}
 .sw{width:10px;height:10px;border-radius:3px;display:inline-block;margin-right:5px;vertical-align:-1px}.sw.ci{background:var(--city)}.sw.hi{background:var(--hike)}.sw.re{background:var(--rest)}
 .step{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--surface)}
-.step button{border:0;border-radius:0;background:transparent;width:30px;height:30px;padding:0;font-size:16px;line-height:1;color:var(--ink)}
+.step button{margin:0;border:0;border-radius:0;background:transparent;width:30px;height:30px;padding:0;font-size:16px;line-height:1;color:var(--ink)}
 .step button:disabled{opacity:.35}
 .step .n{min-width:46px;text-align:center;font-size:.85rem;font-weight:600}
 .splitctl{background:var(--bg);border-radius:8px;padding:8px 10px;margin:8px 0}
@@ -176,6 +176,27 @@ pre.summary{white-space:pre-wrap;font-size:.82rem;background:var(--bg);padding:1
   .card{padding:12px}
   .tripcard footer{margin-top:6px}
   .grid4 button[type=submit],.grid4 input,.grid4 select{width:100%}
+  /* 16px stops iPhones zooming the page when a field is tapped */
+  input,select,textarea,table.itin input,table.log input,table.log select,table.ledger input{font-size:16px}
+  /* every step visible: the tab row wraps instead of hiding steps off-screen */
+  .tabs{flex-wrap:wrap;overflow:visible;gap:6px;justify-content:flex-start}
+  .tabs a{padding:6px 10px;font-size:.84rem}
+  /* bigger tap targets */
+  .step{align-self:center}.step button{width:40px;height:40px}
+  button.small,[role=button].small{padding:.45rem .8rem}
+  .splitctl{display:grid;grid-template-columns:1fr auto;align-items:center}
+  /* tables of rows become a stack of cards; each cell shows its column name */
+  .scroller:has(> table.itin),.scroller:has(> table.ledger),.scroller:has(> table.log),.scroller:has(> table.people){overflow:visible}
+  table.itin,table.ledger,table.log,table.people{display:block;min-width:0}
+  table.itin thead,table.ledger thead,table.log thead,table.people thead{display:none}
+  table.itin tbody,table.ledger tbody,table.log tbody,table.people tbody{display:block}
+  table.itin tr,table.ledger tr,table.log tr,table.people tr{display:block;border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:8px;background:var(--bg)}
+  table.itin td,table.ledger td,table.log td,table.people td{display:block;position:relative;border:0;padding:4px 0 4px 7.5em;background:none;min-height:1.6em}
+  table.itin td::before,table.ledger td::before,table.log td::before,table.people td::before{content:attr(data-label);position:absolute;left:0;top:7px;width:7em;font-size:.72rem;line-height:1.25;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-2)}
+  table.itin td:not([data-label]),table.ledger td:not([data-label]),table.log td:not([data-label]),table.people td:not([data-label]){padding-left:0}
+  table.itin td:empty,table.ledger td:empty,table.log td:empty{display:none}
+  table.itin input,table.log input,table.people input,table.people select,table.ledger input{min-width:0;width:100%}
+  tr.nogo{border-color:var(--crit)}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none !important}}
 </style>

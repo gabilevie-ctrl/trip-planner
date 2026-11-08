@@ -1,0 +1,72 @@
+// Template for a new "explore" destination.
+//
+// How to add one:
+//   1. Copy this file to data/destinations/<id>.json and delete every comment (JSON has none).
+//   2. Fill every field. Each number must come from a source listed in "sources".
+//   3. Add an entry to data/index.json with the same id, kind, name and zone, plus noFlights, tags,
+//      countries and "file": "destinations/<id>.json".
+//   4. Run `npm run validate:strict` (new destinations must list sources) and `npm test`.
+// Hiking and ski-touring routes are written as code in scripts/seed-routes.cjs instead (`npm run seed`).
+// Field reference: docs/DATA-MODEL.md.
+// The Madeira values below are placeholders that show the shape, not checked facts.
+{
+  "id": "madeira",                                  // lowercase, hyphens; must equal the file name
+  "kind": "explore",                                // explore | hike | skitour
+  "name": "Madeira: levadas and Funchal",           // shown everywhere; index.json must match
+  "region": "Madeira, Portugal",
+  "zone": "europe",                                 // europe | asia | americas | africa | oceania
+  "tagline": "One line that says why go.",
+  "noFlights": false,                               // true when reachable by train from Brussels or London
+  "countries": ["PT"],                              // ISO 3166-1 alpha-2
+  "tags": ["mountains", "coast", "cities"],         // cities, mountains, coast, wildlife, history, food, festival, …
+  "palette": ["#9cb8c6", "#5e8299", "#36546b", "#1b2e3d", "#e8eef1"],   // five colours for the card art
+
+  "access": [                                       // one entry per origin the app offers
+    { "originRegion": "europe-west", "originCity": "Brussels", "mode": "flight", "costPerPerson": 250, "route": "Brussels→Funchal direct, 4 h" },
+    { "originRegion": "uk", "originCity": "London", "mode": "flight", "costPerPerson": 200, "route": "Gatwick→Funchal direct, 4 h" }
+  ],
+
+  "rates": { "city": 110, "hike": 110, "transit": 110 },        // € per person per day, B&B basis
+  "lodgingAssumption": "Local B&B or Airbnb, two rooms for five, one meal out a day",
+  "nightsNote": "16°C at night on the coast in January",
+
+  "climate": {                                      // 12 values each, January first
+    "representative": "Funchal (sea level)",
+    "dayHighC": [19, 19, 20, 20, 21, 23, 25, 26, 26, 24, 22, 20],
+    "nightLowC": [13, 13, 13, 14, 15, 17, 18, 19, 19, 18, 16, 14],
+    "rainDays": [7, 6, 6, 4, 2, 1, 0, 0, 2, 6, 7, 8],
+    "snowMonths": []
+  },
+
+  "season": {
+    "fitByMonth": [75, 75, 80, 85, 85, 80, 70, 70, 80, 80, 75, 75],   // 0–100, January first
+    "events": [ { "name": "Carnival, Funchal", "from": "02-13", "to": "02-18", "effect": "festival", "note": "Parades; book early" } ],
+    "notes": ["Why the fit numbers are what they are, in a sentence or two."]
+  },
+
+  "whyNotes": "Why this fits the kind of trip, in plain words.",
+  "fitNotes": "Who it suits and who it does not (altitude, heat, crowds, walking).",
+
+  "blocks": [                                       // the pieces a trip is built from
+    {
+      "id": "funchal", "type": "city",              // city | hike | stage | beach | wildlife | rest
+      "name": "Funchal", "place": "Old town, market, cable car to Monte",
+      "defaultDays": 2, "minDays": 1, "maxDays": 3, // minDays ≤ defaultDays ≤ maxDays
+      "maxAltitudeM": 0, "dayHighC": 19,
+      "crowd": "med",                               // low | med | high
+      "transitHours": 0.5,                          // from the previous hub
+      "history": "Wine trade, sugar", "guidebookPick": true,
+      "see": ["Mercado dos Lavradores", "Monte by cable car"],
+      "note": null, "ratePerDay": null, "extraTransportCost": 0,
+      "bookAhead": null                             // or { "what": "…", "leadMonths": 2 }
+    }
+  ],
+
+  "presets": [ { "name": "Balanced", "picks": { "funchal": 2 } } ],   // picks reference block ids
+
+  "guides": [ { "name": "Visit Madeira", "url": "https://visitmadeira.com/" } ],
+  "sources": [                                      // required: where the numbers come from
+    { "name": "Portuguese weather service (IPMA), Funchal climate normals", "url": "https://www.ipma.pt/" }
+  ],
+  "lastReviewed": "2026-11-08"                      // YYYY-MM-DD; validate fails after 18 months
+}

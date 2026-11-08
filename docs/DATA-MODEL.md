@@ -55,10 +55,14 @@ Shipped shape (v1). Fields marked **→** were planned and are now in place; `cl
   },
 
   "guides": [ { "name": "Lonely Planet Georgia", "url": "…" } ],
-  "sources": [],                   // → phase 5
-  "lastReviewed": "2026-11-08"     // → phase 5
+  "sources": [ { "name": "…", "url": "https://…" } ],   // required; may be empty only for the 38 v1 destinations
+  "lastReviewed": "2026-11-08"     // YYYY-MM-DD; validate fails when older than 18 months
 }
 ```
+
+## Checks (`npm run validate`)
+
+`scripts/lib/check-destination.cjs` checks each file: the fields above are present, block types, day ranges, crowd levels and preset picks are valid, `season.fitByMonth` has 12 numbers 0–100, `lastReviewed` is a real date that is neither in the future nor older than 18 months, every `sources` entry has a `name` and an `https://` `url`, and the `data/index.json` entry has the same `kind`, `name` and `zone`. An empty `sources` list is reported as a count; `npm run validate:strict` fails on it, and new destinations must pass the strict check. Start a new destination from `docs/destination-template.jsonc`.
 
 ## Trip (stored in the browser, shareable by link)
 

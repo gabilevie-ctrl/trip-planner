@@ -35,3 +35,12 @@ test("plan steps for the ski trip mention the bulletin and the car, and conditio
   const plan = views.plan.render(ctx); assert.ok(/avalanche bulletin/i.test(plan)); assert.ok(/who drives/.test(plan));
   const cond = views.conditions.render(ctx); assert.ok((cond.match(/data-k="danger"/g) || []).length >= 5);
 });
+test("destination card shows sources and review date", () => {
+  const trip = familyTrip({ id: "t_src" }); const ctx = ctxFor(trip);
+  const i = ctx.dests.findIndex(d => d.id === "norway");
+  ctx.dests[i] = Object.assign({}, ctx.dests[i], { lastReviewed: "2026-11-08", sources: [{ name: "Visit Norway", url: "https://www.visitnorway.com/" }] });
+  const html = views.destinations.render(ctx);
+  assert.ok(html.includes("Reviewed 8 Nov 2026"), "review date shown");
+  assert.match(html, /<a href="https:\/\/www\.visitnorway\.com\/" target="_blank" rel="noopener"[^>]*>Visit Norway<\/a>/);
+  assert.ok(html.includes("No sources yet"), "destinations without sources say so");
+});

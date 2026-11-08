@@ -1,4 +1,4 @@
-import { esc, fmtMoney, chip, altClass, tempClass, hrsClass, CROWD, hrs, scoreClass, empty, splitBar } from "../ui.js";
+import { esc, fmtMoney, fmtDateY, chip, altClass, tempClass, hrsClass, CROWD, hrs, scoreClass, empty, splitBar } from "../ui.js";
 import { computePlan, climateFor, tripLength, isVisited } from "../compute.js";
 import { score, CRITERIA_BY_KIND, DEFAULT_WEIGHTS } from "../scoring.js";
 import { uid } from "../state.js";
@@ -77,6 +77,7 @@ function card({ d, c, s, cl }, t, ctx) {
       <button type="button" class="outline" data-act="build" data-id="${d.id}">Build the days →</button>
       ${(d.guides || []).map(g => `<a href="${esc(g.url)}" target="_blank" rel="noopener" class="small">${esc(g.name)}</a>`).join(" · ")}
     </footer>
+    <p class="muted small">${provenance(d)}</p>
   </article>`;
 }
 
@@ -97,3 +98,10 @@ export const actions = {
 export const forms = {
   "idea": (data, ctx) => { if (!data.name) return; ctx.trip.ideas.push({ id: uid("i"), name: data.name, region: data.region, pp: +data.pp || 0, note: data.note }); ctx.commit(); }
 };
+
+/* Where a destination's figures come from and when they were last checked. */
+function provenance(d) {
+  const reviewed = d.lastReviewed ? `Reviewed ${fmtDateY(d.lastReviewed)}` : "Not reviewed yet";
+  const srcs = (d.sources || []).map(s => `<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.name)}</a>`).join(", ");
+  return `${reviewed} · ${srcs ? "Sources: " + srcs : "No sources yet"}`;
+}

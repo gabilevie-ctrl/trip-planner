@@ -17,6 +17,7 @@ Library today: 38 destinations (19 explore, 6 hiking routes, 8 ski-touring areas
 - **Hosted:** open the published link, pick a kind of trip, follow the numbered steps. Everything is saved in your browser. **Share** makes a link that carries the whole trip; whoever opens it gets an editable copy.
 - **Locally:** `npm run serve` (or any static server) and open `http://localhost:8000/`. No build step.
 - **Tests:** `npm test` (pure modules plus a jsdom end-to-end run through the real router). `npm run validate` checks the data files.
+- **Add a destination:** copy `docs/destination-template.jsonc` to `data/destinations/<id>.json`, list it in `data/index.json`, then run `npm run validate:strict -- data/destinations/<id>.json` (new destinations must cite their sources), `npm run validate` and `npm test`.
 
 ## Repository layout
 
@@ -36,7 +37,7 @@ data/
   index.json         list of destinations
   destinations/      one JSON file per destination (schema in docs/DATA-MODEL.md)
 vendor/              pico.min.css, lz-string.min.js (vendored, pinned)
-scripts/             validate.cjs, seed-routes.cjs
+scripts/             validate.cjs (checks in lib/check-destination.cjs), seed-routes.cjs
 test/                node --test files
 docs/                ROADMAP, DATA-MODEL, WIZARD, superpowers/specs and plans
 legacy/              the original single-file family dashboard this grew from

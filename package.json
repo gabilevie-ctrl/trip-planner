@@ -7,7 +7,8 @@
     "test": "node --test test/*.test.mjs",
     "validate": "node scripts/validate.cjs",
     "seed": "node scripts/seed-routes.cjs",
-    "serve": "python3 -m http.server 8000"
+    "serve": "python3 -m http.server 8000",
+    "validate:strict": "node scripts/validate.cjs --strict"
   },
   "devDependencies": { "jsdom": "^25.0.1" }
 }

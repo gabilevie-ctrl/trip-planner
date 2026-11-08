@@ -22,3 +22,7 @@ export const HUT_PORTALS = [
 ];
 export function mapsSearch(place) { return `https://www.google.com/maps/search/${q(place)}`; }
 export function rooms(adults) { return Math.max(1, Math.ceil(adults / 2.5)); }
+
+// Where testers send feedback (header link on every page).
+export const FEEDBACK_EMAIL = "gabilevie@gmail.com";
+export function feedbackMailto() { return `mailto:${FEEDBACK_EMAIL}?subject=${q("Trip planner feedback")}`; }

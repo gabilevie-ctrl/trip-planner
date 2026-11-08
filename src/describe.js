@@ -25,7 +25,7 @@ const ALIASES = { GB: ["uk", "britain", "great britain", "england", "scotland", 
 const TYPE_LABEL = { cities: "cities & museums", hike: "mountains & walking", coast: "coast", wildlife: "wildlife", history: "history", food: "food & wine", festival: "a festival" };
 const LEVEL = ["off", "a little", "yes", "a lot"];
 // Placeholder values for vague limits; always reported as guesses.
-const VAGUE = { heatC: 28, altitudeM: 3000, hikeSharePct: 40, defaultDays: 7 };
+const VAGUE = { warmC: 18, heatC: 28, altitudeM: 3000, hikeSharePct: 40, defaultDays: 7 };
 
 const n = w => (w == null ? NaN : /^\d/.test(w) ? parseInt(w, 10) : NUM[w.toLowerCase()]);
 const monthIdx = s => MONTHS.findIndex(m => m.startsWith(s.toLowerCase().slice(0, 3)));
@@ -162,8 +162,20 @@ export function readDescription(text, { today = new Date().toISOString().slice(0
   const altCtx = alt && (/(altitude|high|above|over|below|under|max|higher|ceiling|nothing above|not above|up to)/.test(s.slice(Math.max(0, alt.index - 30), alt.index)) || /^ ?(altitude|high|max|ceiling|above sea|elevation)\b/.test(s.slice(alt.index + alt[0].length, alt.index + alt[0].length + 20)));
   if (alt && altCtx) L.maxAltitudeM = money(alt[1]);
   else if (new RegExp(`altitude sickness|not too high|low altitude|altitude is a problem|\\b(?:can't|cannot|can not|no|not|avoid|hate|bad with|problems? with|don't like|doesn't like|struggles? with|sensitive to)\\b[^.,;]{0,25}\\baltitude`).test(s)) { L.maxAltitudeM = VAGUE.altitudeM; out.guesses.push(`altitude ceiling ${VAGUE.altitudeM} m (set your own number in the limits)`); }
-  const heat = s.match(/(\d{2})\s?(?:°\s?c?|degrees?|ºc?)/);
-  if (heat) L.maxDayHighC = +heat[1];
+  // Temperatures: "between 18 and 28°C" sets both; "at least 20 degrees" is a floor; any other is a ceiling.
+  const DEG = "\\s?(?:°\\s?c?|degrees?|ºc?)";
+  const between = s.match(new RegExp(`between (-?\\d{1,2})(?:${DEG})? ?(?:and|-|to) ?(-?\\d{1,2})${DEG}`));
+  if (between) { L.minDayHighC = +between[1]; L.maxDayHighC = +between[2]; }
+  else for (const m of s.matchAll(new RegExp(`(-?\\d{1,2})${DEG}`, "g"))) {
+    const before = s.slice(Math.max(0, m.index - 25), m.index);
+    if (/(at least|minimum|min\.?|warmer than|no colder than|not colder than|not below|no lower than|above)\s*$/.test(before) && !/(nothing|not|no|never|heat)\b[^.,;]*$/.test(before)) L.minDayHighC ??= +m[1];
+    else L.maxDayHighC ??= +m[1];
+  }
+  if (L.minDayHighC === undefined && /\b(hate|can't do|cannot do|don't like|avoid|no|not too|sensitive to|bad with)\b[^.,;]{0,15}\bcold\b|somewhere warm|warm weather|want (?:some )?(?:sun|warmth)/.test(s)) { L.minDayHighC = VAGUE.warmC; out.guesses.push(`warmth floor ${VAGUE.warmC} °C (set your own number in the limits)`); }
+  if (/schengen/.test(s)) L.countryZone = "schengen";
+  else if (/\b(?:stay in|stay within|within|only in|inside) (?:the )?eu\b|\beu only\b|\bonly (?:the )?eu\b|european union/.test(s)) L.countryZone = "eu";
+  else if (/\b(?:stay in|stay within|within|only in|inside) europe\b|\beurope only\b|\bonly europe\b/.test(s)) L.countryZone = "europe";
+  if (L.maxDayHighC !== undefined) { /* explicit number already read */ }
   else if (new RegExp(`heat is a problem|\\b(?:can't|cannot|can not|no|not|avoid|hate|bad with|problems? with|don't like|doesn't like|struggles? with|sensitive to)\\b[^.,;]{0,25}\\b(heat|hot)\\b`).test(s)) { L.maxDayHighC = VAGUE.heatC; out.guesses.push(`heat ceiling ${VAGUE.heatC} °C (set your own number in the limits)`); }
   if (/avoid (the )?crowds|no crowds|hate crowds|not touristy|no tourist traps|avoid tourists/.test(s)) L.crowds = "avoid";
   else if (/\bquiet\b|off the beaten (track|path)|less touristy|few tourists|not too busy|fewer crowds/.test(s)) L.crowds = "prefer";
@@ -219,6 +231,13 @@ export function applyDescription(trip, p) {
       // The strictest limit wins anyway; a looser number later must not quietly relax someone's limit.
       const have = trip.travellers.map(t => t.limits?.[k]).filter(x => x !== undefined && x !== null && x !== "");
       if (have.length && label[k].combine === "min") { const strictest = Math.min(...have.map(Number)); if (v > strictest) { kept.push(say(k, strictest)); continue; } }
+      if (label[k].combine === "all") {
+        // A country limit is per person: give it to everyone who has none, never replace someone else's.
+        const free = trip.travellers.filter(t => !t.limits?.[k] || t.limits[k] === "any");
+        if (!free.length) { if (!have.includes(v)) kept.push(say(k, have[0]) + " (add another in a traveller's row below)"); continue; }
+        for (const t of free) { t.limits = t.limits || {}; t.limits[k] = v; }
+        set.push(say(k, v)); continue;
+      }
       if (have.length && label[k].combine === "rank") { const order = RANK[k]; const strictest = have.slice().sort((a, b) => order.indexOf(String(b)) - order.indexOf(String(a)))[0]; if (order.indexOf(String(v)) < order.indexOf(String(strictest))) { kept.push(say(k, strictest)); continue; } }
       for (const t of trip.travellers) { t.limits = t.limits || {}; t.limits[k] = v; }
       set.push(say(k, v));

@@ -59,7 +59,7 @@ function card({ d, c, s, cl }, t, ctx) {
     <p class="reason">${esc(s.reason)}.</p>
     <div class="facts">
       <div class="fact"><span class="k">Highest point</span><span class="v ${altClass(c.maxAlt, limits.maxAltitudeM)} num">${c.maxAlt.toLocaleString("en-GB")} m</span></div>
-      <div class="fact"><span class="k">Weather then${cl ? " (" + esc(cl.place.split(" (")[0]) + ")" : ""}</span><span class="v ${tempClass(cl ? cl.high : c.maxTemp, limits.maxDayHighC)}">${weather || "—"}</span></div>
+      <div class="fact"><span class="k">Weather then${cl ? " (" + esc(cl.place.split(" (")[0]) + ")" : ""}</span><span class="v ${tempClass(cl ? cl.high : c.maxTemp, limits.maxDayHighC, limits.minDayHighC)}">${weather || "—"}</span></div>
       <div class="fact"><span class="k">Crowds</span><span class="v ${CROWD[c.worstCrowd][0]}">${CROWD[c.worstCrowd][1]}</span></div>
       <div class="fact"><span class="k">In transit</span><span class="v ${hrsClass(c.hrs)} num">${hrs(c.hrs)}${c.longest ? ` · longest ${hrs(c.longest)}` : ""}</span></div>
       ${d.kind !== "explore" ? `<div class="fact"><span class="k">Hardest day</span><span class="v">${esc(c.maxGradeLabel || "—")} · ${c.maxAscent} m up · ${c.maxHours} h</span></div>` : ""}

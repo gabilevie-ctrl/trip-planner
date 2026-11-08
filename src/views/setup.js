@@ -104,7 +104,7 @@ function critInput(c, value, bind) {
   if (c.type === "bool") return `<input type="checkbox" data-bind="${bind}" data-type="bool" ${value ? "checked" : ""}>`;
   return `<select data-bind="${bind}"><option value="">—</option>${c.options.map(([v, l]) => `<option value="${esc(v)}" ${String(value) === String(v) ? "selected" : ""}>${esc(l)}</option>`).join("")}</select>`;
 }
-function fmtLimit(c, v) { if (c.type === "bool") return v ? "yes" : "no"; if (c.type === "select") { const o = c.options.find(([k]) => String(k) === String(v)); return o ? o[1] : v; } return `${Number(v).toLocaleString("en-GB")}${c.unit ? " " + c.unit : ""}`; }
+function fmtLimit(c, v) { if (Array.isArray(v)) return v.map(x => fmtLimit(c, x)).join(" and "); if (c.type === "bool") return v ? "yes" : "no"; if (c.type === "select") { const o = c.options.find(([k]) => String(k) === String(v)); return o ? o[1] : v; } return `${Number(v).toLocaleString("en-GB")}${c.unit ? " " + c.unit : ""}`; }
 
 export const actions = {
   "chat-send": (el, ctx) => { const box = document.getElementById("chatText"); const r = describeTurn(ctx.trip, box.value, { countries: ctx.countries }); if (!r) { ctx.toast("Write something first."); return; } ctx.commit(); },

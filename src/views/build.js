@@ -76,7 +76,7 @@ function blockRow(b, plan, c, t) {
     </div>
     <div class="chips">
       ${b.maxAltitudeM >= 800 || b.type !== "city" ? chip(altClass(b.maxAltitudeM, lim.maxAltitudeM), "↑ " + b.maxAltitudeM.toLocaleString("en-GB") + " m") : ""}
-      ${typeof b.dayHighC === "number" ? chip(tempClass(b.dayHighC, lim.maxDayHighC), "~" + b.dayHighC + "°C") : ""}
+      ${typeof b.dayHighC === "number" ? chip(tempClass(b.dayHighC, lim.maxDayHighC, lim.minDayHighC), "~" + b.dayHighC + "°C") : ""}
       ${chip(CROWD[b.crowd][0], CROWD[b.crowd][1])}
       ${b.transitHours ? chip("", "⏱ " + hrs(b.transitHours) + " to get there") : ""}
       ${b.history ? chip("", "History: " + esc(b.history)) : ""}

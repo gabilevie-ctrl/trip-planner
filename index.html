@@ -57,9 +57,15 @@ td,th{padding:.4rem .5rem;vertical-align:top}
 .kindbtn span{font-size:.85rem;color:var(--ink-2);font-weight:400}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 16px}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px 16px}
 @media (max-width:900px){.grid3,.grid4{grid-template-columns:1fr 1fr}}
-@media (max-width:600px){.grid2,.grid3,.grid4{grid-template-columns:1fr}}
+@media (max-width:600px){.grid2,.grid3,.grid4{grid-template-columns:minmax(0,1fr)}}
+.pair input,.pair select{min-width:0;width:100%}
 .tripcard{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:0;cursor:pointer}
 .tripcard:hover{border-color:var(--pico-primary)}
+/* trip cards are clickable articles with role=button: undo Pico's button look (centred, inverse colour) */
+.tripcard[role=button]{display:block;width:100%;text-align:left;font-weight:400;font-size:inherit;line-height:inherit;color:var(--ink);--pico-color:var(--ink);background:var(--surface);box-shadow:none}
+.tripcard[role=button] p{color:var(--ink)}.tripcard[role=button] .muted{color:var(--ink-2)}
+.pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;align-items:start}
+.cmpact{margin-top:4px;gap:6px}.cmpact button{margin:0}
 .tripcard header,.tripcard footer{background:none;padding:0;margin:0;border:0}
 .tripcard h3{margin:.2rem 0 .3rem}
 .kind{font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-2);font-weight:500;font-family:var(--pico-font-family)}
@@ -166,7 +172,7 @@ pre.summary{white-space:pre-wrap;font-size:.82rem;background:var(--bg);padding:1
 .nextbar [role=button]{margin:0}
 /* describe + chat */
 .describe textarea,.chat textarea{width:100%;margin-bottom:8px}
-.thread{list-style:none;padding:0;margin:0 0 10px;display:flex;flex-direction:column;gap:8px}
+.thread{list-style:none;padding:0 4px 0 0;margin:0 0 10px;display:flex;flex-direction:column;gap:8px;max-height:min(55vh,520px);overflow-y:auto}
 .msg{max-width:85%;padding:8px 12px;border-radius:14px;font-size:.92rem;white-space:pre-wrap}
 .msg.you{align-self:flex-end;background:var(--pico-primary);color:var(--pico-primary-inverse);border-bottom-right-radius:4px}
 .msg.app{align-self:flex-start;background:var(--surface-2);border-bottom-left-radius:4px}
@@ -184,6 +190,12 @@ pre.summary{white-space:pre-wrap;font-size:.82rem;background:var(--bg);padding:1
   table{font-size:.84rem}td,th{padding:.35rem .4rem}
   table.itin input,table.log input{min-width:120px}
   .card{padding:12px}
+  /* tighter forms: Pico spaces every label and field a full line apart */
+  .grid2,.grid3,.grid4{gap:8px}
+  label{margin-bottom:0}label small{margin-top:.1rem}
+  input:not([type=checkbox]):not([type=radio]):not([type=range]),select,textarea{margin-top:.2rem}
+  .pair label small{font-size:.74rem}
+  .tripcard h3{font-size:1rem}.tripcard p{margin-bottom:.25rem}
   .tripcard footer{margin-top:6px}
   .grid4 button[type=submit],.grid4 input,.grid4 select{width:100%}
   /* 16px stops iPhones zooming the page when a field is tapped */

@@ -35,7 +35,8 @@ export function render(ctx) {
           <td><select data-log="${x.date}" data-k="decision"><option value="">—</option>${["go", "modified", "rest day", "no-go"].map(v => `<option ${l.decision === v ? "selected" : ""}>${v}</option>`).join("")}</select></td>
           <td><input type="text" data-log="${x.date}" data-k="note" value="${esc(l.note || "")}" placeholder="aspects avoided, who decided"></td></tr>`; }).join("")}
     </tbody></table></div>` : empty("No dates yet", "Set the dates to get one row per day.")}
-  </section>`;
+  </section>
+  <p class="row"><a href="#share" role="button">Next: share →</a></p>`;
 }
 const list = arr => arr.length ? `<ul class="small">${arr.map(b => `<li><a href="${esc(b.url)}" target="_blank" rel="noopener">${esc(b.name)}</a></li>`).join("")}</ul>` : `<p class="muted small">None recorded for this destination.</p>`;
 

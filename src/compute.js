@@ -31,9 +31,32 @@ export function accessFor(dest, trip) {
 export function ensurePlan(trip, dest) {
   trip.plans = trip.plans || {};
   let p = trip.plans[dest.id];
-  if (!p) { p = applyPreset(dest, 0); trip.plans[dest.id] = p; }
+  if (!p) { p = applyPreset(dest, 0); const len = tripLength(trip); if (len) fitPlan(dest, p, len); trip.plans[dest.id] = p; }
   for (const b of dest.blocks) if (!p.picks[b.id]) p.picks[b.id] = { on: false, days: b.defaultDays };
   return p;
+}
+/* Trims a plan to the trip's length, keeping travel days (2 for explore, 1 otherwise).
+   Order: rest days down to 1, stops towards their minimum (the most stretched first), the last rest day, then the last stops. */
+function fitPlan(dest, p, len) {
+  const target = Math.max(0, len - (dest.kind === "explore" ? 2 : 1));
+  const on = () => dest.blocks.filter(b => p.picks[b.id]?.on);
+  const alloc = () => on().reduce((a, b) => a + p.picks[b.id].days, 0) + (p.rest || 0);
+  if (alloc() <= target) return false;
+  let guard = 500;
+  while (alloc() > target && (p.rest || 0) > 1 && guard--) p.rest--;
+  while (alloc() > target && guard--) {
+    const c = on().filter(b => p.picks[b.id].days > b.minDays).sort((a, b) => p.picks[b.id].days / b.defaultDays - p.picks[a.id].days / a.defaultDays);
+    if (!c.length) break; p.picks[c[0].id].days--;
+  }
+  while (alloc() > target && (p.rest || 0) > 0 && guard--) p.rest--;
+  const order = p.order && p.order.length ? p.order : dest.blocks.map(b => b.id);
+  for (let i = order.length - 1; i >= 0 && alloc() > target && on().length > 1; i--) if (p.picks[order[i]]?.on) p.picks[order[i]].on = false;
+  p.presetIdx = -1;
+  return true;
+}
+export function fitToDates(dest, trip) {
+  const len = tripLength(trip); if (!len) return false;
+  return fitPlan(dest, ensurePlan(trip, dest), len);
 }
 export function applyPreset(dest, idx) {
   const preset = dest.presets[idx] || { picks: {} };

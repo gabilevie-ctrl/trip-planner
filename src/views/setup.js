@@ -29,10 +29,10 @@ export function render(ctx) {
       ${field("Kind of trip", `<input type="text" value="${esc(kind.label)}" disabled>`, "Set when the trip was created. Start a new trip to change it.")}
       ${field("Leaving from", sel("origin", t.origin.city, ORIGINS.map(([c]) => [c, c]), `data-bind="origin.city" data-after="origin"`), "Access routes and costs are held per origin; Brussels and London are covered best.")}
       ${field("How we travel", sel("travel", t.travel.mode, Object.entries(TRAVEL_MODES).map(([k, v]) => [k, v.label]), `data-bind="travel.mode"`), esc(TRAVEL_MODES[t.travel.mode]?.blurb || ""))}
-      ${field("Start date", `<input type="date" data-bind="dates.start" value="${esc(t.dates.start)}">`)}
-      ${field("End date", `<input type="date" data-bind="dates.end" value="${esc(t.dates.end)}">`, len ? `${len} days` : "Pick both dates; the itinerary and the season scoring depend on them.")}
-      ${field("Budget for the whole group", `<input type="number" min="0" step="100" data-bind="budget.total" data-type="number" value="${t.budget.total || ""}" placeholder="e.g. 15000">`, "Leave empty for no cap; destinations still show their estimate.")}
-      ${field("Currency", sel("cur", t.budget.currency, [["EUR", "EUR €"], ["GBP", "GBP £"], ["CHF", "CHF"], ["USD", "USD $"]], `data-bind="budget.currency"`))}
+      <div class="pair">${field("Start date", `<input type="date" data-bind="dates.start" value="${esc(t.dates.start)}">`)}
+      ${field("End date", `<input type="date" data-bind="dates.end" value="${esc(t.dates.end)}">`, len ? `${len} days` : "Pick both dates; the itinerary and the season scoring depend on them.")}</div>
+      <div class="pair">${field("Budget for the whole group", `<input type="number" min="0" step="100" data-bind="budget.total" data-type="number" value="${t.budget.total || ""}" placeholder="e.g. 15000">`, "Leave empty for no cap; destinations still show their estimate.")}
+      ${field("Currency", sel("cur", t.budget.currency, [["EUR", "EUR €"], ["GBP", "GBP £"], ["CHF", "CHF"], ["USD", "USD $"]], `data-bind="budget.currency"`))}</div>
       ${field("Lodging style", sel("lodging", t.lodging, Object.entries(LODGING).map(([k, v]) => [k, v.label]), `data-bind="lodging"`), "Drives the per-day rates: B&B/huts is the baseline; hotels add about 40%.")}
     </div>
   </section>

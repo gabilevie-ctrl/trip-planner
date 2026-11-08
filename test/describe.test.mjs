@@ -108,3 +108,63 @@ test("common country nicknames count as the country", () => {
   const p = readDescription("we've been to Scotland, the USA, Holland and the Czech Republic", { ...T, countries });
   assert.deepEqual(p.visited.map(c => c.code).sort(), ["CZ", "GB", "NL", "US"]);
 });
+
+/* ---- review fixes ---- */
+test("review: a later message never loosens a stricter crowds or grade limit", () => {
+  const t = newTrip("hike");
+  applyDescription(t, readDescription("avoid crowds, T2 max", T));
+  const changes = applyDescription(t, readDescription("somewhere quiet, T4 is ok for us", T));
+  assert.equal(t.travellers[0].limits.crowds, "avoid"); assert.equal(t.travellers[0].limits.maxGradeHike, "T2");
+  assert.ok(changes.some(c => /kept the stricter/.test(c)), changes.join(" | "));
+});
+
+test("review: a negated kind word, or plain skiing, does not make a ski touring trip", () => {
+  assert.equal(readDescription("skiing is not for us, we want beaches", T).kind, "explore");
+  assert.equal(readDescription("No skiing please, we want a hut trek", T).kind, "hike");
+  const p = readDescription("A skiing holiday with the kids", T);
+  assert.equal(p.kind, "explore"); assert.ok(!p.kindSaid); assert.ok(p.guesses.some(g => /ski touring/.test(g)));
+});
+
+test("review: traveller counts with roles, the speaker and an explicit family size", () => {
+  assert.equal(readDescription("We are a family of 4 with 2 kids", T).travellers, 4);
+  assert.equal(readDescription("We're 2 parents, 2 kids", T).travellers, 4);
+  assert.equal(readDescription("Me, my wife and our 3 kids", T).travellers, 5);
+  assert.equal(readDescription("I may go with 3 friends", T).travellers, 4);
+});
+
+test("review: European number formats and nightly prices", () => {
+  assert.equal(readDescription("€15.000 total", T).budget.total, 15000);
+  assert.deepEqual(readDescription("€ 1.500 each", T).budget, { total: 1500, currency: "EUR", perPerson: true });
+  assert.equal(readDescription("budget 2.500,50 euros", T).budget.total, 2501);
+  const p = readDescription("hotels around €500 a night max", T);
+  assert.equal(p.budget, undefined); assert.equal(p.days, undefined);
+});
+
+test("review: a per-person budget follows the traveller count", () => {
+  const t = newTrip("explore");
+  describeTurn(t, "4 of us, €1000 per person", T);
+  assert.equal(t.budget.total, 4000);
+  const r = describeTurn(t, "actually 6 of us", T);
+  assert.equal(t.budget.total, 6000); assert.match(r.reply, /6,000/);
+});
+
+test("review: dates across two months, and impossible dates are not used", () => {
+  let p = readDescription("28 Dec to 3 Jan", T); assert.equal(p.start, "2026-12-28"); assert.equal(p.end, "2027-01-03"); assert.equal(p.days, 7);
+  p = readDescription("30 June to 5 July", T); assert.equal(p.start, "2027-06-30"); assert.equal(p.end, "2027-07-05");
+  p = readDescription("31 to 2 February", T); assert.equal(p.start, undefined); assert.ok(p.guesses.some(g => /dates/.test(g)));
+});
+
+test("review: altitude after the number, and 'up to 2000 m' is not an ascent", () => {
+  assert.equal(readDescription("1500 m altitude max", T).limits.maxAltitudeM, 1500);
+  const p = readDescription("mom is fine up to 2000 m", T);
+  assert.equal(p.limits.maxAltitudeM, 2000); assert.equal(p.limits.maxDailyAscentM, undefined);
+});
+
+test("review: origins written as a country or with 'the'", () => {
+  assert.equal(readDescription("We fly from the UK", T).origin, "London");
+  assert.equal(readDescription("Leaving from London", T).origin, "London");
+});
+
+test("review: very long input stays quick", () => {
+  const t0 = Date.now(); readDescription("1".repeat(50000) + " €", T); assert.ok(Date.now() - t0 < 500);
+});

@@ -1,6 +1,6 @@
 // Reads a plain-English trip description into trip fields, applies it, and writes the reply.
 // Pure, rule-based, no network: what it cannot read it asks about.
-import { KINDS, TRAVEL_MODES, LODGING, HIKE_GRADES, SKI_GRADES, criteriaFor } from "./criteria.js";
+import { KINDS, TRAVEL_MODES, LODGING, HIKE_GRADES, SKI_GRADES, RANK, criteriaFor } from "./criteria.js";
 import { uid, newTrip } from "./state.js";
 
 const NUM = { one: 1, a: 1, an: 1, two: 2, couple: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12 };
@@ -19,6 +19,7 @@ const INTERESTS = {
   food: ["food", "wine", "restaurants", "cuisine", "eating", "gastronomy", "foodie"],
   festival: ["festival", "festivals", "carnival", "concert", "concerts"]
 };
+const ORIGIN_ALIASES = { uk: "London", england: "London", britain: "London", scotland: "London", wales: "London", belgium: "Brussels", france: "Paris", netherlands: "Amsterdam", holland: "Amsterdam", switzerland: "Geneva" };
 // Everyday names for countries in data/countries.json
 const ALIASES = { GB: ["uk", "britain", "great britain", "england", "scotland", "wales", "northern ireland"], US: ["usa", "us", "america", "the states"], NL: ["holland"], CZ: ["czech republic"], AE: ["uae", "dubai"], KR: ["korea", "south korea"] };
 const TYPE_LABEL = { cities: "cities & museums", hike: "mountains & walking", coast: "coast", wildlife: "wildlife", history: "history", food: "food & wine", festival: "a festival" };
@@ -30,31 +31,49 @@ const n = w => (w == null ? NaN : /^\d/.test(w) ? parseInt(w, 10) : NUM[w.toLowe
 const monthIdx = s => MONTHS.findIndex(m => m.startsWith(s.toLowerCase().slice(0, 3)));
 const iso = (y, m, d) => `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
 const plusDays = (isoDate, k) => { const [y, m, d] = isoDate.split("-").map(Number); const t = new Date(Date.UTC(y, m - 1, d + k)); return t.toISOString().slice(0, 10); };
-const money = s => { const m = String(s).toLowerCase().replace(/[,\s]/g, "").replace(/\.+$/, "").match(/^(\d+(?:\.\d+)?)(k)?$/); return m ? Math.round(parseFloat(m[1]) * (m[2] ? 1000 : 1)) : NaN; };
+// "15,000", "15.000", "1.500,50", "2.5k", "2000": a group of three digits after a separator is thousands.
+const money = s => {
+  const t = String(s).toLowerCase().replace(/\s/g, "").replace(/[.,]+$/, "");
+  let m = t.match(/^(\d{1,3}(?:[.,]\d{3})+)(?:[.,](\d{1,2}))?(k)?$/);
+  if (m) return Math.round((parseInt(m[1].replace(/[.,]/g, ""), 10) + (m[2] ? parseFloat("0." + m[2]) : 0)) * (m[3] ? 1000 : 1));
+  m = t.match(/^(\d+)(?:[.,](\d+))?(k)?$/);
+  return m ? Math.round(parseFloat(m[1] + (m[2] ? "." + m[2] : "")) * (m[3] ? 1000 : 1)) : NaN;
+};
+const validDate = (y, mi, d) => { const t = new Date(Date.UTC(y, mi, d)); return t.getUTCMonth() === mi && t.getUTCDate() === d; };
+const MAX_CHARS = 2000;
 // Year for a month with no year: the next time that month starts after today.
 const yearFor = (mi, today) => { const [ty, tm] = today.split("-").map(Number); return mi + 1 > tm ? ty : ty + 1; };
 
 export function readDescription(text, { today = new Date().toISOString().slice(0, 10), countries = [] } = {}) {
-  const raw = String(text || ""), s = raw.toLowerCase().replace(/[–—]/g, "-").replace(/\s+/g, " ");
+  const raw = String(text || "").slice(0, MAX_CHARS), s = raw.toLowerCase().replace(/[–—]/g, "-").replace(/\s+/g, " ");
   const out = { guesses: [], limits: {} };
 
   // Kind
-  if (/ski[- ]?tour|skitour|skinning|on skins|splitboard|ski mountaineering|\bski(ing)?\b/.test(s)) { out.kind = "skitour"; out.kindSaid = true; }
-  else if (/hut[- ]to[- ]hut|\bhuts?\b.*\btrek|\btrek\b|multi[- ]day hike|long[- ]distance (hike|walk)|refuge|thru[- ]hike/.test(s)) { out.kind = "hike"; out.kindSaid = true; }
+  // A kind word only counts when no "no / not / don't" sits just before it in the same clause, or "not for us" just after.
+  const said = re => { for (const m of s.matchAll(new RegExp(re, "g"))) { const before = s.slice(Math.max(0, m.index - 25), m.index), after = s.slice(m.index + m[0].length, m.index + m[0].length + 25); if (/\b(no|not|never|don't|dont|without|hate|instead of)\b[^.,;]*$/.test(before) || /^[^.,;]*\b(not for us|no thanks|is out|isn't for us)\b/.test(after)) continue; return true; } return false; };
+  if (said("ski[- ]?tour\\w*|skitour\\w*|skinning|on skins|splitboard\\w*|ski mountaineering")) { out.kind = "skitour"; out.kindSaid = true; }
+  else if (said("hut[- ]to[- ]hut|\\btrek\\w*|multi[- ]day hike|long[- ]distance (?:hike|walk)|refuges?|thru[- ]hike")) { out.kind = "hike"; out.kindSaid = true; }
   else out.kind = "explore";
+  if (out.kind === "explore" && said("\\bski(?:ing)?\\b")) out.guesses.push(`this app plans ski touring (on skins, hut to hut), not resort skiing; say "ski touring" and start a new trip if that is what you mean`);
 
   // Travellers
-  let people = 0;
-  for (const m of s.matchAll(new RegExp(`\\b(${NUMW}) (adults?|kids?|children|teenagers?|teens|people|persons|friends|grown-ups)\\b`, "g"))) people += n(m[1]) || 0;
-  const group = s.match(new RegExp(`\\b(${NUMW}) of us\\b|\\bwe(?:'re| are) (${NUMW})\\b|\\bfamily of (${NUMW})\\b|\\bgroup of (${NUMW})\\b|\\bfor (${NUMW})\\b(?! (?:days?|weeks?|nights?|hours?|h|m|months?|years?)\\b)`));
-  if (!people && group) people = n(group.slice(1).find(Boolean));
-  if (!people && /\b(just me|solo|on my own|alone)\b/.test(s)) people = 1;
-  if (!people && /\b(a couple|my (wife|husband|partner|girlfriend|boyfriend)|the two of us|both of us)\b/.test(s)) people = 2;
+  // An explicit group size wins; otherwise add up roles, plus the speaker ("me", "I") and a partner when named.
+  const ROLES = "adults?|kids?|children|teenagers?|teens|people|persons|friends|grown-ups|parents|grandparents|sons?|daughters?|cousins";
+  const group = s.match(new RegExp(`\\b(${NUMW}) of us\\b|\\bwe(?:'re| are)(?: a)? (?:family |group )?(?:of )?(${NUMW})\\b(?! (?:${ROLES})\\b)|\\bfamily of (${NUMW})\\b|\\bgroup of (${NUMW})\\b|\\bfor (${NUMW})\\b(?! (?:days?|weeks?|nights?|hours?|h|m|months?|years?|${ROLES})\\b)`));
+  let people = group ? n(group.slice(1).find(Boolean)) : 0;
+  if (!people) {
+    let roles = 0, grownUps = false;
+    for (const m of s.matchAll(new RegExp(`\\b(${NUMW}) (${ROLES})\\b`, "g"))) { roles += n(m[1]) || 0; if (/adult|parent|grown/.test(m[2])) grownUps = true; }
+    const me = /\b(me|i|i'm|myself)\b/.test(s), partner = /\bmy (wife|husband|partner|girlfriend|boyfriend)\b/.test(s);
+    if (roles) people = roles + (grownUps ? 0 : (me ? 1 : 0) + (partner ? 1 : 0));
+    else if (/\b(just me|solo|on my own|alone)\b/.test(s)) people = 1;
+    else if (partner || /\b(a couple|the two of us|both of us)\b/.test(s)) people = 2;
+  }
   if (people > 0 && people < 40) out.travellers = people;
 
   // Length
   // "a day" is a rate ("1200 m up a day"), not a length
-  const len = [...s.matchAll(new RegExp(`\\b(${NUMW}|a) (days?|nights?|weeks?)\\b`, "g"))].find(m => !(m[1] === "a" && /day/.test(m[2]))) || s.match(/\b(fortnight|week)\b/);
+  const len = [...s.matchAll(new RegExp(`\\b(${NUMW}|a) (days?|nights?|weeks?)\\b`, "g"))].find(m => !(m[1] === "a" && /day|night/.test(m[2]))) || s.match(/\b(fortnight|week)\b/);
   if (len) {
     if (len[1] === "fortnight") out.days = 14;
     else if (len[1] === "week") out.days = 7;
@@ -62,13 +81,23 @@ export function readDescription(text, { today = new Date().toISOString().slice(0
   }
 
   // Dates: "12-26 July 2027", "12 to 26 July", "July 12-26", "2-8 March"
+  const cross = s.match(new RegExp(`\\b(\\d{1,2})(?:st|nd|rd|th)? ${MON}(?: (\\d{4}))? ?(?:-|to|until) ?(\\d{1,2})(?:st|nd|rd|th)? ${MON}\\b(?: (\\d{4}))?`));
   const rangeA = s.match(new RegExp(`\\b(\\d{1,2})(?:st|nd|rd|th)? ?(?:-|to|until) ?(\\d{1,2})(?:st|nd|rd|th)? ${MON}\\b(?: (\\d{4}))?`));
   const rangeB = s.match(new RegExp(`\\b${MON} (\\d{1,2})(?:st|nd|rd|th)? ?(?:-|to|until) ?(\\d{1,2})(?:st|nd|rd|th)?\\b(?:,? (\\d{4}))?`));
-  if (rangeA || rangeB) {
-    const [d1, d2, mon, yr] = rangeA ? [rangeA[1], rangeA[2], rangeA[3], rangeA[4]] : [rangeB[2], rangeB[3], rangeB[1], rangeB[4]];
-    const mi = monthIdx(mon), y = yr ? +yr : yearFor(mi, today);
-    out.start = iso(y, mi, +d1); out.end = iso(y, mi, +d2);
-    out.days = +d2 - +d1 + 1;
+  if (cross || rangeA || rangeB) {
+    let d1, m1, y1, d2, m2, y2;
+    if (cross) {
+      [d1, m1, d2, m2] = [+cross[1], monthIdx(cross[2]), +cross[4], monthIdx(cross[5])];
+      y2 = cross[6] ? +cross[6] : cross[3] ? +cross[3] + (m2 < m1 ? 1 : 0) : null;
+      y1 = cross[3] ? +cross[3] : y2 ? y2 - (m2 < m1 ? 1 : 0) : yearFor(m1, today);
+      if (!y2) y2 = y1 + (m2 < m1 ? 1 : 0);
+    } else {
+      const [a, b2, mon, yr] = rangeA ? [rangeA[1], rangeA[2], rangeA[3], rangeA[4]] : [rangeB[2], rangeB[3], rangeB[1], rangeB[4]];
+      d1 = +a; d2 = +b2; m1 = m2 = monthIdx(mon); y1 = y2 = yr ? +yr : yearFor(m1, today);
+    }
+    const start = iso(y1, m1, d1), end = iso(y2, m2, d2);
+    if (validDate(y1, m1, d1) && validDate(y2, m2, d2) && start <= end) { out.start = start; out.end = end; out.days = Math.round((Date.UTC(y2, m2, d2) - Date.UTC(y1, m1, d1)) / 864e5) + 1; }
+    else out.guesses.push(`I couldn't make sense of the dates "${(cross || rangeA || rangeB)[0]}", so I left them; pick them in the form`);
   } else {
     const mm = s.match(new RegExp(`\\b(?:(early|beginning of|mid|middle of|late|end of) )?${MON}\\b(?: (\\d{4}))?`));
     // "may" is only a month when it looks like one ("in may", "may 2027")
@@ -89,15 +118,20 @@ export function readDescription(text, { today = new Date().toISOString().slice(0
     const curTok = [b[1], b[2]].find(x => x && CUR[x.trim()]);
     const numTok = [b[1], b[2]].find(x => x && /\d/.test(x));
     const total = money(numTok);
-    if (total > 0) {
-      const after = s.slice(b.index + b[0].length, b.index + b[0].length + 20);
+    const after = s.slice(b.index + b[0].length, b.index + b[0].length + 20);
+    // "€500 a night" is a price, not the trip budget
+    if (total > 0 && !/^\s*(a|per|\/) ?(night|day|room)\b/.test(after)) {
       out.budget = { total, currency: curTok ? CUR[curTok.trim()] : "EUR", perPerson: /^\s*(per person|pp|each|a head|per head|a person)\b/.test(after) };
     }
   }
 
   // Origin and travel
-  const from = s.match(/\b(?:from|leaving|starting in|based in|live in|living in)\s+([a-z][a-z-]+)/);
-  if (from) { const city = Object.keys(ORIGIN_REGIONS).find(c => c.toLowerCase() === from[1]); out.origin = city || "Other"; if (!city) out.otherOrigin = from[1]; }
+  const from = s.match(/\b(?:from|leaving(?: from)?|starting (?:in|from)|based in|live in|living in)\s+(?:the\s+)?([a-z][a-z-]+)/);
+  if (from) {
+    const w = from[1], city = Object.keys(ORIGIN_REGIONS).find(c => c.toLowerCase() === w) || ORIGIN_ALIASES[w];
+    if (city) out.origin = city;
+    else if (!/^(home|here|there|us|our|my|a|an)$/.test(w)) { out.origin = "Other"; out.otherOrigin = w; }
+  }
   if (/\b(no (flights?|flying|planes?)|not fly|don't fly|do not fly|without flying|by train|trains? only|only trains?|by rail|night trains?)\b/.test(s)) out.travel = "train";
   else if (/\b(we drive|drive there|driving|by car|our car|road ?trip)\b/.test(s)) out.travel = "drive";
 
@@ -125,7 +159,7 @@ export function readDescription(text, { today = new Date().toISOString().slice(0
   // Limits
   const L = out.limits;
   const alt = s.match(/(\d[\d,.]*)\s?m\b(?! (?:up|ascent|of ascent|climb|gain|elevation gain|a day|per day))/);
-  const altCtx = alt && /(altitude|high|above|over|below|under|max|higher|ceiling|nothing above|not above|up to)/.test(s.slice(Math.max(0, alt.index - 30), alt.index));
+  const altCtx = alt && (/(altitude|high|above|over|below|under|max|higher|ceiling|nothing above|not above|up to)/.test(s.slice(Math.max(0, alt.index - 30), alt.index)) || /^ ?(altitude|high|max|ceiling|above sea|elevation)\b/.test(s.slice(alt.index + alt[0].length, alt.index + alt[0].length + 20)));
   if (alt && altCtx) L.maxAltitudeM = money(alt[1]);
   else if (new RegExp(`altitude sickness|not too high|low altitude|altitude is a problem|\\b(?:can't|cannot|can not|no|not|avoid|hate|bad with|problems? with|don't like|doesn't like|struggles? with|sensitive to)\\b[^.,;]{0,25}\\baltitude`).test(s)) { L.maxAltitudeM = VAGUE.altitudeM; out.guesses.push(`altitude ceiling ${VAGUE.altitudeM} m (set your own number in the limits)`); }
   const heat = s.match(/(\d{2})\s?(?:°\s?c?|degrees?|ºc?)/);
@@ -133,7 +167,7 @@ export function readDescription(text, { today = new Date().toISOString().slice(0
   else if (new RegExp(`heat is a problem|\\b(?:can't|cannot|can not|no|not|avoid|hate|bad with|problems? with|don't like|doesn't like|struggles? with|sensitive to)\\b[^.,;]{0,25}\\b(heat|hot)\\b`).test(s)) { L.maxDayHighC = VAGUE.heatC; out.guesses.push(`heat ceiling ${VAGUE.heatC} °C (set your own number in the limits)`); }
   if (/avoid (the )?crowds|no crowds|hate crowds|not touristy|no tourist traps|avoid tourists/.test(s)) L.crowds = "avoid";
   else if (/\bquiet\b|off the beaten (track|path)|less touristy|few tourists|not too busy|fewer crowds/.test(s)) L.crowds = "prefer";
-  const asc = s.match(/(\d[\d,.]*)\s?m (?:up|ascent|of ascent|climb|gain|elevation gain)|(?:ascent|climb|up)[a-z ]{0,12}?(\d[\d,.]*)\s?m\b/);
+  const asc = s.match(/(\d[\d,.]*)\s?m (?:up|ascent|of ascent|climb|gain|elevation gain)|(?:ascent|climb(?:ing)?|elevation gain)[a-z ]{0,12}?(\d[\d,.]*)\s?m\b/);
   if (asc) L.maxDailyAscentM = money(asc[1] || asc[2]);
   const hrs = s.match(/(\d{1,2})\s?(?:hours?|hrs?|h)\b(?: (?:a|per) day| walking| of walking| max| at most)?/);
   if (hrs && /(day|max|at most|walking|no more)/.test(s.slice(hrs.index, hrs.index + 30))) L.maxDailyHours = +hrs[1];
@@ -158,12 +192,14 @@ export function applyDescription(trip, p) {
     while (trip.travellers.length < p.travellers) trip.travellers.push({ id: uid("p"), name: "", limits: Object.assign({}, trip.travellers[0]?.limits) });
     if (trip.travellers.length > p.travellers && trip.travellers.slice(p.travellers).every(x => !x.name)) trip.travellers.length = p.travellers;
     changes.push(`${trip.travellers.length} traveller${trip.travellers.length > 1 ? "s" : ""}`);
+    if (trip.budget.perPerson && !p.budget) { trip.budget.total = trip.budget.perPerson * trip.travellers.length; changes.push(`budget ${fmtN(trip.budget.total)} ${trip.budget.currency} for the group (still ${fmtN(trip.budget.perPerson)} each)`); }
   }
   if (p.start) { trip.dates.start = p.start; trip.dates.end = p.end; changes.push(`${fmtD(p.start)} → ${fmtD(p.end)}${p.guessedDates ? " (a guess)" : ""}`); }
   else if (p.days && trip.dates.start) { trip.dates.end = plusDays(trip.dates.start, p.days - 1); changes.push(`${p.days} days, ending ${fmtD(trip.dates.end)}`); }
   if (p.budget) {
     const total = p.budget.perPerson ? p.budget.total * (trip.travellers.length || 1) : p.budget.total;
     trip.budget.total = total; trip.budget.currency = p.budget.currency;
+    if (p.budget.perPerson) trip.budget.perPerson = p.budget.total; else delete trip.budget.perPerson;
     changes.push(`budget ${fmtN(total)} ${p.budget.currency} for the group${p.budget.perPerson ? ` (${fmtN(p.budget.total)} each)` : ""}`);
   }
   if (p.origin) { trip.origin = { city: p.origin, region: ORIGIN_REGIONS[p.origin] || "europe-west" }; changes.push(`leaving from ${p.otherOrigin && p.origin === "Other" ? `${p.otherOrigin} (set as Other: costs use Brussels)` : p.origin}`); }
@@ -181,8 +217,9 @@ export function applyDescription(trip, p) {
     const set = [], kept = [];
     for (const [k, v] of lim) {
       // The strictest limit wins anyway; a looser number later must not quietly relax someone's limit.
-      const strictest = label[k].combine === "min" ? Math.min(...trip.travellers.map(t => t.limits?.[k]).filter(x => typeof x === "number")) : Infinity;
-      if (v > strictest) { kept.push(say(k, strictest)); continue; }
+      const have = trip.travellers.map(t => t.limits?.[k]).filter(x => x !== undefined && x !== null && x !== "");
+      if (have.length && label[k].combine === "min") { const strictest = Math.min(...have.map(Number)); if (v > strictest) { kept.push(say(k, strictest)); continue; } }
+      if (have.length && label[k].combine === "rank") { const order = RANK[k]; const strictest = have.slice().sort((a, b) => order.indexOf(String(b)) - order.indexOf(String(a)))[0]; if (order.indexOf(String(v)) < order.indexOf(String(strictest))) { kept.push(say(k, strictest)); continue; } }
       for (const t of trip.travellers) { t.limits = t.limits || {}; t.limits[k] = v; }
       set.push(say(k, v));
     }

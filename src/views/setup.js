@@ -1,6 +1,8 @@
-import { esc, field, sel } from "../ui.js";
+import { esc, field, sel, fmtMoney, scoreClass } from "../ui.js";
 import { KINDS, TRAVEL_MODES, LODGING, criteriaFor, strictestLimits } from "../criteria.js";
-import { tripLength } from "../compute.js";
+import { tripLength, computePlan, isVisited } from "../compute.js";
+import { score } from "../scoring.js";
+import { describeTurn } from "../describe.js";
 import { uid } from "../state.js";
 
 const ORIGINS = [["Brussels", "europe-west"], ["London", "uk"], ["Paris", "europe-west"], ["Amsterdam", "europe-west"], ["Geneva", "europe-west"], ["Other", "europe-west"]];
@@ -18,7 +20,7 @@ export function render(ctx) {
       <td><button type="button" class="outline secondary small" data-act="remove-traveller" data-pid="${p.id}" aria-label="Remove traveller" ${t.travellers.length <= 1 ? "disabled" : ""}>✕</button></td>
     </tr>`).join("");
   const limitSummary = crit.map(c => lim[c.key] !== undefined ? `${c.label}: <strong>${fmtLimit(c, lim[c.key])}</strong>` : null).filter(Boolean).join(" · ") || "No limits set yet: everything will be offered, nothing flagged.";
-  return `
+  return `${chat(t)}${fitIdeas(ctx, t)}
   <section class="card">
     <h2>Basics</h2>
     <div class="grid2">
@@ -67,6 +69,25 @@ export function render(ctx) {
   <p><a href="#destinations" role="button">Next: destinations →</a></p>`;
 }
 
+function chat(t) {
+  const msgs = t.brief || [];
+  return `<section class="card chat">
+    <h2>Describe the trip</h2>
+    ${msgs.length ? `<ol class="thread">${msgs.map(m => `<li class="msg ${m.who === "app" ? "app" : "you"}">${esc(m.text)}</li>`).join("")}</ol>` : `<p class="muted">Tell the planner about the trip in your own words; it fills in the form below and asks about what is missing.</p>`}
+    <div class="chatin"><textarea id="chatText" rows="2" placeholder="${msgs.length ? "Add more: a limit for someone, a change of dates, what to skip…" : "e.g. Four of us, ten days in May, from London, about £1,500 each, love the coast"}"></textarea><button type="button" data-act="chat-send">Send</button></div>
+  </section>`;
+}
+/* Step 1 brainstorm: the best three destinations for what is known so far. */
+function fitIdeas(ctx, t) {
+  if (!ctx.dests.length) return "";
+  const top = ctx.dests.filter(d => !isVisited(d, t)).map(d => { const c = computePlan(d, t); return { d, c, s: score(d, t, c) }; }).sort((a, b) => b.s.score - a.s.score).slice(0, 3);
+  return `<section class="card">
+    <div class="row between"><h2>Ideas that fit so far</h2><a href="#destinations" class="small">See all ${ctx.dests.length} →</a></div>
+    <p class="muted small">Ranked by your dates, budget, interests and limits; they change as you fill in more.</p>
+    <ol class="fitideas">${top.map(({ d, c, s }) => `<li><span class="score ${scoreClass(s.score)}">${s.score}</span> <div><button type="button" class="linklike" data-act="see-dest" data-name="${esc(d.name)}"><strong>${esc(d.name)}</strong></button> <span class="muted small">${esc(d.region)} · ${fmtMoney(c.pp, t.budget.currency)} pp${c.flags.length ? ` · ${c.flags.length} thing${c.flags.length > 1 ? "s" : ""} flagged` : ""}</span><br><span class="small">${esc(s.reason)}.</span></div></li>`).join("")}</ol>
+  </section>`;
+}
+
 const CONTS = ["Europe", "Asia", "Africa", "North America", "South America", "Oceania"];
 function countryPicker(ctx, t) {
   const ui = t._ui = t._ui || {}; const q = (ui.cq || "").toLowerCase(); const cont = ui.ccont || "all";
@@ -86,6 +107,8 @@ function critInput(c, value, bind) {
 function fmtLimit(c, v) { if (c.type === "bool") return v ? "yes" : "no"; if (c.type === "select") { const o = c.options.find(([k]) => String(k) === String(v)); return o ? o[1] : v; } return `${Number(v).toLocaleString("en-GB")}${c.unit ? " " + c.unit : ""}`; }
 
 export const actions = {
+  "chat-send": (el, ctx) => { const box = document.getElementById("chatText"); const r = describeTurn(ctx.trip, box.value, { countries: ctx.countries }); if (!r) { ctx.toast("Write something first."); return; } ctx.commit(); },
+  "see-dest": (el, ctx) => { const t = ctx.trip; t._ui = Object.assign(t._ui || {}, { q: el.dataset.name }); ctx.save(); ctx.nav("destinations"); },
   "add-traveller": (el, ctx) => { ctx.trip.travellers.push({ id: uid("p"), name: "", limits: {} }); ctx.commit(); },
   "remove-traveller": (el, ctx) => { ctx.trip.travellers = ctx.trip.travellers.filter(p => p.id !== el.dataset.pid); ctx.commit(); },
   "toggle-country": (el, ctx) => { const code = el.dataset.code; const v = ctx.trip.visitedCountries = ctx.trip.visitedCountries || []; const i = v.indexOf(code); const on = el.tagName === "INPUT" ? el.checked : false; if (on && i < 0) v.push(code); if (!on && i >= 0) v.splice(i, 1); ctx.commit(true); }

@@ -1,7 +1,7 @@
 // Reads a plain-English trip description into trip fields, applies it, and writes the reply.
 // Pure, rule-based, no network: what it cannot read it asks about.
 import { KINDS, TRAVEL_MODES, LODGING, HIKE_GRADES, SKI_GRADES, criteriaFor } from "./criteria.js";
-import { uid } from "./state.js";
+import { uid, newTrip } from "./state.js";
 
 const NUM = { one: 1, a: 1, an: 1, two: 2, couple: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12 };
 const NUMW = "\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve";
@@ -19,6 +19,8 @@ const INTERESTS = {
   food: ["food", "wine", "restaurants", "cuisine", "eating", "gastronomy", "foodie"],
   festival: ["festival", "festivals", "carnival", "concert", "concerts"]
 };
+// Everyday names for countries in data/countries.json
+const ALIASES = { GB: ["uk", "britain", "great britain", "england", "scotland", "wales", "northern ireland"], US: ["usa", "us", "america", "the states"], NL: ["holland"], CZ: ["czech republic"], AE: ["uae", "dubai"], KR: ["korea", "south korea"] };
 const TYPE_LABEL = { cities: "cities & museums", hike: "mountains & walking", coast: "coast", wildlife: "wildlife", history: "history", food: "food & wine", festival: "a festival" };
 const LEVEL = ["off", "a little", "yes", "a lot"];
 // Placeholder values for vague limits; always reported as guesses.
@@ -32,7 +34,7 @@ const money = s => { const m = String(s).toLowerCase().replace(/[,\s]/g, "").rep
 // Year for a month with no year: the next time that month starts after today.
 const yearFor = (mi, today) => { const [ty, tm] = today.split("-").map(Number); return mi + 1 > tm ? ty : ty + 1; };
 
-export function readDescription(text, { today = new Date().toISOString().slice(0, 10) } = {}) {
+export function readDescription(text, { today = new Date().toISOString().slice(0, 10), countries = [] } = {}) {
   const raw = String(text || ""), s = raw.toLowerCase().replace(/[–—]/g, "-").replace(/\s+/g, " ");
   const out = { guesses: [], limits: {} };
 
@@ -75,7 +77,7 @@ export function readDescription(text, { today = new Date().toISOString().slice(0
       const day = /early|beginning/.test(mm[1] || "") ? 1 : /mid|middle/.test(mm[1] || "") ? 10 : /late|end/.test(mm[1] || "") ? 20 : 1;
       const days = out.days || VAGUE.defaultDays;
       out.start = iso(y, mi, day); out.end = plusDays(out.start, days - 1); out.guessedDates = true;
-      out.guesses.push(`dates ${out.start} → ${out.end} are a guess from "${mm[0]}"${out.days ? "" : ` and a ${VAGUE.defaultDays}-day length`}`);
+      out.guesses.push(`the dates, from "${mm[0].trim()}"${out.days ? "" : ` with a ${VAGUE.defaultDays}-day length`}`);
     }
   }
 
@@ -125,10 +127,10 @@ export function readDescription(text, { today = new Date().toISOString().slice(0
   const alt = s.match(/(\d[\d,.]*)\s?m\b(?! (?:up|ascent|of ascent|climb|gain|elevation gain|a day|per day))/);
   const altCtx = alt && /(altitude|high|above|over|below|under|max|higher|ceiling|nothing above|not above|up to)/.test(s.slice(Math.max(0, alt.index - 30), alt.index));
   if (alt && altCtx) L.maxAltitudeM = money(alt[1]);
-  else if (/altitude sickness|no (high )?altitude|not too high|low altitude|altitude is a problem/.test(s)) { L.maxAltitudeM = VAGUE.altitudeM; out.guesses.push(`altitude ceiling ${VAGUE.altitudeM} m (a guess)`); }
+  else if (new RegExp(`altitude sickness|not too high|low altitude|altitude is a problem|\\b(?:can't|cannot|can not|no|not|avoid|hate|bad with|problems? with|don't like|doesn't like|struggles? with|sensitive to)\\b[^.,;]{0,25}\\baltitude`).test(s)) { L.maxAltitudeM = VAGUE.altitudeM; out.guesses.push(`altitude ceiling ${VAGUE.altitudeM} m (set your own number in the limits)`); }
   const heat = s.match(/(\d{2})\s?(?:°\s?c?|degrees?|ºc?)/);
   if (heat) L.maxDayHighC = +heat[1];
-  else if (/not too hot|hate (the )?heat|no heat|can't do heat|cannot do heat|don't like heat|sensitive to heat|heat is a problem|avoid heat|not hot/.test(s)) { L.maxDayHighC = VAGUE.heatC; out.guesses.push(`heat ceiling ${VAGUE.heatC} °C (a guess from "not too hot")`); }
+  else if (new RegExp(`heat is a problem|\\b(?:can't|cannot|can not|no|not|avoid|hate|bad with|problems? with|don't like|doesn't like|struggles? with|sensitive to)\\b[^.,;]{0,25}\\b(heat|hot)\\b`).test(s)) { L.maxDayHighC = VAGUE.heatC; out.guesses.push(`heat ceiling ${VAGUE.heatC} °C (set your own number in the limits)`); }
   if (/avoid (the )?crowds|no crowds|hate crowds|not touristy|no tourist traps|avoid tourists/.test(s)) L.crowds = "avoid";
   else if (/\bquiet\b|off the beaten (track|path)|less touristy|few tourists|not too busy|fewer crowds/.test(s)) L.crowds = "prefer";
   const asc = s.match(/(\d[\d,.]*)\s?m (?:up|ascent|of ascent|climb|gain|elevation gain)|(?:ascent|climb|up)[a-z ]{0,12}?(\d[\d,.]*)\s?m\b/);
@@ -138,11 +140,16 @@ export function readDescription(text, { today = new Date().toISOString().slice(0
   const hg = s.match(/\b(t[1-5]\+?)\b/); if (hg && HIKE_GRADES.includes(hg[1].toUpperCase())) L.maxGradeHike = hg[1].toUpperCase();
   const sg = raw.match(/\b(F|WS\+?|ZS[+-]?|S[+-]?)\b(?=[^a-z]|$)/); if (sg && out.kind === "skitour" && SKI_GRADES.includes(sg[1])) L.maxGradeSki = sg[1];
   if (/huts? only|only huts?|no camping/.test(s)) L.hutsOnly = true;
+
+  // Countries already visited, matched against the app's country list when given
+  const been = s.match(/\b(?:been to|visited|already did|we did|went to|have done)\b([^.;!?]*)/);
+  if (been && countries.length) { const tail = been[1]; out.visited = countries.filter(c => (ALIASES[c.code] || []).some(a => new RegExp(`\\b${a}\\b`).test(tail)) || new RegExp(`\\b${c.name.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`).test(tail)).map(c => ({ code: c.code, name: c.name })); if (!out.visited.length) delete out.visited; }
   return out;
 }
 
 const fmtN = v => Number(v).toLocaleString("en-GB");
-const fmtD = d => { const [y, m, dd] = d.split("-").map(Number); return `${dd} ${MONTHS[m - 1].slice(0, 3)} ${y}`; };
+const cap = w => w.charAt(0).toUpperCase() + w.slice(1);
+const fmtD = d => { const [y, m, dd] = d.split("-").map(Number); return `${dd} ${cap(MONTHS[m - 1].slice(0, 3))} ${y}`; };
 
 /* Applies what was read to the trip. Returns what changed, in words. */
 export function applyDescription(trip, p) {
@@ -169,26 +176,52 @@ export function applyDescription(trip, p) {
   const allowed = new Set(criteriaFor(trip.kind).map(c => c.key));
   const lim = Object.entries(p.limits || {}).filter(([k]) => allowed.has(k));
   if (lim.length) {
-    for (const t of trip.travellers) { t.limits = t.limits || {}; for (const [k, v] of lim) t.limits[k] = v; }
     const label = Object.fromEntries(criteriaFor(trip.kind).map(c => [c.key, c]));
-    changes.push("limits for everyone: " + lim.map(([k, v]) => `${label[k].label.toLowerCase()} ${v === true ? "yes" : label[k].unit ? fmtN(v) + " " + label[k].unit : (label[k].options?.find(o => o[0] === v)?.[1] || v)}`).join(", "));
+    const say = (k, v) => `${label[k].label.toLowerCase()} ${v === true ? "yes" : label[k].unit ? fmtN(v) + " " + label[k].unit : (label[k].options?.find(o => o[0] === v)?.[1] || v)}`;
+    const set = [], kept = [];
+    for (const [k, v] of lim) {
+      // The strictest limit wins anyway; a looser number later must not quietly relax someone's limit.
+      const strictest = label[k].combine === "min" ? Math.min(...trip.travellers.map(t => t.limits?.[k]).filter(x => typeof x === "number")) : Infinity;
+      if (v > strictest) { kept.push(say(k, strictest)); continue; }
+      for (const t of trip.travellers) { t.limits = t.limits || {}; t.limits[k] = v; }
+      set.push(say(k, v));
+    }
+    if (set.length) changes.push("limits for the group: " + set.join(", "));
+    if (kept.length) changes.push("kept the stricter " + kept.join(", ") + " already set (edit a traveller's limits below to change it)");
   }
-  if (!trip.name && changes.length) trip.name = trip.dates.start ? `${MONTHS[+trip.dates.start.slice(5, 7) - 1].replace(/^./, c => c.toUpperCase())} ${trip.dates.start.slice(0, 4)} trip` : "New trip";
+  if (p.visited?.length) {
+    const vc = trip.visitedCountries = trip.visitedCountries || [];
+    for (const c of p.visited) if (!vc.includes(c.code)) vc.push(c.code);
+    changes.push(`already visited: ${p.visited.map(c => c.name).join(", ")} (hidden from ideas)`);
+  }
+  if (!trip.name && changes.length) trip.name = trip.dates.start ? `${cap(MONTHS[+trip.dates.start.slice(5, 7) - 1])} ${trip.dates.start.slice(0, 4)} trip` : "New trip";
   return changes;
 }
 
 /* The chat reply: what was filled, guesses, and the next question. */
 export function replyFor(changes, trip, p) {
   const parts = [];
-  if (changes.length) parts.push(`Filled in: ${changes.join(" · ")}.`);
+  if (changes.length) parts.push(`Filled in:\n${changes.map(c => "• " + c).join("\n")}`);
   else parts.push("I didn't catch anything I can fill in from that. Try who is coming, when, for how long, the budget, what you love and what to avoid.");
   if (p.guesses?.length) parts.push(`Guesses to check: ${p.guesses.join("; ")}.`);
   if (p.kindSaid && p.kind !== trip.kind) parts.push(`That sounds like ${KINDS[p.kind].label.toLowerCase()}; this trip is "${KINDS[trip.kind].label}". Start a new trip from the home page to switch.`);
   const ask = !trip.dates.start ? "When would you like to go, and for how long?"
     : trip.travellers.length <= 1 && !p.travellers ? "How many of you are going?"
     : !trip.budget.total ? "Roughly what budget, for the group or per person?"
-    : trip.kind === "explore" && !p.type && !(trip.brief || []).some(m => m.who === "app" && /what do you love/i.test(m.text)) ? "What do you love on a trip, and what would you rather skip?"
+    : trip.kind === "explore" && !p.type && JSON.stringify(trip.type) === JSON.stringify(newTrip("explore").type) && !(trip.brief || []).some(m => m.who === "app" && /what do you love/i.test(m.text)) ? "What do you love on a trip, and what would you rather skip?"
     : "Anything else, like limits for someone (heat, altitude, walking), or places you've already been? Check the form below.";
   if (changes.length) parts.push(ask);
-  return parts.join(" ");
+  return parts.join("\n\n");
+}
+
+/* One chat turn: read the message, fill the trip, keep the message in the notes, add both sides to the thread. */
+export function describeTurn(trip, text, opts) {
+  const msg = String(text || "").trim(); if (!msg) return null;
+  const p = readDescription(msg, opts);
+  const changes = applyDescription(trip, p);
+  const reply = replyFor(changes, trip, p);
+  trip.brief = trip.brief || [];
+  trip.brief.push({ who: "you", text: msg }, { who: "app", text: reply });
+  trip.notes = trip.notes ? `${trip.notes}\n${msg}` : msg;
+  return { parsed: p, changes, reply };
 }

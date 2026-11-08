@@ -1,5 +1,5 @@
 import test from "node:test"; import assert from "node:assert/strict";
-import { readDescription, applyDescription, replyFor } from "../src/describe.js";
+import { readDescription, applyDescription, replyFor, describeTurn } from "../src/describe.js";
 import { newTrip } from "../src/state.js";
 const T = { today: "2026-11-08" };
 
@@ -76,4 +76,35 @@ test("reply asks for the first missing thing", () => {
   assert.match(reply, /when/i);
   const t2 = newTrip("explore"); const p2 = readDescription("hello", T);
   assert.match(replyFor(applyDescription(t2, p2), t2, p2), /didn't catch/i);
+});
+
+test("'can't do heat or altitude' sets both, and the reply writes months properly", () => {
+  const p = readDescription("Mom can't do heat or altitude, two weeks in July", T);
+  assert.equal(p.limits.maxDayHighC, 28); assert.equal(p.limits.maxAltitudeM, 3000);
+  const t = newTrip("explore"); const changes = applyDescription(t, p);
+  assert.ok(changes.some(c => c.includes("1 Jul 2027 → 14 Jul 2027 (a guess)")), changes.join(" | "));
+  assert.equal(p.guesses.filter(g => /2027-07-01/.test(g)).length, 0, "dates are not repeated as ISO in the guesses");
+});
+
+test("a later limit never loosens a stricter one already set", () => {
+  const t = newTrip("explore");
+  applyDescription(t, readDescription("nothing above 2000 m", T));
+  const changes = applyDescription(t, readDescription("Dad is fine up to 4000 m", T));
+  assert.ok(t.travellers.every(p => p.limits.maxAltitudeM === 2000));
+  assert.ok(changes.some(c => /kept the stricter/.test(c)), changes.join(" | "));
+});
+
+test("interests are not asked again once given, and visited countries are read", () => {
+  const t = newTrip("explore");
+  describeTurn(t, "two weeks in July for 4, €8000, we love museums", T);
+  const r = describeTurn(t, "we've already been to Slovenia and Norway", { ...T, countries: [{ code: "SI", name: "Slovenia" }, { code: "NO", name: "Norway" }, { code: "IT", name: "Italy" }] });
+  assert.deepEqual(t.visitedCountries.sort(), ["NO", "SI"]);
+  assert.doesNotMatch(r.reply, /what do you love/i);
+  assert.match(r.reply, /Slovenia/);
+});
+
+test("common country nicknames count as the country", () => {
+  const countries = [{ code: "GB", name: "United Kingdom" }, { code: "US", name: "United States" }, { code: "NL", name: "Netherlands" }, { code: "CZ", name: "Czechia" }];
+  const p = readDescription("we've been to Scotland, the USA, Holland and the Czech Republic", { ...T, countries });
+  assert.deepEqual(p.visited.map(c => c.code).sort(), ["CZ", "GB", "NL", "US"]);
 });

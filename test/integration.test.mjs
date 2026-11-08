@@ -71,3 +71,23 @@ test("table cells carry their column name so rows can stack on a phone", async (
   await go("#setup");
   const people = $("table.people tbody tr td"); assert.equal(people.dataset.label, "Name");
 });
+
+test("describe a trip on home: the form fills in, the chat replies, step 1 shows ideas", async () => {
+  await import("../src/main.js"); await go("#home");
+  $("#describeText").value = "Five of us from Brussels, 12-26 July 2027, budget €15,000. We love old towns and food, avoid crowds, nothing above 30°C.";
+  click($('[data-act="describe-new"]')); await tick(200);
+  assert.equal(window.location.hash, "#setup");
+  assert.equal($('[data-bind="dates.start"]').value, "2027-07-12");
+  assert.equal($('[data-bind="budget.total"]').value, "15000");
+  assert.equal(window.document.querySelectorAll("table.people tbody tr").length, 5);
+  assert.equal($('[data-bind="travellers.0.limits.maxDayHighC"]').value, "30");
+  const msgs = () => [...window.document.querySelectorAll(".chat .msg")];
+  assert.equal(msgs().length, 2); assert.match(msgs()[1].textContent, /Filled in/);
+  const ideas = window.document.querySelectorAll(".fitideas li");
+  assert.equal(ideas.length, 3, "three ideas in step 1");
+  $("#chatText").value = "Dad can't go higher than 2000 m";
+  click($('[data-act="chat-send"]')); await tick(120);
+  assert.equal(msgs().length, 4);
+  assert.equal($('[data-bind="travellers.0.limits.maxAltitudeM"]').value, "2000");
+  assert.match($('[data-bind="notes"]').value, /Dad can't go higher/);
+});

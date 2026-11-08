@@ -1,6 +1,9 @@
 // Plan computation: days, costs, flags and the day-by-day itinerary for one destination in one trip.
 // Pure module: no DOM.
-import { strictestLimits, gradeRank, selectedBlocks, LODGING } from "./criteria.js";
+import { strictestLimits, gradeRank, selectedBlocks, LODGING, countriesOutside, COUNTRY_ZONE_LABEL } from "./criteria.js";
+let regionNames = null; try { regionNames = new Intl.DisplayNames(["en"], { type: "region" }); } catch (e) { /* older browsers: show codes */ }
+const countryName = code => { try { return (regionNames && regionNames.of(code)) || code; } catch (e) { return code; } };
+const andList = xs => xs.length < 2 ? xs.join("") : xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1];
 
 export const CONTINGENCY = 0.08;
 const DAY = 86400000;
@@ -28,9 +31,32 @@ export function accessFor(dest, trip) {
 export function ensurePlan(trip, dest) {
   trip.plans = trip.plans || {};
   let p = trip.plans[dest.id];
-  if (!p) { p = applyPreset(dest, 0); trip.plans[dest.id] = p; }
+  if (!p) { p = applyPreset(dest, 0); const len = tripLength(trip); if (len) fitPlan(dest, p, len); trip.plans[dest.id] = p; }
   for (const b of dest.blocks) if (!p.picks[b.id]) p.picks[b.id] = { on: false, days: b.defaultDays };
   return p;
+}
+/* Trims a plan to the trip's length, keeping travel days (2 for explore, 1 otherwise).
+   Order: rest days down to 1, stops towards their minimum (the most stretched first), the last rest day, then the last stops. */
+function fitPlan(dest, p, len) {
+  const target = Math.max(0, len - (dest.kind === "explore" ? 2 : 1));
+  const on = () => dest.blocks.filter(b => p.picks[b.id]?.on);
+  const alloc = () => on().reduce((a, b) => a + p.picks[b.id].days, 0) + (p.rest || 0);
+  if (alloc() <= target) return false;
+  let guard = 500;
+  while (alloc() > target && (p.rest || 0) > 1 && guard--) p.rest--;
+  while (alloc() > target && guard--) {
+    const c = on().filter(b => p.picks[b.id].days > b.minDays).sort((a, b) => p.picks[b.id].days / b.defaultDays - p.picks[a.id].days / a.defaultDays);
+    if (!c.length) break; p.picks[c[0].id].days--;
+  }
+  while (alloc() > target && (p.rest || 0) > 0 && guard--) p.rest--;
+  const order = p.order && p.order.length ? p.order : dest.blocks.map(b => b.id);
+  for (let i = order.length - 1; i >= 0 && alloc() > target && on().length > 1; i--) if (p.picks[order[i]]?.on) p.picks[order[i]].on = false;
+  p.presetIdx = -1;
+  return true;
+}
+export function fitToDates(dest, trip) {
+  const len = tripLength(trip); if (!len) return false;
+  return fitPlan(dest, ensurePlan(trip, dest), len);
 }
 export function applyPreset(dest, idx) {
   const preset = dest.presets[idx] || { picks: {} };
@@ -57,6 +83,8 @@ export function computePlan(dest, trip) {
   const rates = dest.rates || {};
   const sel = selectedBlocks(dest, plan);
   const flags = [], warnings = [];
+  // Stops carry one typical afternoon high; with dates and a monthly climate, the warmth floor uses those months instead.
+  const climate = climateFor(dest, trip);
   let city = 0, outdoor = 0, cityCost = 0, outdoorCost = 0, extra = 0, maxAlt = 0, maxTemp = -99, minTemp = 99, hrs = 0, longest = 0, histN = 0, worstCrowd = "low";
   let totalAscent = 0, maxAscent = 0, maxHours = 0, maxGrade = 0, maxGradeLabel = "";
   const rank = { low: 0, med: 1, high: 2 };
@@ -75,6 +103,7 @@ export function computePlan(dest, trip) {
     // flags against the strictest limits
     if (limits.maxAltitudeM && b.maxAltitudeM > limits.maxAltitudeM) flags.push(`${b.name}: ${b.maxAltitudeM.toLocaleString("en-GB")} m is above the ${limits.maxAltitudeM.toLocaleString("en-GB")} m ceiling`);
     if (limits.maxDayHighC && typeof b.dayHighC === "number" && b.dayHighC > limits.maxDayHighC) flags.push(`${b.name}: ~${b.dayHighC}°C is above the ${limits.maxDayHighC}°C ceiling`);
+    if (limits.minDayHighC !== undefined && !climate && typeof b.dayHighC === "number" && b.dayHighC < limits.minDayHighC) flags.push(`${b.name}: ~${b.dayHighC}°C is below the ${limits.minDayHighC}°C floor`);
     if (limits.crowds === "avoid" && b.crowd === "high") flags.push(`${b.name} is crowded in season`);
     if (limits.maxDailyAscentM && b.ascentM > limits.maxDailyAscentM) flags.push(`${b.name}: ${b.ascentM} m of ascent is above the ${limits.maxDailyAscentM} m daily limit`);
     if (limits.maxDailyHours && b.hours > limits.maxDailyHours) flags.push(`${b.name}: ${b.hours} h is above the ${limits.maxDailyHours} h daily limit`);
@@ -82,6 +111,14 @@ export function computePlan(dest, trip) {
     if (gl && b.difficulty && gradeRank(b.difficulty, dest.kind) > gradeRank(gl, dest.kind)) flags.push(`${b.name} is ${b.difficulty}, above the ${gl} limit`);
   }
   if (minTemp === 99) { minTemp = 0; maxTemp = 0; }
+  const coldTemp = climate ? climate.high : minTemp;
+  if (limits.minDayHighC !== undefined && climate && climate.high < limits.minDayHighC) flags.push(`${climate.place.split(";")[0]}: ~${climate.high}°C on average in those months, below the ${limits.minDayHighC}°C floor`);
+  let countryBreach = false;
+  for (const zone of limits.countryZone || []) {
+    const out = countriesOutside(dest.countries || [], zone, dest.zone);
+    if (out.length) countryBreach = true;
+    if (out.length) flags.push(`${andList(out.map(countryName))} ${out.length > 1 ? "are" : "is"} outside ${COUNTRY_ZONE_LABEL[zone]}`);
+  }
   const rest = plan.rest || 0;
   const alloc = city + outdoor + rest;
   const noDates = !len;
@@ -106,7 +143,7 @@ export function computePlan(dest, trip) {
   if (noDates) warnings.push("No dates yet: costed for the planned days plus 2 travel days; add dates in Setup to score the season and get a calendar.");
   else if (alloc > len) warnings.push(`${alloc} days planned in a ${len}-day trip.`);
   else if (free < 1 && (dest.kind === "explore" ? free < 2 : free < 1)) warnings.push(`Only ${free} travel day${free === 1 ? "" : "s"}; arrival and departure usually need ${dest.kind === "explore" ? 2 : 1}.`);
-  return { plan, limits, len: lenEff, noDates, n, sel, city, outdoor, rest, free, alloc, accessCost, access, extra, cityCost: cityCost * factor, outdoorCost: outdoorCost * factor, transitCost: transitCost * factor, cont, pp, total, budget, fits, over: total - budget, maxAlt, maxTemp, minTemp, hrs: hrs + 1, longest, histN, worstCrowd, hikeShare, totalAscent, maxAscent, maxHours, maxGrade, maxGradeLabel, flags, warnings };
+  return { coldTemp, countryBreach, plan, limits, len: lenEff, noDates, n, sel, city, outdoor, rest, free, alloc, accessCost, access, extra, cityCost: cityCost * factor, outdoorCost: outdoorCost * factor, transitCost: transitCost * factor, cont, pp, total, budget, fits, over: total - budget, maxAlt, maxTemp, minTemp, hrs: hrs + 1, longest, histN, worstCrowd, hikeShare, totalAscent, maxAscent, maxHours, maxGrade, maxGradeLabel, flags, warnings };
 }
 
 /* Redistribute days of one group (city | outdoor) across selected blocks to hit a target. */

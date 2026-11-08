@@ -6,7 +6,13 @@ export const fmtDateY = iso => { if (!iso) return ""; const [y, m, d] = iso.spli
 export const hrs = h => (Math.round(h * 2) / 2).toString().replace(".5", "½") + " h";
 export const chip = (cls, label, title) => `<span class="chip ${cls || ""}"${title ? ` title="${esc(title)}"` : ""}>${label}</span>`;
 export const altClass = (a, ceiling) => ceiling ? (a > ceiling ? "crit" : a > ceiling * 0.85 ? "warn" : "good") : (a > 4250 ? "crit" : a > 3500 ? "warn" : "good");
-export const tempClass = (t, ceiling) => ceiling ? (t > ceiling ? "crit" : t > ceiling - 4 ? "warn" : "good") : (t > 33 ? "crit" : t > 28 ? "warn" : "good");
+// A traveller's floor or ceiling replaces the generic 28/33 °C thresholds; within 3–4 °C of a limit is a warning.
+export const tempClass = (t, ceiling, floor) => {
+  if (floor !== undefined && floor !== null && t < floor) return "crit";
+  const hot = ceiling ? (t > ceiling ? "crit" : t > ceiling - 4 ? "warn" : "good") : (t > 33 ? "crit" : t > 28 ? "warn" : "good");
+  if (hot !== "good") return hot;
+  return floor !== undefined && floor !== null && t < floor + 3 ? "warn" : "good";
+};
 export const hrsClass = h => h > 30 ? "crit" : h > 20 ? "warn" : "good";
 export const CROWD = { low: ["good", "Few visitors"], med: ["warn", "Some visitors"], high: ["crit", "Crowded"] };
 export const scoreClass = v => v >= 70 ? "good" : v >= 50 ? "warn" : "crit";

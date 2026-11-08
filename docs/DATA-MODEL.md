@@ -73,7 +73,10 @@ The 38 v1 destinations carry `"lastReviewed": "2026-11-08"` and `"sources": []`:
   "id": "t_…", "name": "Parents' 30th",
   "origin": { "city": "Brussels", "region": "europe-west" },
   "travellers": [
-    { "name": "Mom", "limits": { "maxAltitudeM": 4200, "maxDayHighC": 33, "crowds": "avoid", "noFlights": false } },
+    { "name": "Mom", "limits": { "maxAltitudeM": 4200, "maxDayHighC": 33, "minDayHighC": 15, "crowds": "avoid", "noFlights": false } },
+    // minDayHighC: warmth floor; the highest floor across travellers applies. countryZone: "any" | "europe" | "eu" | "schengen";
+    // every traveller's country limit applies (lists in src/criteria.js COUNTRY_GROUPS). Both are flags, never exclusions.
+    { "name": "Antoine", "limits": { "countryZone": "schengen" } },
     { "name": "Antoine", "limits": { "maxHikeShare": 0.6 } }
   ],
   "dates": { "start": "2027-07-12", "end": "2027-07-26" },      // or { "window": {...}, "lengthDays": 15 }

@@ -79,6 +79,8 @@ async function render() {
     }
     app.innerHTML = HEAD + html;
     labelCells(app);
+    const thread = app.querySelector(".thread"); if (thread) thread.scrollTop = thread.scrollHeight;
+    if (trip && trip._ui?.focus) { const el = document.getElementById("d-" + trip._ui.focus); delete trip._ui.focus; if (el && el.scrollIntoView) el.scrollIntoView({ block: "start" }); }
   } catch (e) { console.error(e); app.innerHTML = `<section class="card"><h2>Something went wrong</h2><p>${esc(e.message)}</p><p><a href="#home">Back to trips</a></p></section>`; }
 }
 

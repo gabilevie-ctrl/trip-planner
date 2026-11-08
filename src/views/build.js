@@ -16,8 +16,9 @@ export function render(ctx) {
   const picker = `<select data-act-change="pick-dest" aria-label="Destination">${ctx.dests.map(x => `<option value="${x.id}" ${x.id === d.id ? "selected" : ""}>${esc(x.name)}${t.chosen === x.id ? " ✓" : ""}</option>`).join("")}</select>`;
   const groups = t.kind === "explore" ? [["city", kind.groups.city], ["hike", kind.groups.hike], ["beach", kind.groups.beach], ["wildlife", kind.groups.wildlife]] : [["stage", kind.groups.stage], ["city", kind.groups.city]];
   const alerts = [];
-  if (c.len && c.alloc > c.len) alerts.push(`<div class="alert crit">${c.alloc} days planned in a ${c.len}-day trip. Drop ${c.alloc - c.len} or change the dates.</div>`);
-  for (const w of c.warnings) alerts.push(`<div class="alert">${esc(w)}</div>`);
+  for (const w of c.warnings) alerts.push(/days planned in a/.test(w)
+    ? `<div class="alert crit row between"><span>${esc(w)} Drop ${c.alloc - c.len} or change the dates.</span><button type="button" class="small" data-act="fit-dates">Fit to my dates</button></div>`
+    : `<div class="alert">${esc(w)}</div>`);
   if (c.flags.length) alerts.push(`<div class="alert crit"><strong>Limits broken:</strong> ${c.flags.map(esc).join("; ")}.</div>`);
   if (!alerts.length && c.len) alerts.push(`<div class="alert ok">${Math.max(c.free, 0)} travel day${c.free === 1 ? "" : "s"} left, nothing flagged.</div>`);
 
@@ -76,7 +77,7 @@ function blockRow(b, plan, c, t) {
     </div>
     <div class="chips">
       ${b.maxAltitudeM >= 800 || b.type !== "city" ? chip(altClass(b.maxAltitudeM, lim.maxAltitudeM), "↑ " + b.maxAltitudeM.toLocaleString("en-GB") + " m") : ""}
-      ${typeof b.dayHighC === "number" ? chip(tempClass(b.dayHighC, lim.maxDayHighC), "~" + b.dayHighC + "°C") : ""}
+      ${typeof b.dayHighC === "number" ? chip(tempClass(b.dayHighC, lim.maxDayHighC, lim.minDayHighC), "~" + b.dayHighC + "°C") : ""}
       ${chip(CROWD[b.crowd][0], CROWD[b.crowd][1])}
       ${b.transitHours ? chip("", "⏱ " + hrs(b.transitHours) + " to get there") : ""}
       ${b.history ? chip("", "History: " + esc(b.history)) : ""}
@@ -120,6 +121,7 @@ function orderedList(d, plan, c, t) {
 export const actions = {
   "pick-dest": (el, ctx) => { ctx.trip._ui = ctx.trip._ui || {}; ctx.trip._ui.buildId = el.value; ctx.commit(); },
   "choose-here": (el, ctx) => { ctx.trip.chosen = el.dataset.id; ctx.commit(); },
+  "fit-dates": (el, ctx) => { const d = currentDest(ctx); if (ctx.compute.fitToDates(d, ctx.trip)) { ctx.commit(); ctx.toast("Trimmed to fit your dates; adjust the days below."); } },
   "preset": (el, ctx) => { const d = currentDest(ctx); ctx.trip.plans[d.id] = ctx.compute.applyPreset(d, +el.dataset.i); ctx.commit(); },
   "clear-plan": (el, ctx) => { const d = currentDest(ctx); const p = ctx.compute.applyPreset(d, -1); p.rest = 0; ctx.trip.plans[d.id] = p; ctx.commit(); },
   "toggle-block": (el, ctx) => { const d = currentDest(ctx); const p = ctx.compute.ensurePlan(ctx.trip, d); p.picks[el.dataset.id].on = el.checked; p.presetIdx = -1; ctx.commit(); },

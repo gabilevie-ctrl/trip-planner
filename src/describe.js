@@ -25,7 +25,7 @@ const ALIASES = { GB: ["uk", "britain", "great britain", "england", "scotland", 
 const TYPE_LABEL = { cities: "cities & museums", hike: "mountains & walking", coast: "coast", wildlife: "wildlife", history: "history", food: "food & wine", festival: "a festival" };
 const LEVEL = ["off", "a little", "yes", "a lot"];
 // Placeholder values for vague limits; always reported as guesses.
-const VAGUE = { heatC: 28, altitudeM: 3000, hikeSharePct: 40, defaultDays: 7 };
+const VAGUE = { warmC: 18, heatC: 28, altitudeM: 3000, hikeSharePct: 40, defaultDays: 7 };
 
 const n = w => (w == null ? NaN : /^\d/.test(w) ? parseInt(w, 10) : NUM[w.toLowerCase()]);
 const monthIdx = s => MONTHS.findIndex(m => m.startsWith(s.toLowerCase().slice(0, 3)));
@@ -68,6 +68,11 @@ export function readDescription(text, { today = new Date().toISOString().slice(0
     if (roles) people = roles + (grownUps ? 0 : (me ? 1 : 0) + (partner ? 1 : 0));
     else if (/\b(just me|solo|on my own|alone)\b/.test(s)) people = 1;
     else if (partner || /\b(a couple|the two of us|both of us)\b/.test(s)) people = 2;
+    else {
+      // "Situ and I", "Anna, Tom and I", "me and my brother": the names listed plus the speaker
+      const named = s.match(/\b((?:[a-z']+, )*[a-z']+) and (?:i|me|myself)\b/) || s.match(/\bme and ((?:my )?[a-z']+(?:, (?:my )?[a-z']+)*)\b/);
+      if (named && !/^(you|we|they|he|she|it|us)$/.test(named[1])) people = named[1].split(", ").length + 1;
+    }
   }
   if (people > 0 && people < 40) out.travellers = people;
 
@@ -81,15 +86,18 @@ export function readDescription(text, { today = new Date().toISOString().slice(0
   }
 
   // Dates: "12-26 July 2027", "12 to 26 July", "July 12-26", "2-8 March"
-  const cross = s.match(new RegExp(`\\b(\\d{1,2})(?:st|nd|rd|th)? ${MON}(?: (\\d{4}))? ?(?:-|to|until) ?(\\d{1,2})(?:st|nd|rd|th)? ${MON}\\b(?: (\\d{4}))?`));
-  const rangeA = s.match(new RegExp(`\\b(\\d{1,2})(?:st|nd|rd|th)? ?(?:-|to|until) ?(\\d{1,2})(?:st|nd|rd|th)? ${MON}\\b(?: (\\d{4}))?`));
-  const rangeB = s.match(new RegExp(`\\b${MON} (\\d{1,2})(?:st|nd|rd|th)? ?(?:-|to|until) ?(\\d{1,2})(?:st|nd|rd|th)?\\b(?:,? (\\d{4}))?`));
-  if (cross || rangeA || rangeB) {
+  const cross = s.match(new RegExp(`\\b(\\d{1,2})(?:st|nd|rd|th)? ${MON}(?: (\\d{4}))? ?(?:-|to|until|till|through) ?(\\d{1,2})(?:st|nd|rd|th)? ${MON}\\b(?: (\\d{4}))?`));
+  const crossB = s.match(new RegExp(`\\b${MON} (\\d{1,2})(?:st|nd|rd|th)?(?:,? (\\d{4}))? ?(?:-|to|until|till|through) ?${MON} (\\d{1,2})(?:st|nd|rd|th)?\\b(?:,? (\\d{4}))?`));
+  const rangeA = s.match(new RegExp(`\\b(\\d{1,2})(?:st|nd|rd|th)? ?(?:-|to|until|till|through) ?(\\d{1,2})(?:st|nd|rd|th)? ${MON}\\b(?: (\\d{4}))?`));
+  const rangeB = s.match(new RegExp(`\\b${MON} (\\d{1,2})(?:st|nd|rd|th)? ?(?:-|to|until|till|through) ?(\\d{1,2})(?:st|nd|rd|th)?\\b(?:,? (\\d{4}))?`));
+  if (cross || crossB || rangeA || rangeB) {
     let d1, m1, y1, d2, m2, y2;
-    if (cross) {
-      [d1, m1, d2, m2] = [+cross[1], monthIdx(cross[2]), +cross[4], monthIdx(cross[5])];
-      y2 = cross[6] ? +cross[6] : cross[3] ? +cross[3] + (m2 < m1 ? 1 : 0) : null;
-      y1 = cross[3] ? +cross[3] : y2 ? y2 - (m2 < m1 ? 1 : 0) : yearFor(m1, today);
+    if (cross || crossB) {
+      // both as [day1, month1, year1?, day2, month2, year2?]
+      const c = cross ? [cross[1], cross[2], cross[3], cross[4], cross[5], cross[6]] : [crossB[2], crossB[1], crossB[3], crossB[5], crossB[4], crossB[6]];
+      [d1, m1, d2, m2] = [+c[0], monthIdx(c[1]), +c[3], monthIdx(c[4])];
+      y2 = c[5] ? +c[5] : c[2] ? +c[2] + (m2 < m1 ? 1 : 0) : null;
+      y1 = c[2] ? +c[2] : y2 ? y2 - (m2 < m1 ? 1 : 0) : yearFor(m1, today);
       if (!y2) y2 = y1 + (m2 < m1 ? 1 : 0);
     } else {
       const [a, b2, mon, yr] = rangeA ? [rangeA[1], rangeA[2], rangeA[3], rangeA[4]] : [rangeB[2], rangeB[3], rangeB[1], rangeB[4]];
@@ -97,7 +105,7 @@ export function readDescription(text, { today = new Date().toISOString().slice(0
     }
     const start = iso(y1, m1, d1), end = iso(y2, m2, d2);
     if (validDate(y1, m1, d1) && validDate(y2, m2, d2) && start <= end) { out.start = start; out.end = end; out.days = Math.round((Date.UTC(y2, m2, d2) - Date.UTC(y1, m1, d1)) / 864e5) + 1; }
-    else out.guesses.push(`I couldn't make sense of the dates "${(cross || rangeA || rangeB)[0]}", so I left them; pick them in the form`);
+    else out.guesses.push(`I couldn't make sense of the dates "${(cross || crossB || rangeA || rangeB)[0]}", so I left them; pick them in the form`);
   } else {
     const mm = s.match(new RegExp(`\\b(?:(early|beginning of|mid|middle of|late|end of) )?${MON}\\b(?: (\\d{4}))?`));
     // "may" is only a month when it looks like one ("in may", "may 2027")
@@ -125,6 +133,8 @@ export function readDescription(text, { today = new Date().toISOString().slice(0
     }
   }
 
+  if (!out.budget && /\b(low|tight|small|limited|modest) budget\b|\bon a budget\b|\bbudget (trip|travel)\b|\bcheap(ly)?\b|\bshoestring\b|\bnot (too )?expensive\b/.test(s)) out.lowBudget = true;
+
   // Origin and travel
   const from = s.match(/\b(?:from|leaving(?: from)?|starting (?:in|from)|based in|live in|living in)\s+(?:the\s+)?([a-z][a-z-]+)/);
   if (from) {
@@ -149,7 +159,7 @@ export function readDescription(text, { today = new Date().toISOString().slice(0
       let lvl = 2;
       if (/\b(not too much|not much|not a lot of|limited|light|easy|a bit of|a little|some|bit of)\b[^]*$/.test(before)) lvl = 1;
       else if (/\b(no|not|without|hate|avoid|don't want|dont want|nothing|skip|none)\b[^]*$/.test(before)) lvl = 0;
-      else if (/\b(love|loves|lots of|a lot of|really|mostly|mainly|big on|must|plenty of|adore)\b/.test(before)) lvl = 3;
+      else if (/\b(love|loves|lots of|a lot of|really|mostly|mainly|big on|must|plenty of|adore)\b/.test(before) || /\b(as much as possible|as often as possible|a lot|lots|above all|all day|every day)\b/.test(clause)) lvl = 3;
       if (key === "hike" && lvl === 1 && /walk|hik/.test(w) && /not too much|not much|not a lot/.test(before)) { out.limits.maxHikeShare = VAGUE.hikeSharePct; out.guesses.push(`hiking days capped at ${VAGUE.hikeSharePct}% (a guess from "${clause.trim()}")`); }
       type[key] = lvl; // a later mention wins
     }
@@ -162,8 +172,21 @@ export function readDescription(text, { today = new Date().toISOString().slice(0
   const altCtx = alt && (/(altitude|high|above|over|below|under|max|higher|ceiling|nothing above|not above|up to)/.test(s.slice(Math.max(0, alt.index - 30), alt.index)) || /^ ?(altitude|high|max|ceiling|above sea|elevation)\b/.test(s.slice(alt.index + alt[0].length, alt.index + alt[0].length + 20)));
   if (alt && altCtx) L.maxAltitudeM = money(alt[1]);
   else if (new RegExp(`altitude sickness|not too high|low altitude|altitude is a problem|\\b(?:can't|cannot|can not|no|not|avoid|hate|bad with|problems? with|don't like|doesn't like|struggles? with|sensitive to)\\b[^.,;]{0,25}\\baltitude`).test(s)) { L.maxAltitudeM = VAGUE.altitudeM; out.guesses.push(`altitude ceiling ${VAGUE.altitudeM} m (set your own number in the limits)`); }
-  const heat = s.match(/(\d{2})\s?(?:°\s?c?|degrees?|ºc?)/);
-  if (heat) L.maxDayHighC = +heat[1];
+  // Temperatures: "between 18 and 28°C" sets both; "at least 20 degrees" is a floor; any other is a ceiling.
+  const DEG = "\\s?(?:°\\s?c?|degrees?|ºc?)";
+  const between = s.match(new RegExp(`between (-?\\d{1,2})(?:${DEG})? ?(?:and|-|to) ?(-?\\d{1,2})${DEG}`));
+  if (between) { L.minDayHighC = +between[1]; L.maxDayHighC = +between[2]; }
+  else for (const m of s.matchAll(new RegExp(`(-?\\d{1,2})${DEG}`, "g"))) {
+    const before = s.slice(Math.max(0, m.index - 25), m.index);
+    if (/(at least|minimum|min\.?|warmer than|no colder than|not colder than|not below|no lower than|above)\s*$/.test(before) && !/(nothing|not|no|never|heat)\b[^.,;]*$/.test(before)) L.minDayHighC ??= +m[1];
+    else L.maxDayHighC ??= +m[1];
+  }
+  if (L.minDayHighC === undefined && /\b(hate|can't do|cannot do|don't like|avoid|no|not too|sensitive to|bad with)\b[^.,;]{0,15}\bcold\b|somewhere warm|warm weather|want (?:some )?(?:sun|warmth)/.test(s)) { L.minDayHighC = VAGUE.warmC; out.guesses.push(`warmth floor ${VAGUE.warmC} °C (set your own number in the limits)`); }
+  if (/\bsc?hen?ge?n\b/.test(s)) L.countryZone = "schengen";
+  else if (/\b(?:stay in|stay within|within|only in|inside) (?:the )?eu\b|\beu only\b|\bonly (?:the )?eu\b|european union/.test(s)) L.countryZone = "eu";
+  else if (/\b(?:stay in|stay within|within|only in|inside|in) europe\b|\beurope only\b|\bonly europe\b/.test(s)) L.countryZone = "europe";
+  if (/\b(options|ideas|suggest|suggestions|recommend|recommendations|where (?:should|could|can) we go|what (?:do|would) you (?:suggest|recommend))\b/.test(s)) out.wantsIdeas = true;
+  if (L.maxDayHighC !== undefined) { /* explicit number already read */ }
   else if (new RegExp(`heat is a problem|\\b(?:can't|cannot|can not|no|not|avoid|hate|bad with|problems? with|don't like|doesn't like|struggles? with|sensitive to)\\b[^.,;]{0,25}\\b(heat|hot)\\b`).test(s)) { L.maxDayHighC = VAGUE.heatC; out.guesses.push(`heat ceiling ${VAGUE.heatC} °C (set your own number in the limits)`); }
   if (/avoid (the )?crowds|no crowds|hate crowds|not touristy|no tourist traps|avoid tourists/.test(s)) L.crowds = "avoid";
   else if (/\bquiet\b|off the beaten (track|path)|less touristy|few tourists|not too busy|fewer crowds/.test(s)) L.crowds = "prefer";
@@ -219,6 +242,13 @@ export function applyDescription(trip, p) {
       // The strictest limit wins anyway; a looser number later must not quietly relax someone's limit.
       const have = trip.travellers.map(t => t.limits?.[k]).filter(x => x !== undefined && x !== null && x !== "");
       if (have.length && label[k].combine === "min") { const strictest = Math.min(...have.map(Number)); if (v > strictest) { kept.push(say(k, strictest)); continue; } }
+      if (label[k].combine === "all") {
+        // A country limit is per person: give it to everyone who has none, never replace someone else's.
+        const free = trip.travellers.filter(t => !t.limits?.[k] || t.limits[k] === "any");
+        if (!free.length) { if (!have.includes(v)) kept.push(say(k, have[0]) + " (add another in a traveller's row below)"); continue; }
+        for (const t of free) { t.limits = t.limits || {}; t.limits[k] = v; }
+        set.push(say(k, v)); continue;
+      }
       if (have.length && label[k].combine === "rank") { const order = RANK[k]; const strictest = have.slice().sort((a, b) => order.indexOf(String(b)) - order.indexOf(String(a)))[0]; if (order.indexOf(String(v)) < order.indexOf(String(strictest))) { kept.push(say(k, strictest)); continue; } }
       for (const t of trip.travellers) { t.limits = t.limits || {}; t.limits[k] = v; }
       set.push(say(k, v));
@@ -226,6 +256,7 @@ export function applyDescription(trip, p) {
     if (set.length) changes.push("limits for the group: " + set.join(", "));
     if (kept.length) changes.push("kept the stricter " + kept.join(", ") + " already set (edit a traveller's limits below to change it)");
   }
+  if (p.lowBudget) { trip.weights = Object.assign({}, trip.weights, { cost: 3 }); changes.push("low budget: cheaper places now rank higher (cost weighs the most)"); }
   if (p.visited?.length) {
     const vc = trip.visitedCountries = trip.visitedCountries || [];
     for (const c of p.visited) if (!vc.includes(c.code)) vc.push(c.code);
@@ -236,19 +267,28 @@ export function applyDescription(trip, p) {
 }
 
 /* The chat reply: what was filled, guesses, and the next question. */
-export function replyFor(changes, trip, p) {
+export function replyFor(changes, trip, p, ideas) {
   const parts = [];
   if (changes.length) parts.push(`Filled in:\n${changes.map(c => "• " + c).join("\n")}`);
-  else parts.push("I didn't catch anything I can fill in from that. Try who is coming, when, for how long, the budget, what you love and what to avoid.");
+  else if (!ideas) parts.push("Nothing new to fill in from that.");
+  if (ideas) parts.push(ideasText(ideas));
   if (p.guesses?.length) parts.push(`Guesses to check: ${p.guesses.join("; ")}.`);
   if (p.kindSaid && p.kind !== trip.kind) parts.push(`That sounds like ${KINDS[p.kind].label.toLowerCase()}; this trip is "${KINDS[trip.kind].label}". Start a new trip from the home page to switch.`);
   const ask = !trip.dates.start ? "When would you like to go, and for how long?"
     : trip.travellers.length <= 1 && !p.travellers ? "How many of you are going?"
-    : !trip.budget.total ? "Roughly what budget, for the group or per person?"
+    : !trip.budget.total ? (trip.weights?.cost === 3 ? "Roughly how much can each of you spend, all in?" : "Roughly what budget, for the group or per person?")
     : trip.kind === "explore" && !p.type && JSON.stringify(trip.type) === JSON.stringify(newTrip("explore").type) && !(trip.brief || []).some(m => m.who === "app" && /what do you love/i.test(m.text)) ? "What do you love on a trip, and what would you rather skip?"
     : "Anything else, like limits for someone (heat, altitude, walking), or places you've already been? Check the form below.";
-  if (changes.length) parts.push(ask);
+  parts.push(ask);
   return parts.join("\n\n");
+}
+
+/* Ideas as chat text: [{ name, score, pp, currency?, reason, flags }] from the destination ranking. */
+function ideasText(ideas) {
+  if (!ideas.length) return "No destination in the library fits yet; see all of them in Destinations.";
+  const lines = ideas.map((d, i) => `${i + 1}. ${d.name}: ${d.score}/100, about ${fmtN(Math.round(d.pp))} ${d.currency || "EUR"} each. ${d.reason}.${d.flags.length ? `\n   ⚠ ${d.flags.slice(0, 2).join("; ")}${d.flags.length > 2 ? ` (+${d.flags.length - 2} more)` : ""}` : ""}`);
+  const allFlagged = ideas.every(d => d.flags.length);
+  return `The best fits in the library so far:\n${lines.join("\n")}${allFlagged ? "\n\nEach of these breaks at least one of your limits. The library may not have a destination that fits everything yet; loosen a limit, or add your own idea in Destinations." : ""}\n\nTap a name in "Ideas that fit so far" below to look closer.`;
 }
 
 /* One chat turn: read the message, fill the trip, keep the message in the notes, add both sides to the thread. */
@@ -256,7 +296,8 @@ export function describeTurn(trip, text, opts) {
   const msg = String(text || "").trim(); if (!msg) return null;
   const p = readDescription(msg, opts);
   const changes = applyDescription(trip, p);
-  const reply = replyFor(changes, trip, p);
+  const ideas = p.wantsIdeas && opts?.suggest ? opts.suggest(trip) : null;
+  const reply = replyFor(changes, trip, p, ideas);
   trip.brief = trip.brief || [];
   trip.brief.push({ who: "you", text: msg }, { who: "app", text: reply });
   trip.notes = trip.notes ? `${trip.notes}\n${msg}` : msg;

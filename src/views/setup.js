@@ -29,10 +29,10 @@ export function render(ctx) {
       ${field("Kind of trip", `<input type="text" value="${esc(kind.label)}" disabled>`, "Set when the trip was created. Start a new trip to change it.")}
       ${field("Leaving from", sel("origin", t.origin.city, ORIGINS.map(([c]) => [c, c]), `data-bind="origin.city" data-after="origin"`), "Access routes and costs are held per origin; Brussels and London are covered best.")}
       ${field("How we travel", sel("travel", t.travel.mode, Object.entries(TRAVEL_MODES).map(([k, v]) => [k, v.label]), `data-bind="travel.mode"`), esc(TRAVEL_MODES[t.travel.mode]?.blurb || ""))}
-      ${field("Start date", `<input type="date" data-bind="dates.start" value="${esc(t.dates.start)}">`)}
-      ${field("End date", `<input type="date" data-bind="dates.end" value="${esc(t.dates.end)}">`, len ? `${len} days` : "Pick both dates; the itinerary and the season scoring depend on them.")}
-      ${field("Budget for the whole group", `<input type="number" min="0" step="100" data-bind="budget.total" data-type="number" value="${t.budget.total || ""}" placeholder="e.g. 15000">`, "Leave empty for no cap; destinations still show their estimate.")}
-      ${field("Currency", sel("cur", t.budget.currency, [["EUR", "EUR €"], ["GBP", "GBP £"], ["CHF", "CHF"], ["USD", "USD $"]], `data-bind="budget.currency"`))}
+      <div class="pair">${field("Start date", `<input type="date" data-bind="dates.start" value="${esc(t.dates.start)}">`)}
+      ${field("End date", `<input type="date" data-bind="dates.end" value="${esc(t.dates.end)}">`, len ? `${len} days` : "Pick both dates; the itinerary and the season scoring depend on them.")}</div>
+      <div class="pair">${field("Budget for the whole group", `<input type="number" min="0" step="100" data-bind="budget.total" data-type="number" value="${t.budget.total || ""}" placeholder="e.g. 15000">`, "Leave empty for no cap; destinations still show their estimate.")}
+      ${field("Currency", sel("cur", t.budget.currency, [["EUR", "EUR €"], ["GBP", "GBP £"], ["CHF", "CHF"], ["USD", "USD $"]], `data-bind="budget.currency"`))}</div>
       ${field("Lodging style", sel("lodging", t.lodging, Object.entries(LODGING).map(([k, v]) => [k, v.label]), `data-bind="lodging"`), "Drives the per-day rates: B&B/huts is the baseline; hotels add about 40%.")}
     </div>
   </section>
@@ -78,9 +78,14 @@ function chat(t) {
   </section>`;
 }
 /* Step 1 brainstorm: the best three destinations for what is known so far. */
+/* The best destinations for what is known so far; shared by the ideas card and the chat. */
+export function topIdeas(ctx, t, n = 3) {
+  if (!ctx.dests.length || ctx.dests[0].kind !== t.kind) return [];
+  return ctx.dests.filter(d => !isVisited(d, t)).map(d => { const c = computePlan(d, t); return { d, c, s: score(d, t, c) }; }).sort((a, b) => b.s.score - a.s.score).slice(0, n);
+}
+export const suggestFor = ctx => t => topIdeas(ctx, t).map(({ d, c, s }) => ({ name: d.name, score: s.score, pp: c.pp, currency: t.budget.currency, reason: s.reason, flags: c.flags }));
 function fitIdeas(ctx, t) {
-  if (!ctx.dests.length) return "";
-  const top = ctx.dests.filter(d => !isVisited(d, t)).map(d => { const c = computePlan(d, t); return { d, c, s: score(d, t, c) }; }).sort((a, b) => b.s.score - a.s.score).slice(0, 3);
+  const top = topIdeas(ctx, t); if (!top.length) return "";
   return `<section class="card">
     <div class="row between"><h2>Ideas that fit so far</h2><a href="#destinations" class="small">See all ${ctx.dests.length} →</a></div>
     <p class="muted small">Ranked by your dates, budget, interests and limits; they change as you fill in more.</p>
@@ -104,10 +109,10 @@ function critInput(c, value, bind) {
   if (c.type === "bool") return `<input type="checkbox" data-bind="${bind}" data-type="bool" ${value ? "checked" : ""}>`;
   return `<select data-bind="${bind}"><option value="">—</option>${c.options.map(([v, l]) => `<option value="${esc(v)}" ${String(value) === String(v) ? "selected" : ""}>${esc(l)}</option>`).join("")}</select>`;
 }
-function fmtLimit(c, v) { if (c.type === "bool") return v ? "yes" : "no"; if (c.type === "select") { const o = c.options.find(([k]) => String(k) === String(v)); return o ? o[1] : v; } return `${Number(v).toLocaleString("en-GB")}${c.unit ? " " + c.unit : ""}`; }
+function fmtLimit(c, v) { if (Array.isArray(v)) return v.map(x => fmtLimit(c, x)).join(" and "); if (c.type === "bool") return v ? "yes" : "no"; if (c.type === "select") { const o = c.options.find(([k]) => String(k) === String(v)); return o ? o[1] : v; } return `${Number(v).toLocaleString("en-GB")}${c.unit ? " " + c.unit : ""}`; }
 
 export const actions = {
-  "chat-send": (el, ctx) => { const box = document.getElementById("chatText"); const r = describeTurn(ctx.trip, box.value, { countries: ctx.countries }); if (!r) { ctx.toast("Write something first."); return; } ctx.commit(); },
+  "chat-send": (el, ctx) => { const box = document.getElementById("chatText"); const r = describeTurn(ctx.trip, box.value, { countries: ctx.countries, suggest: suggestFor(ctx) }); if (!r) { ctx.toast("Write something first."); return; } ctx.commit(); },
   "see-dest": (el, ctx) => { const t = ctx.trip; t._ui = Object.assign(t._ui || {}, { q: el.dataset.name }); ctx.save(); ctx.nav("destinations"); },
   "add-traveller": (el, ctx) => { ctx.trip.travellers.push({ id: uid("p"), name: "", limits: {} }); ctx.commit(); },
   "remove-traveller": (el, ctx) => { ctx.trip.travellers = ctx.trip.travellers.filter(p => p.id !== el.dataset.pid); ctx.commit(); },

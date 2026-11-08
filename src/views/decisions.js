@@ -28,7 +28,8 @@ export function render(ctx) {
     </form>
   </section>
   <section class="card"><h3>Open (${open.length})</h3>${open.length ? `<ul class="decisions">${open.map(row).join("")}</ul>` : empty("Nothing open", "Add the questions the group still has to settle.")}</section>
-  ${done.length ? `<section class="card"><h3>Decided (${done.length})</h3><ul class="decisions">${done.map(row).join("")}</ul></section>` : ""}`;
+  ${done.length ? `<section class="card"><h3>Decided (${done.length})</h3><ul class="decisions">${done.map(row).join("")}</ul></section>` : ""}
+  <p class="row"><a href="${ctx.trip.kind === "explore" ? "#share" : "#conditions"}" role="button">${ctx.trip.kind === "explore" ? "Next: share →" : "Next: conditions →"}</a></p>`;
 }
 
 export const actions = { "del-decision": (el, ctx) => { ctx.trip.decisions = ctx.trip.decisions.filter(d => d.id !== el.dataset.id); ctx.commit(); } };

@@ -2,6 +2,7 @@ import { esc, fmtDateY, fmtMoney, empty } from "../ui.js";
 import { KINDS } from "../criteria.js";
 import { tripLength } from "../compute.js";
 import { readDescription, describeTurn } from "../describe.js";
+import { suggestFor } from "./setup.js";
 
 export function render(ctx) {
   const trips = Object.values(ctx.store.trips).sort((a, b) => (b.updatedAt || "").localeCompare(a.updatedAt || ""));
@@ -49,7 +50,7 @@ export const actions = {
     const txt = document.getElementById("describeText").value.trim();
     if (!txt) { ctx.toast("Write a few words about the trip first."); return; }
     const t = ctx.createTrip(readDescription(txt).kind);
-    describeTurn(t, txt, { countries: ctx.countries }); ctx.open(t.id, "setup");
+    describeTurn(t, txt, { countries: ctx.countries, suggest: suggestFor(ctx) }); ctx.open(t.id, "setup");
   },
   "new-trip": (el, ctx) => { const t = ctx.createTrip(el.dataset.kind); ctx.open(t.id, "setup"); },
   "open-trip": (el, ctx) => ctx.open(el.dataset.id, "setup"),

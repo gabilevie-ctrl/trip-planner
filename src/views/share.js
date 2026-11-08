@@ -23,7 +23,9 @@ export function render(ctx) {
 export function summary(t, d) {
   const lines = [];
   lines.push(`${t.name || "Trip"} (${t.kind})${t.owner ? " · owner " + t.owner : ""}`);
-  lines.push(`${t.travellers.map(p => p.name || "?").join(", ")} · from ${t.origin.city} · ${t.travel.mode}`);
+  const named = t.travellers.filter(p => p.name);
+  const who = named.length ? t.travellers.map(p => p.name || "someone unnamed").join(", ") : `${t.travellers.length} traveller${t.travellers.length === 1 ? "" : "s"} (names not set yet)`;
+  lines.push(`${who} · from ${t.origin.city} · ${t.travel.mode}`);
   if (t.dates.start) lines.push(`${fmtDateY(t.dates.start)} → ${fmtDateY(t.dates.end)} (${tripLength(t)} days)`);
   if (t.budget.total) lines.push(`Budget ${fmtMoney(t.budget.total, t.budget.currency)} for the group`);
   if (d) {

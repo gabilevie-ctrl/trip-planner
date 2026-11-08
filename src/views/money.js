@@ -63,7 +63,8 @@ export function render(ctx) {
   <section class="card grid2">
     <div><h3>Balances</h3><ul>${t.travellers.map(p => `<li>${esc(p.name || "Traveller")}: <span class="num ${bal[p.id] > 0.5 ? "good" : bal[p.id] < -0.5 ? "crit" : ""}">${bal[p.id] > 0 ? "+" : ""}${fmtMoney(bal[p.id], cur)}</span></li>`).join("")}</ul><p class="muted small">Positive = paid more than their share.</p></div>
     <div><h3>Settle up</h3>${transfers.length ? `<ul>${transfers.map(x => `<li>${esc(name(x.from))} → ${esc(name(x.to))}: <strong class="num">${fmtMoney(x.amount, cur)}</strong></li>`).join("")}</ul>` : `<p class="muted">Everyone is square.</p>`}</div>
-  </section>`;
+  </section>
+  <p class="row"><a href="#decisions" role="button">Next: decisions →</a></p>`;
 }
 
 export const actions = { "del-expense": (el, ctx) => { ctx.trip.expenses = ctx.trip.expenses.filter(e => e.id !== el.dataset.id); ctx.commit(); } };

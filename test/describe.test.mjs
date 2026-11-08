@@ -75,7 +75,7 @@ test("reply asks for the first missing thing", () => {
   const reply = replyFor(applyDescription(t, p), t, p);
   assert.match(reply, /when/i);
   const t2 = newTrip("explore"); const p2 = readDescription("hello", T);
-  assert.match(replyFor(applyDescription(t2, p2), t2, p2), /didn't catch/i);
+  { const r = replyFor(applyDescription(t2, p2), t2, p2); assert.match(r, /nothing new/i); assert.match(r, /when/i); }
 });
 
 test("'can't do heat or altitude' sets both, and the reply writes months properly", () => {
@@ -167,4 +167,41 @@ test("review: origins written as a country or with 'the'", () => {
 
 test("review: very long input stays quick", () => {
   const t0 = Date.now(); readDescription("1".repeat(50000) + " €", T); assert.ok(Date.now() - t0 < 500);
+});
+
+/* ---- the chat Gabriel tried (8 Nov 2026) ---- */
+test("chat transcript: 'jan 2nd until jan 9th, situ and I, low budget…'", () => {
+  const p = readDescription("jan 2nd until jan 9th, situ and I. low budget. want to be outside in nature as much as possible. Maybe somewhere warm in europe/shengen.", T);
+  assert.equal(p.start, "2027-01-02"); assert.equal(p.end, "2027-01-09"); assert.ok(!p.guessedDates);
+  assert.equal(p.travellers, 2);
+  assert.equal(p.lowBudget, true);
+  assert.equal(p.type.hike, 3);
+  assert.equal(p.limits.countryZone, "schengen");
+  assert.equal(p.limits.minDayHighC, 18);
+});
+
+test("more ways of saying who is coming and when", () => {
+  assert.equal(readDescription("Anna, Tom and I", T).travellers, 3);
+  assert.equal(readDescription("me and my brother", T).travellers, 2);
+  const p = readDescription("January 2 to January 9 2027", T); assert.equal(p.start, "2027-01-02"); assert.equal(p.end, "2027-01-09");
+  assert.equal(readDescription("options in europe", T).limits.countryZone, "europe");
+  assert.equal(readDescription("schegen area please", T).limits.countryZone, "schengen");
+});
+
+test("a low budget ranks cheaper places higher and is said back", () => {
+  const t = newTrip("explore");
+  const changes = applyDescription(t, readDescription("we're on a tight budget", T));
+  assert.equal(t.weights.cost, 3);
+  assert.ok(changes.some(c => /cheaper/.test(c)), changes.join(" | "));
+});
+
+test("asking for options answers with ideas, and a message with nothing new still asks the next question", () => {
+  const t = newTrip("explore");
+  describeTurn(t, "2 of us", T);
+  const ideas = [{ name: "Slovenia", score: 70, pp: 900, reason: "Strong on cost", flags: [] }, { name: "Norway", score: 60, pp: 1800, reason: "Strong on nature", flags: ["Bergen: ~3°C is below the 18°C floor"] }];
+  const r = describeTurn(t, "give us options", { ...T, suggest: () => ideas });
+  assert.match(r.reply, /Slovenia/); assert.match(r.reply, /Norway/); assert.match(r.reply, /below the 18°C floor/);
+  assert.doesNotMatch(r.reply, /didn't catch/);
+  const r2 = describeTurn(t, "hmm ok", T);
+  assert.match(r2.reply, /when/i);
 });

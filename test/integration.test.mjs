@@ -91,3 +91,84 @@ test("describe a trip on home: the form fills in, the chat replies, step 1 shows
   assert.equal($('[data-bind="travellers.0.limits.maxAltitudeM"]').value, "2000");
   assert.match($('[data-bind="notes"]').value, /Dad can't go higher/);
 });
+
+test("choosing a destination offers a button to the next step", async () => {
+  await import("../src/main.js"); await go("#home");
+  click($('[data-act="new-trip"][data-kind="explore"]')); await tick(80);
+  await go("#destinations");
+  assert.equal(window.document.querySelectorAll("a.next-step").length, 0, "no next button before choosing");
+  const choose = $('[data-act="choose"]'); const id = choose.dataset.id; click(choose); await tick(60);
+  const next = $(`#d-${id} a.next-step`);
+  assert.ok(next, "the chosen card has a next-step button");
+  assert.equal(next.getAttribute("href"), "#build");
+  assert.match(next.textContent, /Next: build the days/);
+});
+
+test("UX: over-long plan offers 'Fit to my dates' once; compare rows can be opened and chosen; summary and plan read well", async () => {
+  await import("../src/main.js"); await go("#home");
+  $("#describeText").value = "jan 2nd until jan 9th, situ and I"; click($('[data-act="describe-new"]')); await tick(200);
+  await go("#build");
+  click($('[data-act="preset"][data-i="0"]')); await tick(60);
+  const long = () => [...window.document.querySelectorAll(".view-build .alert")].filter(a => /days planned in a/.test(a.textContent));
+  assert.equal(long().length, 1, "the over-long warning shows once");
+  click(long()[0].querySelector('[data-act="fit-dates"]')); await tick(60);
+  assert.equal(long().length, 0, "fitting removes the warning");
+  await go("#destinations");
+  change($('input[data-ui="compare"]'), true); await tick(60);
+  const row = $("table.cmp tbody tr");
+  assert.ok(row.querySelector('[data-act="choose"]'), "each row can be chosen");
+  const open = row.querySelector('[data-act="open-card"]'); assert.ok(open, "each row can be opened");
+  const id = open.dataset.id; click(open); await tick(80);
+  assert.ok(!$("table.cmp"), "opening a row goes back to the cards"); assert.ok($(`#d-${id}`));
+  click($(`#d-${id} [data-act="choose"]`)); await tick(60);
+  await go("#share"); assert.doesNotMatch($("pre.summary").textContent, /\?, \?/);
+  await go("#plan"); assert.doesNotMatch($(".view-plan table.itin tbody td").textContent, /\d{4}-\d{2}-\d{2}/);
+});
+
+/* ---- Scenarios: people using the whole dashboard ---- */
+const hrefOfNext = () => { const a = [...window.document.querySelectorAll("main a[role=button], main a.next-step")].find(x => /^Next/.test(x.textContent.trim())); return a && a.getAttribute("href"); };
+
+test("scenario: Mom opens the family link on her phone and walks every step with Next buttons only", async () => {
+  await import("../src/main.js"); await go("#home");
+  click($('[data-act="use-template"]')); await tick(150);
+  await go("#share"); const link = $("#shareLink").value;
+  window.location.hash = link.split("#")[1]; await tick(150);
+  assert.equal(window.location.hash, "#setup", "the shared link opens the trip");
+  change($('[data-bind="travellers.0.limits.maxDayHighC"]'), "25"); await tick(60);
+  const steps = ["#destinations", "#build", "#itinerary", "#plan", "#money", "#decisions", "#share"];
+  for (const expected of steps) {
+    if (window.location.hash === "#destinations" && !$(".nextbar")) { click($('[data-act="choose"]')); await tick(60); }
+    const next = hrefOfNext(); assert.equal(next, expected, `from ${window.location.hash} the Next button should go to ${expected}`);
+    await go(next);
+  }
+});
+
+test("scenario: Situ and Gabriel describe a January trip, take the first idea, and get a plan that fits their 8 days", async () => {
+  await import("../src/main.js"); await go("#home");
+  $("#describeText").value = "jan 2nd until jan 9th, situ and I. low budget. want to be outside in nature as much as possible. Maybe somewhere warm in europe/shengen.";
+  click($('[data-act="describe-new"]')); await tick(200);
+  click($("#chatText") && (() => { $("#chatText").value = "give us options"; return $('[data-act="chat-send"]'); })()); await tick(120);
+  const last = [...window.document.querySelectorAll(".chat .msg.app")].pop().textContent;
+  assert.match(last, /best fits/); assert.match(last, /1\. /);
+  click($('.fitideas [data-act="see-dest"]')); await tick(100);
+  assert.equal(window.location.hash, "#destinations");
+  const card = $(".dest"); click(card.querySelector('[data-act="choose"]')); await tick(60);
+  await go(hrefOfNext());
+  assert.equal(window.location.hash, "#build");
+  assert.ok(![...window.document.querySelectorAll(".view-build .alert")].some(a => /days planned in a/.test(a.textContent)), "the plan already fits the dates");
+  await go("#itinerary");
+  const rows = window.document.querySelectorAll("table.itin tbody tr");
+  assert.equal(rows.length, 8, "one row per day of the trip");
+  assert.match(rows[rows.length - 1].textContent, /9 Jan/);
+});
+
+test("scenario: a friend sets up a ski touring week from a sentence and reaches the conditions log", async () => {
+  await import("../src/main.js"); await go("#home");
+  $("#describeText").value = "Ski touring week for 3 in March, we drive, max 1200 m up a day, nothing harder than ZS";
+  click($('[data-act="describe-new"]')); await tick(200);
+  assert.match($(".triphead").textContent, /Ski touring/);
+  assert.equal($('[data-bind="travellers.0.limits.maxDailyAscentM"]').value, "1200");
+  await go("#destinations"); click($('[data-act="choose"]')); await tick(60);
+  await go("#decisions"); assert.equal(hrefOfNext(), "#conditions");
+  await go("#conditions"); assert.ok($("table.log"), "a conditions log row per day"); assert.equal(hrefOfNext(), "#share");
+});

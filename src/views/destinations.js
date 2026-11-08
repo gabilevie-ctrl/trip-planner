@@ -16,7 +16,9 @@ export function render(ctx) {
     .sort((a, b) => b.s.score - a.s.score);
   const labels = CRITERIA_BY_KIND[t.kind]; const w = Object.assign({}, DEFAULT_WEIGHTS[t.kind], t.weights || {});
   const zones = [...new Set(ctx.dests.map(d => d.zone))];
-  return `${noDates}
+  const picked = t.chosen && ctx.dests.find(d => d.id === t.chosen);
+  const nextBar = picked ? `<section class="card alert ok row between nextbar"><span>Chosen: <strong>${esc(picked.name)}</strong></span><a href="#build" role="button" class="next-step small">Next: build the days →</a></section>` : "";
+  return `${nextBar}${noDates}
   <section class="card toolbar">
     <input type="search" id="q" placeholder="Search a country, a region, a place, a hut…" value="${esc(f.q)}" data-ui="q" aria-label="Search destinations">
     <label class="chk"><input type="checkbox" data-ui="fit" ${f.fit ? "checked" : ""}> Within budget</label>
@@ -59,7 +61,7 @@ function card({ d, c, s, cl }, t, ctx) {
     <p class="reason">${esc(s.reason)}.</p>
     <div class="facts">
       <div class="fact"><span class="k">Highest point</span><span class="v ${altClass(c.maxAlt, limits.maxAltitudeM)} num">${c.maxAlt.toLocaleString("en-GB")} m</span></div>
-      <div class="fact"><span class="k">Weather then${cl ? " (" + esc(cl.place.split(" (")[0]) + ")" : ""}</span><span class="v ${tempClass(cl ? cl.high : c.maxTemp, limits.maxDayHighC)}">${weather || "—"}</span></div>
+      <div class="fact"><span class="k">Weather then${cl ? " (" + esc(cl.place.split(" (")[0]) + ")" : ""}</span><span class="v ${tempClass(cl ? cl.high : c.maxTemp, limits.maxDayHighC, limits.minDayHighC)}">${weather || "—"}</span></div>
       <div class="fact"><span class="k">Crowds</span><span class="v ${CROWD[c.worstCrowd][0]}">${CROWD[c.worstCrowd][1]}</span></div>
       <div class="fact"><span class="k">In transit</span><span class="v ${hrsClass(c.hrs)} num">${hrs(c.hrs)}${c.longest ? ` · longest ${hrs(c.longest)}` : ""}</span></div>
       ${d.kind !== "explore" ? `<div class="fact"><span class="k">Hardest day</span><span class="v">${esc(c.maxGradeLabel || "—")} · ${c.maxAscent} m up · ${c.maxHours} h</span></div>` : ""}
@@ -74,7 +76,7 @@ function card({ d, c, s, cl }, t, ctx) {
     </div>
     <footer class="row">
       <button type="button" data-act="choose" data-id="${d.id}" ${chosen ? 'class="secondary"' : ""}>${chosen ? "Chosen ✓ (unchoose)" : "Choose this destination"}</button>
-      <button type="button" class="outline" data-act="build" data-id="${d.id}">Build the days →</button>
+      ${chosen ? `<a href="#build" role="button" class="next-step">Next: build the days →</a>` : `<button type="button" class="outline" data-act="build" data-id="${d.id}">Preview the days →</button>`}
       ${(d.guides || []).map(g => `<a href="${esc(g.url)}" target="_blank" rel="noopener" class="small">${esc(g.name)}</a>`).join(" · ")}
     </footer>
     <p class="muted small">${provenance(d)}</p>
@@ -84,14 +86,15 @@ function card({ d, c, s, cl }, t, ctx) {
 function compareTable(rows, t) {
   const cur = t.budget.currency;
   return `<section class="card scroller"><table class="cmp"><thead><tr><th>Score</th><th>Destination</th><th>Per person</th><th>Group</th><th>Days</th><th>Highest</th><th>Weather</th><th>Crowds</th><th>Transit</th><th>Season</th><th>Flags</th></tr></thead><tbody>
-  ${rows.map(({ d, c, s, cl }) => `<tr class="${c.fits ? "" : "over"}"><td><span class="score ${scoreClass(s.score)}">${s.score}</span></td><td><strong>${esc(d.name)}</strong><br><span class="muted small">${esc(d.region)}</span></td><td class="num">${fmtMoney(c.pp, cur)}</td><td class="num">${fmtMoney(c.total, cur)}${t.budget.total ? `<br><span class="pill ${c.fits ? "good" : "crit"}">${c.fits ? "fits" : "+" + fmtMoney(c.over, cur)}</span>` : ""}</td><td class="num">${c.city}/${c.outdoor}/${c.rest}/${Math.max(c.free, 0)}${splitBar(c)}</td><td>${chip(altClass(c.maxAlt, c.limits.maxAltitudeM), c.maxAlt.toLocaleString("en-GB") + " m")}</td><td>${cl ? `${cl.high}°/${cl.low}° · ${cl.rainDays} rain d${cl.snow ? " · snow" : ""}` : "—"}</td><td>${chip(CROWD[c.worstCrowd][0], CROWD[c.worstCrowd][1])}</td><td>${chip(hrsClass(c.hrs), hrs(c.hrs))}</td><td>${chip(scoreClass(s.criteria.season), s.criteria.season)}</td><td class="small">${c.flags.length ? c.flags.length + " flag" + (c.flags.length > 1 ? "s" : "") : "—"}</td></tr>`).join("")}
+  ${rows.map(({ d, c, s, cl }) => `<tr class="${c.fits ? "" : "over"}"><td><span class="score ${scoreClass(s.score)}">${s.score}</span></td><td><button type="button" class="linklike" data-act="open-card" data-id="${d.id}"><strong>${esc(d.name)}</strong></button><br><span class="muted small">${esc(d.region)}</span><div class="row cmpact">${t.chosen === d.id ? `<span class="pill good">chosen</span> <a href="#build" class="small next-step">Next: build →</a>` : `<button type="button" class="outline small" data-act="choose" data-id="${d.id}">Choose</button>`}</div></td><td class="num">${fmtMoney(c.pp, cur)}</td><td class="num">${fmtMoney(c.total, cur)}${t.budget.total ? `<br><span class="pill ${c.fits ? "good" : "crit"}">${c.fits ? "fits" : "+" + fmtMoney(c.over, cur)}</span>` : ""}</td><td class="num">${c.city}/${c.outdoor}/${c.rest}/${Math.max(c.free, 0)}${splitBar(c)}</td><td>${chip(altClass(c.maxAlt, c.limits.maxAltitudeM), c.maxAlt.toLocaleString("en-GB") + " m")}</td><td>${cl ? `${cl.high}°/${cl.low}° · ${cl.rainDays} rain d${cl.snow ? " · snow" : ""}` : "—"}</td><td>${chip(CROWD[c.worstCrowd][0], CROWD[c.worstCrowd][1])}</td><td>${chip(hrsClass(c.hrs), hrs(c.hrs))}</td><td>${chip(scoreClass(s.criteria.season), s.criteria.season)}</td><td class="small">${c.flags.length ? c.flags.length + " flag" + (c.flags.length > 1 ? "s" : "") : "—"}</td></tr>`).join("")}
   ${t.ideas.map(i => `<tr class="over"><td><span class="pill warn">idea</span></td><td><strong>${esc(i.name)}</strong><br><span class="muted small">${esc(i.region || "")}</span></td><td class="num">${i.pp ? "~" + fmtMoney(i.pp, cur) : "—"}</td><td class="num">${i.pp ? fmtMoney(i.pp * (t.travellers.length || 1), cur) : "—"}</td><td colspan="7" class="small muted">${esc(i.note || "Not built out yet.")}</td></tr>`).join("")}
   </tbody></table><p class="muted small">Days = ${t.kind === "explore" ? "cities / outdoors" : "town / stages"} / rest / travel.</p></section>`;
 }
 
 export const actions = {
   "preset": (el, ctx) => { const d = ctx.dests.find(x => x.id === el.dataset.id); const { applyPreset } = ctx.compute; ctx.trip.plans[d.id] = applyPreset(d, +el.dataset.i); ctx.commit(); },
-  "choose": (el, ctx) => { ctx.trip.chosen = ctx.trip.chosen === el.dataset.id ? null : el.dataset.id; ctx.commit(); },
+  "open-card": (el, ctx) => { const t = ctx.trip; t._ui = Object.assign(t._ui || {}, { compare: false, focus: el.dataset.id }); ctx.commit(); },
+  "choose": (el, ctx) => { const t = ctx.trip; t.chosen = t.chosen === el.dataset.id ? null : el.dataset.id; t._ui = t._ui || {}; if (t.chosen) t._ui.buildId = t.chosen; ctx.commit(); },
   "build": (el, ctx) => { ctx.trip._ui = ctx.trip._ui || {}; ctx.trip._ui.buildId = el.dataset.id; ctx.commit(false); ctx.nav("build"); },
   "remove-idea": (el, ctx) => { ctx.trip.ideas = ctx.trip.ideas.filter(i => i.id !== el.dataset.id); ctx.commit(); }
 };

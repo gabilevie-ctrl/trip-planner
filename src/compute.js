@@ -90,8 +90,10 @@ export function computePlan(dest, trip) {
   if (minTemp === 99) { minTemp = 0; maxTemp = 0; }
   const coldTemp = climate ? climate.high : minTemp;
   if (limits.minDayHighC !== undefined && climate && climate.high < limits.minDayHighC) flags.push(`${climate.place.split(";")[0]}: ~${climate.high}°C on average in those months, below the ${limits.minDayHighC}°C floor`);
+  let countryBreach = false;
   for (const zone of limits.countryZone || []) {
     const out = countriesOutside(dest.countries || [], zone, dest.zone);
+    if (out.length) countryBreach = true;
     if (out.length) flags.push(`${andList(out.map(countryName))} ${out.length > 1 ? "are" : "is"} outside ${COUNTRY_ZONE_LABEL[zone]}`);
   }
   const rest = plan.rest || 0;
@@ -118,7 +120,7 @@ export function computePlan(dest, trip) {
   if (noDates) warnings.push("No dates yet: costed for the planned days plus 2 travel days; add dates in Setup to score the season and get a calendar.");
   else if (alloc > len) warnings.push(`${alloc} days planned in a ${len}-day trip.`);
   else if (free < 1 && (dest.kind === "explore" ? free < 2 : free < 1)) warnings.push(`Only ${free} travel day${free === 1 ? "" : "s"}; arrival and departure usually need ${dest.kind === "explore" ? 2 : 1}.`);
-  return { coldTemp, plan, limits, len: lenEff, noDates, n, sel, city, outdoor, rest, free, alloc, accessCost, access, extra, cityCost: cityCost * factor, outdoorCost: outdoorCost * factor, transitCost: transitCost * factor, cont, pp, total, budget, fits, over: total - budget, maxAlt, maxTemp, minTemp, hrs: hrs + 1, longest, histN, worstCrowd, hikeShare, totalAscent, maxAscent, maxHours, maxGrade, maxGradeLabel, flags, warnings };
+  return { coldTemp, countryBreach, plan, limits, len: lenEff, noDates, n, sel, city, outdoor, rest, free, alloc, accessCost, access, extra, cityCost: cityCost * factor, outdoorCost: outdoorCost * factor, transitCost: transitCost * factor, cont, pp, total, budget, fits, over: total - budget, maxAlt, maxTemp, minTemp, hrs: hrs + 1, longest, histN, worstCrowd, hikeShare, totalAscent, maxAscent, maxHours, maxGrade, maxGradeLabel, flags, warnings };
 }
 
 /* Redistribute days of one group (city | outdoor) across selected blocks to hit a target. */

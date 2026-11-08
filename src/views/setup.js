@@ -78,9 +78,14 @@ function chat(t) {
   </section>`;
 }
 /* Step 1 brainstorm: the best three destinations for what is known so far. */
+/* The best destinations for what is known so far; shared by the ideas card and the chat. */
+export function topIdeas(ctx, t, n = 3) {
+  if (!ctx.dests.length || ctx.dests[0].kind !== t.kind) return [];
+  return ctx.dests.filter(d => !isVisited(d, t)).map(d => { const c = computePlan(d, t); return { d, c, s: score(d, t, c) }; }).sort((a, b) => b.s.score - a.s.score).slice(0, n);
+}
+export const suggestFor = ctx => t => topIdeas(ctx, t).map(({ d, c, s }) => ({ name: d.name, score: s.score, pp: c.pp, currency: t.budget.currency, reason: s.reason, flags: c.flags }));
 function fitIdeas(ctx, t) {
-  if (!ctx.dests.length) return "";
-  const top = ctx.dests.filter(d => !isVisited(d, t)).map(d => { const c = computePlan(d, t); return { d, c, s: score(d, t, c) }; }).sort((a, b) => b.s.score - a.s.score).slice(0, 3);
+  const top = topIdeas(ctx, t); if (!top.length) return "";
   return `<section class="card">
     <div class="row between"><h2>Ideas that fit so far</h2><a href="#destinations" class="small">See all ${ctx.dests.length} →</a></div>
     <p class="muted small">Ranked by your dates, budget, interests and limits; they change as you fill in more.</p>
@@ -107,7 +112,7 @@ function critInput(c, value, bind) {
 function fmtLimit(c, v) { if (Array.isArray(v)) return v.map(x => fmtLimit(c, x)).join(" and "); if (c.type === "bool") return v ? "yes" : "no"; if (c.type === "select") { const o = c.options.find(([k]) => String(k) === String(v)); return o ? o[1] : v; } return `${Number(v).toLocaleString("en-GB")}${c.unit ? " " + c.unit : ""}`; }
 
 export const actions = {
-  "chat-send": (el, ctx) => { const box = document.getElementById("chatText"); const r = describeTurn(ctx.trip, box.value, { countries: ctx.countries }); if (!r) { ctx.toast("Write something first."); return; } ctx.commit(); },
+  "chat-send": (el, ctx) => { const box = document.getElementById("chatText"); const r = describeTurn(ctx.trip, box.value, { countries: ctx.countries, suggest: suggestFor(ctx) }); if (!r) { ctx.toast("Write something first."); return; } ctx.commit(); },
   "see-dest": (el, ctx) => { const t = ctx.trip; t._ui = Object.assign(t._ui || {}, { q: el.dataset.name }); ctx.save(); ctx.nav("destinations"); },
   "add-traveller": (el, ctx) => { ctx.trip.travellers.push({ id: uid("p"), name: "", limits: {} }); ctx.commit(); },
   "remove-traveller": (el, ctx) => { ctx.trip.travellers = ctx.trip.travellers.filter(p => p.id !== el.dataset.pid); ctx.commit(); },

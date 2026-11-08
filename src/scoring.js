@@ -43,7 +43,8 @@ export function criteria(dest, trip, c) {
   const alt = c.maxAlt > altCeiling ? 0 : clamp(100 - (c.maxAlt - Math.min(1000, altCeiling * 0.4)) / (altCeiling - Math.min(1000, altCeiling * 0.4)) * 100);
   const heatCeiling = lim.maxDayHighC || 36;
   const tooCold = lim.minDayHighC !== undefined && c.coldTemp < lim.minDayHighC;
-  const heat = c.maxTemp > heatCeiling || tooCold ? 0 : clamp(100 - (c.maxTemp - 20) / (heatCeiling - 20) * 100);
+  // Someone who set a warmth floor wants warm: anything from the floor up to 3 °C under the ceiling is ideal.
+  const heat = c.maxTemp > heatCeiling || tooCold ? 0 : lim.minDayHighC !== undefined ? clamp(100 - Math.max(0, c.maxTemp - (heatCeiling - 3)) / 3 * 100) : clamp(100 - (c.maxTemp - 20) / (heatCeiling - 20) * 100);
   const crowd = { low: 100, med: 60, high: 20 }[c.worstCrowd];
   const hrs = clamp(100 - (c.hrs - 8) / (36 - 8) * 100);
   const hist = clamp(c.histN / 6 * 100);
@@ -67,6 +68,7 @@ export function criteria(dest, trip, c) {
 }
 
 export function score(dest, trip, c) {
+  c = c || computePlan(dest, trip);
   const k = criteria(dest, trip, c);
   const w = Object.assign({}, DEFAULT_WEIGHTS[dest.kind] || DEFAULT_WEIGHTS.explore, trip.weights || {});
   const labels = CRITERIA_BY_KIND[dest.kind] || CRITERIA_BY_KIND.explore;
@@ -75,8 +77,11 @@ export function score(dest, trip, c) {
   let s = wt ? Math.round(tot / wt) : 0;
   const outOfSeason = k.season < 15;
   if (outOfSeason) s = Math.min(s, 30);
+  // Still shown and flagged, never hidden, but it cannot outrank places everyone can go to.
+  const COUNTRY_CAP = 40;
+  if (c.countryBreach) s = Math.min(s, COUNTRY_CAP);
   const strong = parts.filter(p => p.value >= 75).sort((a, b) => b.value - a.value).slice(0, 2).map(p => p.label.toLowerCase());
   const weak = parts.filter(p => p.value < 45).sort((a, b) => a.value - b.value).slice(0, 2).map(p => p.label.toLowerCase());
-  const reason = [outOfSeason ? "Out of season for these dates" : "", strong.length ? `Strong on ${strong.join(" and ")}` : "", weak.length ? `weak on ${weak.join(" and ")}` : ""].filter(Boolean).join("; ") || "Middling on every criterion";
+  const reason = [c.countryBreach ? "Outside the countries someone can visit" : "", outOfSeason ? "Out of season for these dates" : "", strong.length ? `Strong on ${strong.join(" and ")}` : "", weak.length ? `weak on ${weak.join(" and ")}` : ""].filter(Boolean).join("; ") || "Middling on every criterion";
   return { score: s, parts, reason, criteria: k };
 }

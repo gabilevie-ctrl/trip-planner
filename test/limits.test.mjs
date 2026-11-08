@@ -62,3 +62,14 @@ test("with dates, the warmth floor uses the weather in those months, not each st
   assert.deepEqual(c.flags.filter(f => /floor/.test(f)), ["Betws-y-Coed (60 m): ~13°C on average in those months, below the 15°C floor"]);
   assert.equal(criteria(d, t, c).heat, 0);
 });
+
+test("ranking: breaking a country limit caps the score; wanting warmth no longer favours cold", async () => {
+  const { score } = await import("../src/scoring.js");
+  const t = familyTrip(); t.travellers.forEach(p => { p.limits = { countryZone: "schengen" }; });
+  const cauc = score(dest("caucasus"), t);
+  assert.ok(cauc.score <= 40, `capped, got ${cauc.score}`); assert.match(cauc.reason, /outside the countries/i);
+  assert.ok(score(dest("slovenia"), t).score > 40);
+  const w = familyTrip(); w.dates = { start: "", end: "" }; w.travellers.forEach(p => { p.limits = { minDayHighC: 18 }; });
+  const mexico = dest("mexico"); const k = criteria(mexico, w);
+  assert.ok(k.heat >= 80, `a ~25°C place suits someone who wants warmth, got ${k.heat}`);
+});

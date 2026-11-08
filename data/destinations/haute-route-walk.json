@@ -470,5 +470,9 @@
     }
   ],
   "lastReviewed": "2026-11-08",
-  "sources": []
+  "sources": [],
+  "countries": [
+    "FR",
+    "CH"
+  ]
 }

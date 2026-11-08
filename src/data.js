@@ -18,3 +18,5 @@ export async function loadAll(kind) {
   const list = kind ? idx.filter(x => x.kind === kind) : idx;
   return Promise.all(list.map(x => loadDestination(x.id)));
 }
+let countries = null;
+export async function loadCountries() { if (countries) return countries; const r = await fetch(new URL("countries.json", base)); countries = r.ok ? await r.json() : []; return countries; }

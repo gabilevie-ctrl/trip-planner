@@ -1,14 +1,14 @@
 import { esc, fmtMoney, chip, altClass, tempClass, hrsClass, CROWD, hrs, scoreClass, empty, splitBar } from "../ui.js";
-import { computePlan, climateFor, tripLength } from "../compute.js";
+import { computePlan, climateFor, tripLength, isVisited } from "../compute.js";
 import { score, CRITERIA_BY_KIND, DEFAULT_WEIGHTS } from "../scoring.js";
 import { uid } from "../state.js";
 
 export function render(ctx) {
-  const t = ctx.trip; const f = t._ui = t._ui || { q: "", fit: false, mode: false, zone: "all", showVisited: false, compare: false };
+  const t = ctx.trip; const f = t._ui = Object.assign({ q: "", fit: false, mode: false, zone: "all", showVisited: false, compare: false }, t._ui || {});
   const len = tripLength(t);
-  if (!len) return `<section class="card">${empty("Set the dates first", "Scoring, the budget and the itinerary all depend on when you go.", `<a href="#setup" role="button">Go to setup</a>`)}</section>`;
+  const noDates = !len ? `<div class="alert">No dates yet, so the season column is neutral and budgets assume the planned days plus two travel days. <a href="#setup">Add dates</a> whenever you know them.</div>` : "";
   const rows = ctx.dests.map(d => { const c = computePlan(d, t); const s = score(d, t, c); const cl = climateFor(d, t); return { d, c, s, cl }; })
-    .filter(r => f.showVisited || !t.visited.includes(r.d.id))
+    .filter(r => f.showVisited || !isVisited(r.d, t))
     .filter(r => !f.q || hay(r.d).includes(f.q.toLowerCase()))
     .filter(r => !f.fit || r.c.fits)
     .filter(r => !f.mode || !r.c.flags.some(x => /needs a flight|Not reachable by car/.test(x)))
@@ -16,7 +16,7 @@ export function render(ctx) {
     .sort((a, b) => b.s.score - a.s.score);
   const labels = CRITERIA_BY_KIND[t.kind]; const w = Object.assign({}, DEFAULT_WEIGHTS[t.kind], t.weights || {});
   const zones = [...new Set(ctx.dests.map(d => d.zone))];
-  return `
+  return `${noDates}
   <section class="card toolbar">
     <input type="search" id="q" placeholder="Search a country, a region, a place, a hut…" value="${esc(f.q)}" data-ui="q" aria-label="Search destinations">
     <label class="chk"><input type="checkbox" data-ui="fit" ${f.fit ? "checked" : ""}> Within budget</label>
@@ -53,7 +53,7 @@ function card({ d, c, s, cl }, t, ctx) {
   const weather = cl ? `${cl.high}° / ${cl.low}°C, ${cl.rainDays} rain days a month${cl.snow ? ", snow" : ""}` : "";
   return `<article class="card dest ${chosen ? "chosen" : ""} ${c.fits ? "" : "dim"}" id="d-${d.id}">
     <header class="desthead">
-      <div><span class="kind">${esc(d.region)}${d.noFlights ? " · no flights" : ""}${t.visited.includes(d.id) ? " · visited" : ""}</span><h3>${esc(d.name)}</h3><p class="muted">${esc(d.tagline)}</p></div>
+      <div><span class="kind">${esc(d.region)}${d.noFlights ? " · no flights" : ""}${isVisited(d, t) ? " · visited" : ""}</span><h3>${esc(d.name)}</h3><p class="muted">${esc(d.tagline)}</p></div>
       <div class="scorebox"><span class="score ${scoreClass(s.score)}">${s.score}</span><div class="pp num">${fmtMoney(c.pp, cur)} pp</div><div class="muted num">${fmtMoney(c.total, cur)} for ${c.n}</div>${t.budget.total ? `<span class="pill ${c.fits ? "good" : "crit"}">${c.fits ? "within budget" : "over by " + fmtMoney(c.over, cur)}</span>` : ""}</div>
     </header>
     <p class="reason">${esc(s.reason)}.</p>

@@ -55,9 +55,9 @@ export function render(ctx) {
   </section>` : ""}
 
   <section class="card">
-    <h2>Already visited</h2>
-    <p class="muted">Tick the places some of the group have already been to; they stay in the library but are hidden by default.</p>
-    <div class="chips">${ctx.destsLite.filter(d => d.kind === t.kind).map(d => `<label class="chk"><input type="checkbox" data-act="toggle-visited" data-id="${d.id}" ${t.visited.includes(d.id) ? "checked" : ""}> ${esc(d.name)}</label>`).join("")}</div>
+    <h2>Countries already visited</h2>
+    <p class="muted">Tick the countries the group has been to. Destinations in those countries stay in the library but are hidden by default (a switch in Destinations shows them). Optional, like everything on this page.</p>
+    ${countryPicker(ctx, t)}
   </section>
 
   <section class="card">
@@ -67,6 +67,17 @@ export function render(ctx) {
   <p><a href="#destinations" role="button">Next: destinations →</a></p>`;
 }
 
+const CONTS = ["Europe", "Asia", "Africa", "North America", "South America", "Oceania"];
+function countryPicker(ctx, t) {
+  const ui = t._ui = t._ui || {}; const q = (ui.cq || "").toLowerCase(); const cont = ui.ccont || "all";
+  const vc = t.visitedCountries || [];
+  const list = ctx.countries.filter(c => (cont === "all" || c.continent === cont) && (!q || c.name.toLowerCase().includes(q)));
+  const picked = ctx.countries.filter(c => vc.includes(c.code));
+  return `<div class="row"><input type="search" data-ui="cq" value="${esc(ui.cq || "")}" placeholder="Type a country…" aria-label="Search countries" style="flex:1 1 200px">
+    <select data-ui="ccont" aria-label="Continent"><option value="all">All continents</option>${CONTS.map(c => `<option value="${c}" ${cont === c ? "selected" : ""}>${c}</option>`).join("")}</select></div>
+    ${picked.length ? `<p class="chips" style="margin:8px 0">${picked.map(c => `<button type="button" class="chip good" data-act="toggle-country" data-code="${c.code}" title="Remove">${esc(c.name)} ✕</button>`).join("")}</p>` : `<p class="muted small" style="margin:8px 0">None ticked yet.</p>`}
+    <div class="countries">${list.map(c => `<label class="chk"><input type="checkbox" data-act="toggle-country" data-code="${c.code}" ${vc.includes(c.code) ? "checked" : ""}> ${esc(c.name)}</label>`).join("")}</div>`;
+}
 function critInput(c, value, bind) {
   if (c.type === "number") return `<input type="number" data-bind="${bind}" data-type="number" value="${value ?? ""}" placeholder="${esc(c.placeholder || "")}" style="min-width:90px">`;
   if (c.type === "bool") return `<input type="checkbox" data-bind="${bind}" data-type="bool" ${value ? "checked" : ""}>`;
@@ -77,5 +88,5 @@ function fmtLimit(c, v) { if (c.type === "bool") return v ? "yes" : "no"; if (c.
 export const actions = {
   "add-traveller": (el, ctx) => { ctx.trip.travellers.push({ id: uid("p"), name: "", limits: {} }); ctx.commit(); },
   "remove-traveller": (el, ctx) => { ctx.trip.travellers = ctx.trip.travellers.filter(p => p.id !== el.dataset.pid); ctx.commit(); },
-  "toggle-visited": (el, ctx) => { const id = el.dataset.id; const v = ctx.trip.visited; const i = v.indexOf(id); if (el.checked && i < 0) v.push(id); if (!el.checked && i >= 0) v.splice(i, 1); ctx.commit(false); }
+  "toggle-country": (el, ctx) => { const code = el.dataset.code; const v = ctx.trip.visitedCountries = ctx.trip.visitedCountries || []; const i = v.indexOf(code); const on = el.tagName === "INPUT" ? el.checked : false; if (on && i < 0) v.push(code); if (!on && i >= 0) v.splice(i, 1); ctx.commit(true); }
 };

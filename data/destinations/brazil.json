@@ -437,5 +437,8 @@
       19
     ],
     "snowMonths": []
-  }
+  },
+  "countries": [
+    "BR"
+  ]
 }

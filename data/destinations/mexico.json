@@ -457,5 +457,8 @@
       1
     ],
     "snowMonths": []
-  }
+  },
+  "countries": [
+    "MX"
+  ]
 }

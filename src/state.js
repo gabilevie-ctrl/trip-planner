@@ -16,7 +16,7 @@ export function newTrip(kind = "explore") {
     budget: { total: 0, currency: "EUR" },
     lodging: kind === "explore" ? "bnb" : "bnb",
     type: kind === "explore" ? { cities: 2, hike: 2, coast: 0, wildlife: 0, history: 1 } : {},
-    pace: "normal", visited: [], weights: {},
+    pace: "normal", visited: [], visitedCountries: [], weights: {},
     plans: {}, chosen: null, ideas: [],
     steps: {}, expenses: [], decisions: [], dayNotes: {}, log: [], notes: ""
   };

@@ -18,18 +18,18 @@ import * as share from "./views/share.js";
 const VIEWS = { setup, destinations, build, itinerary, plan, money, decisions, conditions, share };
 const TABS = [["setup", "Setup"], ["destinations", "Destinations"], ["build", "Build"], ["itinerary", "Itinerary"], ["plan", "Plan & book"], ["money", "Money"], ["decisions", "Decisions"], ["conditions", "Conditions"], ["share", "Share"]];
 const app = document.getElementById("app");
-const HEAD = `<header class="apphead"><a class="brand" href="#home">Trip<span>Planner</span></a><span class="muted small">Saved in this browser · share by link</span></header>`;
+const HEAD = `<header class="apphead"><a class="brand" href="#home">Trip<span>Planner</span></a><span class="muted small">Every change is saved automatically in this browser · <a href="#share">share by link</a> to move it elsewhere <span id="saved" class="savedflag"></span></span></header>`;
 const store = state.load();
 for (const id of Object.keys(store.trips)) state.migrate(store.trips[id]);
-let destsLite = [], dests = [], destsKind = null, templates = [];
+let destsLite = [], dests = [], destsKind = null, templates = [], countries = [];
 const lz = window.LZString;
 
 const ctx = {
-  store, compute, get templates() { return templates; },
+  store, compute, get templates() { return templates; }, get countries() { return countries; },
   loadTemplate: async file => { try { const r = await fetch(new URL("../data/trips/" + file, import.meta.url)); if (!r.ok) return null; const t = await r.json(); t.id = state.uid(); t.createdAt = t.updatedAt = new Date().toISOString(); return importTrip(t); } catch (e) { return null; } },
   get trip() { return store.trips[store.current]; }, get dests() { return dests; }, get destsLite() { return destsLite; }, get names() { return Object.fromEntries(destsLite.map(d => [d.id, d.name])); },
   save: () => state.save(store),
-  commit: (rerender = true) => { if (ctx.trip) state.touch(ctx.trip); state.save(store); if (rerender) render(); },
+  commit: (rerender = true) => { if (ctx.trip) state.touch(ctx.trip); state.save(store); savedFlash(); if (rerender) render(); },
   rerender: () => render(),
   nav: tab => { location.hash = "#" + tab; },
   open: (id, tab) => { store.current = id; state.save(store); if (location.hash === "#" + tab) render(); else location.hash = "#" + tab; },
@@ -46,6 +46,7 @@ function importTrip(t) {
   store.trips[t.id] = t; store.current = t.id; state.save(store); return t;
 }
 
+function savedFlash() { const el = document.getElementById("saved"); if (!el) return; el.textContent = "Saved " + new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }); el.classList.add("show"); clearTimeout(savedFlash._t); savedFlash._t = setTimeout(() => el.classList.remove("show"), 1800); }
 function toast(msg) { const el = document.getElementById("toast"); el.textContent = msg; el.classList.add("show"); clearTimeout(toast._t); toast._t = setTimeout(() => el.classList.remove("show"), 2600); }
 
 async function ensureDests(kind) {
@@ -72,7 +73,7 @@ async function render() {
         <div><a href="#home" class="back">← All trips</a><h1>${esc(trip.name || "Untitled trip")} <span class="kind">${esc(KINDS[trip.kind].label)}</span></h1>
         <p class="muted">${trip.dates.start ? `${fmtDateY(trip.dates.start)} → ${fmtDateY(trip.dates.end)} · ${compute.tripLength(trip)} days` : "Dates not set"} · ${trip.travellers.length} traveller${trip.travellers.length === 1 ? "" : "s"} · from ${esc(trip.origin.city)}${trip.chosen ? ` · <strong>${esc(ctx.names[trip.chosen] || trip.chosen)}</strong>` : ""}</p></div>
       </header>
-      <nav class="tabs" aria-label="Trip steps">${tabs.map(([k, l], i) => `<a href="#${k}" aria-current="${k === view ? "page" : "false"}"><span class="n">${i + 1}</span> ${l}</a>`).join("")}</nav>`;
+      <nav class="tabs" aria-label="Trip steps" title="Every step is optional; go in any order">${tabs.map(([k, l], i) => `<a href="#${k}" aria-current="${k === view ? "page" : "false"}"><span class="n">${i + 1}</span> ${l}</a>`).join("")}</nav>`;
       html = head + `<main class="view view-${view}">${v.render(ctx)}</main>`;
     }
     app.innerHTML = HEAD + html;
@@ -101,7 +102,7 @@ document.addEventListener("change", e => {
 });
 document.addEventListener("input", e => {
   const el = e.target;
-  if (el.matches("input[type=search][data-ui]")) { const t = ctx.trip; t._ui = t._ui || {}; t._ui.q = el.value; clearTimeout(render._q); render._q = setTimeout(() => { const pos = el.selectionStart; render().then(() => { const q = document.getElementById("q"); if (q) { q.focus(); q.setSelectionRange(pos, pos); } }); }, 250); }
+  if (el.matches("input[type=search][data-ui]")) { const t = ctx.trip; t._ui = t._ui || {}; const key = el.dataset.ui; t._ui[key] = el.value; clearTimeout(render._q); render._q = setTimeout(() => { const pos = el.selectionStart; render().then(() => { const q = document.querySelector(`input[type=search][data-ui="${key}"]`); if (q) { q.focus(); q.setSelectionRange(pos, pos); } }); }, 250); }
   if (el.matches("input[type=range][data-bind]")) { bound(el); const lbl = el.previousElementSibling; if (lbl && lbl.classList.contains("num")) lbl.textContent = ["off", "low", "medium", "high"][el.value] || el.value; clearTimeout(render._r); render._r = setTimeout(() => ctx.commit(true), 400); }
 });
 document.addEventListener("submit", e => {
@@ -111,4 +112,4 @@ document.addEventListener("submit", e => {
 });
 window.addEventListener("hashchange", render);
 
-data.loadIndex().then(async idx => { destsLite = idx; try { const r = await fetch(new URL("../data/trips/index.json", import.meta.url)); if (r.ok) templates = await r.json(); } catch (e) { templates = []; } render(); }).catch(e => { app.innerHTML = `<section class="card"><h2>Could not load the destination library</h2><p>${esc(e.message)}. If you opened this file directly, serve the folder over HTTP (for example <code>python3 -m http.server</code>).</p></section>`; });
+data.loadIndex().then(async idx => { destsLite = idx; try { countries = await data.loadCountries(); } catch (e) { countries = []; } try { const r = await fetch(new URL("../data/trips/index.json", import.meta.url)); if (r.ok) templates = await r.json(); } catch (e) { templates = []; } render(); }).catch(e => { app.innerHTML = `<section class="card"><h2>Could not load the destination library</h2><p>${esc(e.message)}. If you opened this file directly, serve the folder over HTTP (for example <code>python3 -m http.server</code>).</p></section>`; });

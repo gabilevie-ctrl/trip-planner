@@ -16,7 +16,7 @@ const clamp = v => Math.max(0, Math.min(100, Math.round(v)));
 
 /* Season fit 0–100 for the trip's dates: monthly fit weighted by days, adjusted by events inside the dates. */
 export function seasonFit(dest, trip) {
-  const fit = dest.season?.fitByMonth; if (!fit || !trip.dates?.start) return { score: 60, events: [] };
+  const fit = dest.season?.fitByMonth; if (!fit || !trip.dates?.start) return { score: 60, events: [], noDates: true };
   const s = isoToDate(trip.dates.start), e = trip.dates.end ? isoToDate(trip.dates.end) : s;
   let sum = 0, n = 0; for (let d = s; d <= e; d = addDays(d, 1)) { sum += fit[d.getUTCMonth()] ?? 60; n++; }
   let score = n ? sum / n : 60;

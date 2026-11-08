@@ -343,5 +343,8 @@
       17
     ],
     "snowMonths": []
-  }
+  },
+  "countries": [
+    "ID"
+  ]
 }

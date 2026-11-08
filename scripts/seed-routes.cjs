@@ -539,7 +539,9 @@ D.push({
   guides: [{ name: "Lonely Planet Scotland", url: "https://www.lonelyplanet.com/scotland" }, { name: "Routard Écosse", url: "https://www.routard.com/guide/code_dest/ecosse.htm" }]
 });
 
+const COUNTRIES = { "alta-via-1": ["IT"], "alta-via-2": ["IT"], tmb: ["FR", "IT", "CH"], "haute-route-walk": ["FR", "CH"], gr20: ["FR"], "tour-monte-rosa": ["CH", "IT"], "vanoise-ski": ["FR"], "ecrins-ski": ["FR"], "queyras-ski": ["FR"], "haute-route-ski": ["FR", "CH"], "silvretta-ski": ["AT", "CH"], "ortler-ski": ["IT"], "dolomites-ski": ["IT"], "lyngen-ski": ["NO"], "lake-district": ["GB"], snowdonia: ["GB"], "alsace-black-forest": ["FR", "DE"], "bernese-winter": ["CH"], "scottish-winter": ["GB"] };
 for (const d of D) {
+  d.countries = COUNTRIES[d.id] || [];
   d.lastReviewed = "2026-11-08"; d.sources = d.sources || [];
   for (const b of d.blocks) { if (b.destcentM !== undefined) delete b.destcentM; }
   fs.writeFileSync(path.join(dir, d.id + ".json"), JSON.stringify(d, null, 2));
@@ -547,5 +549,5 @@ for (const d of D) {
 // rebuild index
 const all = fs.readdirSync(dir).filter(f => f.endsWith(".json")).map(f => JSON.parse(fs.readFileSync(path.join(dir, f), "utf8")));
 all.sort((a, b) => a.kind.localeCompare(b.kind) || a.name.localeCompare(b.name));
-fs.writeFileSync(path.join(__dirname, "..", "data", "index.json"), JSON.stringify(all.map(d => ({ id: d.id, kind: d.kind, name: d.name, zone: d.zone, noFlights: !!d.noFlights, tags: d.tags || [], file: "destinations/" + d.id + ".json" })), null, 2));
+fs.writeFileSync(path.join(__dirname, "..", "data", "index.json"), JSON.stringify(all.map(d => ({ id: d.id, kind: d.kind, name: d.name, zone: d.zone, noFlights: !!d.noFlights, tags: d.tags || [], countries: d.countries || [], file: "destinations/" + d.id + ".json" })), null, 2));
 console.log("seeded", D.length, "destinations; index has", all.length);

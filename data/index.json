@@ -13,7 +13,11 @@
       "winter-ok",
       "short"
     ],
-    "file": "destinations/alsace-black-forest.json"
+    "file": "destinations/alsace-black-forest.json",
+    "countries": [
+      "FR",
+      "DE"
+    ]
   },
   {
     "id": "cantabria",
@@ -27,7 +31,10 @@
       "coast",
       "food"
     ],
-    "file": "destinations/cantabria.json"
+    "file": "destinations/cantabria.json",
+    "countries": [
+      "ES"
+    ]
   },
   {
     "id": "bernese-winter",
@@ -42,7 +49,10 @@
       "trains",
       "short"
     ],
-    "file": "destinations/bernese-winter.json"
+    "file": "destinations/bernese-winter.json",
+    "countries": [
+      "CH"
+    ]
   },
   {
     "id": "brazil",
@@ -56,7 +66,10 @@
       "mountains",
       "beach"
     ],
-    "file": "destinations/brazil.json"
+    "file": "destinations/brazil.json",
+    "countries": [
+      "BR"
+    ]
   },
   {
     "id": "snowdonia",
@@ -71,7 +84,10 @@
       "winter-ok",
       "short"
     ],
-    "file": "destinations/snowdonia.json"
+    "file": "destinations/snowdonia.json",
+    "countries": [
+      "GB"
+    ]
   },
   {
     "id": "flores",
@@ -85,7 +101,10 @@
       "villages",
       "boat"
     ],
-    "file": "destinations/flores.json"
+    "file": "destinations/flores.json",
+    "countries": [
+      "ID"
+    ]
   },
   {
     "id": "caucasus",
@@ -99,7 +118,11 @@
       "food",
       "roadtrip"
     ],
-    "file": "destinations/caucasus.json"
+    "file": "destinations/caucasus.json",
+    "countries": [
+      "GE",
+      "AM"
+    ]
   },
   {
     "id": "scottish-winter",
@@ -114,7 +137,10 @@
       "trains",
       "short"
     ],
-    "file": "destinations/scottish-winter.json"
+    "file": "destinations/scottish-winter.json",
+    "countries": [
+      "GB"
+    ]
   },
   {
     "id": "icelandonly",
@@ -127,7 +153,10 @@
       "coast",
       "remote"
     ],
-    "file": "destinations/icelandonly.json"
+    "file": "destinations/icelandonly.json",
+    "countries": [
+      "IS"
+    ]
   },
   {
     "id": "iceland",
@@ -141,7 +170,11 @@
       "remote",
       "arctic"
     ],
-    "file": "destinations/iceland.json"
+    "file": "destinations/iceland.json",
+    "countries": [
+      "IS",
+      "GL"
+    ]
   },
   {
     "id": "indonesia",
@@ -154,7 +187,10 @@
       "volcanoes",
       "culture"
     ],
-    "file": "destinations/indonesia.json"
+    "file": "destinations/indonesia.json",
+    "countries": [
+      "ID"
+    ]
   },
   {
     "id": "tatras",
@@ -167,7 +203,11 @@
       "cities",
       "mountains"
     ],
-    "file": "destinations/tatras.json"
+    "file": "destinations/tatras.json",
+    "countries": [
+      "PL",
+      "SK"
+    ]
   },
   {
     "id": "kyrgyz",
@@ -181,7 +221,11 @@
       "nomad",
       "remote"
     ],
-    "file": "destinations/kyrgyz.json"
+    "file": "destinations/kyrgyz.json",
+    "countries": [
+      "KG",
+      "UZ"
+    ]
   },
   {
     "id": "lake-district",
@@ -196,7 +240,10 @@
       "winter-ok",
       "short"
     ],
-    "file": "destinations/lake-district.json"
+    "file": "destinations/lake-district.json",
+    "countries": [
+      "GB"
+    ]
   },
   {
     "id": "borneo",
@@ -209,7 +256,10 @@
       "rainforest",
       "caves"
     ],
-    "file": "destinations/borneo.json"
+    "file": "destinations/borneo.json",
+    "countries": [
+      "MY"
+    ]
   },
   {
     "id": "mexico",
@@ -223,7 +273,10 @@
       "mountains",
       "food"
     ],
-    "file": "destinations/mexico.json"
+    "file": "destinations/mexico.json",
+    "countries": [
+      "MX"
+    ]
   },
   {
     "id": "mongolia",
@@ -237,7 +290,10 @@
       "remote",
       "steppe"
     ],
-    "file": "destinations/mongolia.json"
+    "file": "destinations/mongolia.json",
+    "countries": [
+      "MN"
+    ]
   },
   {
     "id": "sumatra",
@@ -250,7 +306,10 @@
       "villages",
       "wildlife"
     ],
-    "file": "destinations/sumatra.json"
+    "file": "destinations/sumatra.json",
+    "countries": [
+      "ID"
+    ]
   },
   {
     "id": "norway",
@@ -264,7 +323,10 @@
       "mountains",
       "fjords"
     ],
-    "file": "destinations/norway.json"
+    "file": "destinations/norway.json",
+    "countries": [
+      "NO"
+    ]
   },
   {
     "id": "peru",
@@ -277,7 +339,10 @@
       "mountains",
       "cities"
     ],
-    "file": "destinations/peru.json"
+    "file": "destinations/peru.json",
+    "countries": [
+      "PE"
+    ]
   },
   {
     "id": "scotland",
@@ -290,7 +355,10 @@
       "islands",
       "mountains"
     ],
-    "file": "destinations/scotland.json"
+    "file": "destinations/scotland.json",
+    "countries": [
+      "GB"
+    ]
   },
   {
     "id": "slovenia",
@@ -303,7 +371,11 @@
       "cities",
       "coast"
     ],
-    "file": "destinations/slovenia.json"
+    "file": "destinations/slovenia.json",
+    "countries": [
+      "SI",
+      "IT"
+    ]
   },
   {
     "id": "sweden",
@@ -316,7 +388,10 @@
       "mountains",
       "islands"
     ],
-    "file": "destinations/sweden.json"
+    "file": "destinations/sweden.json",
+    "countries": [
+      "SE"
+    ]
   },
   {
     "id": "pacific",
@@ -330,7 +405,11 @@
       "forest",
       "cities"
     ],
-    "file": "destinations/pacific.json"
+    "file": "destinations/pacific.json",
+    "countries": [
+      "CA",
+      "US"
+    ]
   },
   {
     "id": "alta-via-1",
@@ -344,7 +423,10 @@
       "limestone",
       "classic"
     ],
-    "file": "destinations/alta-via-1.json"
+    "file": "destinations/alta-via-1.json",
+    "countries": [
+      "IT"
+    ]
   },
   {
     "id": "alta-via-2",
@@ -358,7 +440,10 @@
       "via-ferrata-light",
       "limestone"
     ],
-    "file": "destinations/alta-via-2.json"
+    "file": "destinations/alta-via-2.json",
+    "countries": [
+      "IT"
+    ]
   },
   {
     "id": "gr20",
@@ -372,7 +457,10 @@
       "camping",
       "island"
     ],
-    "file": "destinations/gr20.json"
+    "file": "destinations/gr20.json",
+    "countries": [
+      "FR"
+    ]
   },
   {
     "id": "tmb",
@@ -386,7 +474,12 @@
       "classic",
       "glaciers"
     ],
-    "file": "destinations/tmb.json"
+    "file": "destinations/tmb.json",
+    "countries": [
+      "FR",
+      "IT",
+      "CH"
+    ]
   },
   {
     "id": "tour-monte-rosa",
@@ -400,7 +493,11 @@
       "glaciers",
       "quiet"
     ],
-    "file": "destinations/tour-monte-rosa.json"
+    "file": "destinations/tour-monte-rosa.json",
+    "countries": [
+      "CH",
+      "IT"
+    ]
   },
   {
     "id": "haute-route-walk",
@@ -414,7 +511,11 @@
       "glaciers",
       "classic"
     ],
-    "file": "destinations/haute-route-walk.json"
+    "file": "destinations/haute-route-walk.json",
+    "countries": [
+      "FR",
+      "CH"
+    ]
   },
   {
     "id": "dolomites-ski",
@@ -429,7 +530,10 @@
       "italy",
       "lifts"
     ],
-    "file": "destinations/dolomites-ski.json"
+    "file": "destinations/dolomites-ski.json",
+    "countries": [
+      "IT"
+    ]
   },
   {
     "id": "ecrins-ski",
@@ -444,7 +548,10 @@
       "france",
       "big-days"
     ],
-    "file": "destinations/ecrins-ski.json"
+    "file": "destinations/ecrins-ski.json",
+    "countries": [
+      "FR"
+    ]
   },
   {
     "id": "haute-route-ski",
@@ -459,7 +566,11 @@
       "classic",
       "big-days"
     ],
-    "file": "destinations/haute-route-ski.json"
+    "file": "destinations/haute-route-ski.json",
+    "countries": [
+      "FR",
+      "CH"
+    ]
   },
   {
     "id": "lyngen-ski",
@@ -474,7 +585,10 @@
       "fjords",
       "no-huts"
     ],
-    "file": "destinations/lyngen-ski.json"
+    "file": "destinations/lyngen-ski.json",
+    "countries": [
+      "NO"
+    ]
   },
   {
     "id": "ortler-ski",
@@ -489,7 +603,10 @@
       "italy",
       "spring"
     ],
-    "file": "destinations/ortler-ski.json"
+    "file": "destinations/ortler-ski.json",
+    "countries": [
+      "IT"
+    ]
   },
   {
     "id": "queyras-ski",
@@ -504,7 +621,10 @@
       "france",
       "sunny"
     ],
-    "file": "destinations/queyras-ski.json"
+    "file": "destinations/queyras-ski.json",
+    "countries": [
+      "FR"
+    ]
   },
   {
     "id": "silvretta-ski",
@@ -518,7 +638,11 @@
       "glaciers-easy",
       "austria"
     ],
-    "file": "destinations/silvretta-ski.json"
+    "file": "destinations/silvretta-ski.json",
+    "countries": [
+      "AT",
+      "CH"
+    ]
   },
   {
     "id": "vanoise-ski",
@@ -532,6 +656,9 @@
       "glaciers-easy",
       "france"
     ],
-    "file": "destinations/vanoise-ski.json"
+    "file": "destinations/vanoise-ski.json",
+    "countries": [
+      "FR"
+    ]
   }
 ]

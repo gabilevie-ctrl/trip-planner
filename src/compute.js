@@ -10,6 +10,9 @@ export const addDays = (d, n) => new Date(d.getTime() + n * DAY);
 export function tripLength(trip) { if (!trip.dates?.start || !trip.dates?.end) return 0; return Math.round((isoToDate(trip.dates.end) - isoToDate(trip.dates.start)) / DAY) + 1; }
 export function travellers(trip) { return Math.max(1, (trip.travellers || []).length || trip.partySize || 1); }
 
+/* A destination counts as visited when it is ticked by id or when any of its countries is in the visited list. */
+export function isVisited(dest, trip) { if ((trip.visited || []).includes(dest.id)) return true; const vc = trip.visitedCountries || []; return (dest.countries || []).some(c => vc.includes(c)); }
+
 /* Access entry for the trip's origin, with a fallback and a note when none matches. */
 export function accessFor(dest, trip) {
   const list = dest.access || [];
@@ -81,7 +84,9 @@ export function computePlan(dest, trip) {
   if (minTemp === 99) { minTemp = 0; maxTemp = 0; }
   const rest = plan.rest || 0;
   const alloc = city + outdoor + rest;
-  const free = len - alloc;
+  const noDates = !len;
+  const lenEff = len || alloc + 2;
+  const free = lenEff - alloc;
   const transitRate = rates.transit ?? 100;
   const transitCost = (Math.max(free, 0) + rest) * transitRate;
   const access = accessFor(dest, trip);
@@ -98,9 +103,10 @@ export function computePlan(dest, trip) {
   if (mode === "train" && access.mode === "flight") flags.push("Reaching this destination needs a flight; the trip is set to trains only");
   if (mode === "drive" && access.mode === "flight") flags.push("Not reachable by car from home");
   if (access.approx) warnings.push(`No access data from ${trip.origin?.city || "your origin"}; using ${access.originCity || "the default origin"} as an estimate.`);
-  if (len && alloc > len) warnings.push(`${alloc} days planned in a ${len}-day trip.`);
-  else if (len && free < 1 && (dest.kind === "explore" ? free < 2 : free < 1)) warnings.push(`Only ${free} travel day${free === 1 ? "" : "s"}; arrival and departure usually need ${dest.kind === "explore" ? 2 : 1}.`);
-  return { plan, limits, len, n, sel, city, outdoor, rest, free, alloc, accessCost, access, extra, cityCost: cityCost * factor, outdoorCost: outdoorCost * factor, transitCost: transitCost * factor, cont, pp, total, budget, fits, over: total - budget, maxAlt, maxTemp, minTemp, hrs: hrs + 1, longest, histN, worstCrowd, hikeShare, totalAscent, maxAscent, maxHours, maxGrade, maxGradeLabel, flags, warnings };
+  if (noDates) warnings.push("No dates yet: costed for the planned days plus 2 travel days; add dates in Setup to score the season and get a calendar.");
+  else if (alloc > len) warnings.push(`${alloc} days planned in a ${len}-day trip.`);
+  else if (free < 1 && (dest.kind === "explore" ? free < 2 : free < 1)) warnings.push(`Only ${free} travel day${free === 1 ? "" : "s"}; arrival and departure usually need ${dest.kind === "explore" ? 2 : 1}.`);
+  return { plan, limits, len: lenEff, noDates, n, sel, city, outdoor, rest, free, alloc, accessCost, access, extra, cityCost: cityCost * factor, outdoorCost: outdoorCost * factor, transitCost: transitCost * factor, cont, pp, total, budget, fits, over: total - budget, maxAlt, maxTemp, minTemp, hrs: hrs + 1, longest, histN, worstCrowd, hikeShare, totalAscent, maxAscent, maxHours, maxGrade, maxGradeLabel, flags, warnings };
 }
 
 /* Redistribute days of one group (city | outdoor) across selected blocks to hit a target. */
@@ -122,11 +128,11 @@ export function rebalance(dest, plan, group, target) {
 /* Day-by-day itinerary: travel day(s), blocks in order, rest days before the return. */
 export function itinerary(dest, trip) {
   const c = computePlan(dest, trip);
-  if (!trip.dates?.start) return [];
-  const start = isoToDate(trip.dates.start);
+  const hasDates = !!trip.dates?.start;
+  const start = hasDates ? isoToDate(trip.dates.start) : null;
   const days = [];
   let i = 0;
-  const push = (kind, label, block, extra) => { days.push(Object.assign({ n: i + 1, date: dateToIso(addDays(start, i)), kind, label, block: block || null }, extra || {})); i++; };
+  const push = (kind, label, block, extra) => { days.push(Object.assign({ n: i + 1, date: start ? dateToIso(addDays(start, i)) : "day-" + (i + 1), kind, label, block: block || null }, extra || {})); i++; };
   const arrival = c.access.mode === "flight" || (c.access.route || "").includes("night") ? 1 : 1;
   for (let k = 0; k < arrival; k++) push("travel", `Travel: ${trip.origin?.city || "home"} → ${dest.name}`, null, { route: c.access.route });
   for (const b of c.sel) { const d = c.plan.picks[b.id].days; for (let k = 0; k < d; k++) push(b.type, d > 1 ? `${b.name} (day ${k + 1} of ${d})` : b.name, b, { lodging: b.hut ? b.hut.name : (b.place || ""), night: k === d - 1 ? null : undefined }); }

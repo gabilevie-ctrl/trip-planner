@@ -1,0 +1,411 @@
+{
+  "id": "sweden",
+  "name": "Sweden: Stockholm, Gotland and the Kungsleden",
+  "region": "Sweden and Swedish Lapland, by train",
+  "zone": "europe",
+  "tagline": "Day train to Stockholm, night train to the Arctic, hut-to-hut above the treeline, and a medieval walled town on an island.",
+  "noFlights": true,
+  "palette": [
+    "#a9c6d6",
+    "#5f8fa8",
+    "#3a5f73",
+    "#1f3542",
+    "#edf2f4"
+  ],
+  "access": [
+    {
+      "originRegion": "europe-west",
+      "originCity": "Brussels",
+      "mode": "train",
+      "costPerPerson": 300,
+      "route": "Train: Brussels→Hamburg→Copenhagen→Stockholm (about 13 h, or overnight from Hamburg); Norrland night train Stockholm→Abisko (17 h, couchettes)"
+    },
+    {
+      "originRegion": "uk",
+      "originCity": "London",
+      "mode": "train",
+      "costPerPerson": 320,
+      "route": "Eurostar→Brussels→Hamburg→Copenhagen→Stockholm (two days or the Hamburg night train)"
+    }
+  ],
+  "rates": {
+    "city": 130,
+    "hike": 110,
+    "transit": 130
+  },
+  "nightsNote": "4–8°C at the Kungsleden huts, 12°C in Stockholm",
+  "whyNotes": "The furthest north you can get without a plane, and closest to the Alta Via rhythm: five days hut to hut with light packs, STF huts with saunas, then a city with world-class museums. Gotland adds the history.",
+  "fitNotes": "Highest point 1,150 m, 15–22°C, long light. Crowds: Visby during Medieval Week (early August) and the Abisko trailhead on July weekends; the trail itself empties after day one. Mosquitoes in Lapland in July are real; August is better.",
+  "guides": [
+    {
+      "name": "Lonely Planet Sweden",
+      "url": "https://www.lonelyplanet.com/sweden"
+    },
+    {
+      "name": "Routard Suède",
+      "url": "https://www.routard.com/guide/code_dest/suede.htm"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Kungsleden + Stockholm",
+      "picks": {
+        "stockholm": 3,
+        "uppsala": 1,
+        "kungsleden": 5,
+        "abisko": 1,
+        "gotland": 2
+      }
+    },
+    {
+      "name": "High Coast + Gotland",
+      "picks": {
+        "stockholm": 3,
+        "hogakusten": 3,
+        "gotland": 3,
+        "uppsala": 1,
+        "archipelago": 2
+      }
+    },
+    {
+      "name": "Fewest hours in transit",
+      "picks": {
+        "stockholm": 3,
+        "uppsala": 1,
+        "archipelago": 2,
+        "hogakusten": 3
+      }
+    }
+  ],
+  "blocks": [
+    {
+      "id": "stockholm",
+      "type": "city",
+      "name": "Stockholm",
+      "place": "Vasa, Skansen, Nordic Museum, Fotografiska, Gamla Stan",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 0,
+      "dayHighC": 23,
+      "crowd": "med",
+      "transitHours": 13,
+      "history": "Swedish empire, the Vasa of 1628",
+      "guidebookPick": true,
+      "see": [
+        "Vasa museum (the 17th-century warship, intact)",
+        "Skansen open-air museum and the Nordic Museum on Djurgården",
+        "Gamla Stan early, Royal Palace, Storkyrkan",
+        "Fotografiska and Moderna Museet",
+        "Archipelago ferry to Vaxholm or Fjäderholmarna for an evening"
+      ],
+      "note": "Arrival by day train via Copenhagen. Stay on Södermalm or Kungsholmen: cheaper, local, 15 minutes from everything.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "uppsala",
+      "type": "city",
+      "name": "Uppsala + Sigtuna",
+      "place": "Cathedral, Gamla Uppsala royal mounds, Linnaeus garden",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 30,
+      "dayHighC": 22,
+      "crowd": "low",
+      "transitHours": 1,
+      "history": "Viking-age royal mounds, Linnaeus",
+      "guidebookPick": true,
+      "see": [
+        "Gamla Uppsala mounds and museum",
+        "Uppsala cathedral and Gustavianum",
+        "Linnaeus garden",
+        "Sigtuna, Sweden's oldest town, on the way back"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "gotland",
+      "type": "city",
+      "name": "Visby, Gotland",
+      "place": "Hanseatic walled town (UNESCO), rauk sea stacks, 90 medieval churches",
+      "defaultDays": 2,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 50,
+      "dayHighC": 22,
+      "crowd": "med",
+      "transitHours": 4,
+      "history": "Hanseatic League, 13th-century walls",
+      "guidebookPick": true,
+      "see": [
+        "The 3.5 km town wall and the church ruins",
+        "Gotland museum (picture stones, the Spillings hoard)",
+        "Fårö rauks and Bergman's island",
+        "Cycle the country churches; Lummelunda cave"
+      ],
+      "note": "Ferry from Nynäshamn (3 h). Medieval Week, usually the second week of August, fills the island; otherwise July is busy with Swedes, August quiet.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "gothenburg",
+      "type": "city",
+      "name": "Gothenburg",
+      "place": "West-coast port, Konstmuseum, the southern archipelago",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 0,
+      "dayHighC": 21,
+      "crowd": "low",
+      "transitHours": 3,
+      "history": "Dutch-built trading port",
+      "guidebookPick": false,
+      "see": [
+        "Göteborgs Konstmuseum (Nordic painting)",
+        "Haga and the fish church",
+        "Car-free southern archipelago by ferry"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "kungsleden",
+      "type": "hike",
+      "name": "Kungsleden: Abisko to Nikkaluokta",
+      "place": "5 days, STF huts with saunas, Tjäktja pass 1,150 m, Kebnekaise base",
+      "defaultDays": 5,
+      "minDays": 4,
+      "maxDays": 6,
+      "maxAltitudeM": 1150,
+      "dayHighC": 16,
+      "crowd": "med",
+      "transitHours": 17,
+      "history": "Sámi reindeer land",
+      "guidebookPick": true,
+      "see": [
+        "Abisko to Abiskojaure, Alesjaure, Tjäktja, Sälka, Singi, Kebnekaise fjällstation",
+        "Boat shortcuts on two lakes if legs are tired",
+        "Kebnekaise summit (2,097 m) from the fjällstation for the siblings",
+        "Sauna and lake swim at every hut"
+      ],
+      "note": "Night train Stockholm→Abisko counts as a night's lodging. Huts take no booking for sleeping (nobody is turned away) but have simple dorms; Kebnekaise fjällstation has rooms.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "abisko",
+      "type": "hike",
+      "name": "Abisko day walks",
+      "place": "Abisko canyon, Kårsavagge, Njulla by chairlift",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 1170,
+      "dayHighC": 15,
+      "crowd": "med",
+      "transitHours": 0.5,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Aurora Sky Station chairlift to Njulla (view of Lapporten)",
+        "Abisko canyon and the Kårsavagge valley",
+        "Lake Torneträsk shore"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "hogakusten",
+      "type": "hike",
+      "name": "Höga Kusten (High Coast)",
+      "place": "UNESCO uplift coast: Skuleskogen, Slåttdalsskrevan, the High Coast trail",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 300,
+      "dayHighC": 21,
+      "crowd": "low",
+      "transitHours": 5,
+      "history": "Post-glacial uplift (UNESCO)",
+      "guidebookPick": true,
+      "see": [
+        "Skuleskogen national park and the Slåttdalsskrevan crevice",
+        "Two or three day-stages of the Höga Kusten trail with a cabin or B&B each night",
+        "Ulvön island and the fermented-herring museum",
+        "Skuleberget via ferrata for the siblings"
+      ],
+      "note": "Quiet, cheap, 5 h by train north of Stockholm. The best under-visited hiking in southern Sweden.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "archipelago",
+      "type": "hike",
+      "name": "Stockholm archipelago: Utö, Grinda, Finnhamn",
+      "place": "Island hopping on the Waxholm boats, forest and rock walks, kayaks",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 30,
+      "dayHighC": 22,
+      "crowd": "med",
+      "transitHours": 2,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Utö mines trail and cycling",
+        "Finnhamn nature reserve walk",
+        "Kayak from Grinda",
+        "Hostel or cabin nights on the islands"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "fulufjallet",
+      "type": "hike",
+      "name": "Dalarna: Fulufjället",
+      "place": "Njupeskär falls, Old Tjikko (9,500-year-old spruce), fjäll plateau",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 1040,
+      "dayHighC": 19,
+      "crowd": "low",
+      "transitHours": 5,
+      "history": null,
+      "guidebookPick": false,
+      "see": [
+        "Njupeskär, Sweden's highest waterfall",
+        "Old Tjikko guided walk",
+        "Plateau loop to the Rösjöstugorna cabins"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "kvikkjokk",
+      "type": "hike",
+      "name": "Kvikkjokk and the edge of Sarek",
+      "place": "Delta, Kungsleden southern section, Pårte",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 1100,
+      "dayHighC": 16,
+      "crowd": "low",
+      "transitHours": 4,
+      "history": "Sámi Laponia (UNESCO)",
+      "guidebookPick": false,
+      "see": [
+        "Kvikkjokk delta boat",
+        "Kungsleden south to Pårte hut and back",
+        "Guided day into Sarek's edge with a Sámi guide"
+      ],
+      "note": "Wilder and emptier than Abisko; needs a guide for anything beyond the marked trail.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    }
+  ],
+  "season": {
+    "fitByMonth": [
+      25,
+      25,
+      30,
+      45,
+      65,
+      85,
+      72,
+      88,
+      80,
+      55,
+      30,
+      25
+    ],
+    "events": [
+      {
+        "name": "Medieval Week, Visby",
+        "from": "08-08",
+        "to": "08-15",
+        "effect": "festival",
+        "note": "Lodging doubles"
+      }
+    ],
+    "notes": [
+      "Kungsleden huts open until mid-September; midnight sun at Abisko until about 17 July, light nights all window.",
+      "Mosquitoes in Lapland peak in July and fade in August; carry a head net either way.",
+      "Swedish industrial holidays run to early August: Gotland and the archipelago are busiest before then."
+    ]
+  },
+  "kind": "explore",
+  "tags": [
+    "cities",
+    "mountains",
+    "islands"
+  ],
+  "lodgingAssumption": "Local B&B or Airbnb, two rooms for five, one meal out a day; shared van or hire car",
+  "climate": {
+    "representative": "Abisko (400 m) / Stockholm",
+    "dayHighC": [
+      -7,
+      -7,
+      -2,
+      3,
+      8,
+      15,
+      18,
+      15,
+      10,
+      3,
+      -2,
+      -5
+    ],
+    "nightLowC": [
+      -14,
+      -14,
+      -10,
+      -5,
+      0,
+      6,
+      9,
+      7,
+      3,
+      -2,
+      -8,
+      -12
+    ],
+    "rainDays": [
+      9,
+      8,
+      8,
+      7,
+      8,
+      10,
+      13,
+      13,
+      12,
+      11,
+      10,
+      10
+    ],
+    "snowMonths": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      10,
+      11,
+      12
+    ]
+  }
+}

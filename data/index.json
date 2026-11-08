@@ -1,0 +1,537 @@
+[
+  {
+    "id": "alsace-black-forest",
+    "kind": "explore",
+    "name": "Alsace + the Black Forest by train",
+    "zone": "europe",
+    "noFlights": true,
+    "tags": [
+      "cities",
+      "food",
+      "wine",
+      "forest",
+      "winter-ok",
+      "short"
+    ],
+    "file": "destinations/alsace-black-forest.json"
+  },
+  {
+    "id": "cantabria",
+    "kind": "explore",
+    "name": "Basque Country, Asturias + Picos de Europa",
+    "zone": "europe",
+    "noFlights": true,
+    "tags": [
+      "mountains",
+      "cities",
+      "coast",
+      "food"
+    ],
+    "file": "destinations/cantabria.json"
+  },
+  {
+    "id": "bernese-winter",
+    "kind": "explore",
+    "name": "Bernese Oberland in winter, by train",
+    "zone": "europe",
+    "noFlights": true,
+    "tags": [
+      "mountains",
+      "villages",
+      "winter",
+      "trains",
+      "short"
+    ],
+    "file": "destinations/bernese-winter.json"
+  },
+  {
+    "id": "brazil",
+    "kind": "explore",
+    "name": "Brazil: Minas, Bahia and the Chapada",
+    "zone": "americas",
+    "noFlights": false,
+    "tags": [
+      "history",
+      "cities",
+      "mountains",
+      "beach"
+    ],
+    "file": "destinations/brazil.json"
+  },
+  {
+    "id": "snowdonia",
+    "kind": "explore",
+    "name": "Eryri (Snowdonia) + the Llŷn by train",
+    "zone": "europe",
+    "noFlights": true,
+    "tags": [
+      "mountains",
+      "castles",
+      "coast",
+      "winter-ok",
+      "short"
+    ],
+    "file": "destinations/snowdonia.json"
+  },
+  {
+    "id": "flores",
+    "kind": "explore",
+    "name": "Flores + Komodo",
+    "zone": "asia",
+    "noFlights": false,
+    "tags": [
+      "islands",
+      "wildlife",
+      "villages",
+      "boat"
+    ],
+    "file": "destinations/flores.json"
+  },
+  {
+    "id": "caucasus",
+    "kind": "explore",
+    "name": "Georgia + Armenia",
+    "zone": "asia",
+    "noFlights": false,
+    "tags": [
+      "mountains",
+      "history",
+      "food",
+      "roadtrip"
+    ],
+    "file": "destinations/caucasus.json"
+  },
+  {
+    "id": "scottish-winter",
+    "kind": "explore",
+    "name": "Highlands in winter by sleeper",
+    "zone": "europe",
+    "noFlights": true,
+    "tags": [
+      "mountains",
+      "islands",
+      "winter",
+      "trains",
+      "short"
+    ],
+    "file": "destinations/scottish-winter.json"
+  },
+  {
+    "id": "icelandonly",
+    "kind": "explore",
+    "name": "Iceland",
+    "zone": "europe",
+    "noFlights": false,
+    "tags": [
+      "mountains",
+      "coast",
+      "remote"
+    ],
+    "file": "destinations/icelandonly.json"
+  },
+  {
+    "id": "iceland",
+    "kind": "explore",
+    "name": "Iceland + East Greenland",
+    "zone": "europe",
+    "noFlights": false,
+    "tags": [
+      "mountains",
+      "coast",
+      "remote",
+      "arctic"
+    ],
+    "file": "destinations/iceland.json"
+  },
+  {
+    "id": "indonesia",
+    "kind": "explore",
+    "name": "Indonesia: Java highlands + Tana Toraja",
+    "zone": "asia",
+    "noFlights": false,
+    "tags": [
+      "history",
+      "volcanoes",
+      "culture"
+    ],
+    "file": "destinations/indonesia.json"
+  },
+  {
+    "id": "tatras",
+    "kind": "explore",
+    "name": "Kraków + the Slovak Tatras",
+    "zone": "europe",
+    "noFlights": true,
+    "tags": [
+      "history",
+      "cities",
+      "mountains"
+    ],
+    "file": "destinations/tatras.json"
+  },
+  {
+    "id": "kyrgyz",
+    "kind": "explore",
+    "name": "Kyrgyzstan",
+    "zone": "asia",
+    "noFlights": false,
+    "tags": [
+      "mountains",
+      "horses",
+      "nomad",
+      "remote"
+    ],
+    "file": "destinations/kyrgyz.json"
+  },
+  {
+    "id": "lake-district",
+    "kind": "explore",
+    "name": "Lake District + Settle–Carlisle",
+    "zone": "europe",
+    "noFlights": true,
+    "tags": [
+      "mountains",
+      "walking",
+      "villages",
+      "winter-ok",
+      "short"
+    ],
+    "file": "destinations/lake-district.json"
+  },
+  {
+    "id": "borneo",
+    "kind": "explore",
+    "name": "Malaysian Borneo: Sarawak + Sabah",
+    "zone": "asia",
+    "noFlights": false,
+    "tags": [
+      "wildlife",
+      "rainforest",
+      "caves"
+    ],
+    "file": "destinations/borneo.json"
+  },
+  {
+    "id": "mexico",
+    "kind": "explore",
+    "name": "Mexico: highlands and the south",
+    "zone": "americas",
+    "noFlights": false,
+    "tags": [
+      "history",
+      "cities",
+      "mountains",
+      "food"
+    ],
+    "file": "destinations/mexico.json"
+  },
+  {
+    "id": "mongolia",
+    "kind": "explore",
+    "name": "Mongolia",
+    "zone": "asia",
+    "noFlights": false,
+    "tags": [
+      "nomad",
+      "horses",
+      "remote",
+      "steppe"
+    ],
+    "file": "destinations/mongolia.json"
+  },
+  {
+    "id": "sumatra",
+    "kind": "explore",
+    "name": "North Sumatra: Lake Toba and the Batak highlands",
+    "zone": "asia",
+    "noFlights": false,
+    "tags": [
+      "lake",
+      "villages",
+      "wildlife"
+    ],
+    "file": "destinations/sumatra.json"
+  },
+  {
+    "id": "norway",
+    "kind": "explore",
+    "name": "Norway: cities, a festival and the fjells",
+    "zone": "europe",
+    "noFlights": false,
+    "tags": [
+      "cities",
+      "festival",
+      "mountains",
+      "fjords"
+    ],
+    "file": "destinations/norway.json"
+  },
+  {
+    "id": "peru",
+    "kind": "explore",
+    "name": "Peru, acclimatised",
+    "zone": "americas",
+    "noFlights": false,
+    "tags": [
+      "history",
+      "mountains",
+      "cities"
+    ],
+    "file": "destinations/peru.json"
+  },
+  {
+    "id": "scotland",
+    "kind": "explore",
+    "name": "Scotland: Highlands and Orkney by sleeper",
+    "zone": "europe",
+    "noFlights": true,
+    "tags": [
+      "history",
+      "islands",
+      "mountains"
+    ],
+    "file": "destinations/scotland.json"
+  },
+  {
+    "id": "slovenia",
+    "kind": "explore",
+    "name": "Slovenia: Ljubljana, the Julian Alps and the Adriatic",
+    "zone": "europe",
+    "noFlights": true,
+    "tags": [
+      "mountains",
+      "cities",
+      "coast"
+    ],
+    "file": "destinations/slovenia.json"
+  },
+  {
+    "id": "sweden",
+    "kind": "explore",
+    "name": "Sweden: Stockholm, Gotland and the Kungsleden",
+    "zone": "europe",
+    "noFlights": true,
+    "tags": [
+      "cities",
+      "mountains",
+      "islands"
+    ],
+    "file": "destinations/sweden.json"
+  },
+  {
+    "id": "pacific",
+    "kind": "explore",
+    "name": "Vancouver + Olympic Peninsula",
+    "zone": "americas",
+    "noFlights": false,
+    "tags": [
+      "wildlife",
+      "coast",
+      "forest",
+      "cities"
+    ],
+    "file": "destinations/pacific.json"
+  },
+  {
+    "id": "alta-via-1",
+    "kind": "hike",
+    "name": "Alta Via 1 (Dolomites)",
+    "zone": "europe",
+    "noFlights": true,
+    "tags": [
+      "mountains",
+      "huts",
+      "limestone",
+      "classic"
+    ],
+    "file": "destinations/alta-via-1.json"
+  },
+  {
+    "id": "alta-via-2",
+    "kind": "hike",
+    "name": "Alta Via 2 (Dolomites)",
+    "zone": "europe",
+    "noFlights": true,
+    "tags": [
+      "mountains",
+      "huts",
+      "via-ferrata-light",
+      "limestone"
+    ],
+    "file": "destinations/alta-via-2.json"
+  },
+  {
+    "id": "gr20",
+    "kind": "hike",
+    "name": "GR20 (Corsica)",
+    "zone": "europe",
+    "noFlights": true,
+    "tags": [
+      "mountains",
+      "scrambling",
+      "camping",
+      "island"
+    ],
+    "file": "destinations/gr20.json"
+  },
+  {
+    "id": "tmb",
+    "kind": "hike",
+    "name": "Tour du Mont Blanc",
+    "zone": "europe",
+    "noFlights": true,
+    "tags": [
+      "mountains",
+      "huts",
+      "classic",
+      "glaciers"
+    ],
+    "file": "destinations/tmb.json"
+  },
+  {
+    "id": "tour-monte-rosa",
+    "kind": "hike",
+    "name": "Tour of Monte Rosa",
+    "zone": "europe",
+    "noFlights": true,
+    "tags": [
+      "mountains",
+      "huts",
+      "glaciers",
+      "quiet"
+    ],
+    "file": "destinations/tour-monte-rosa.json"
+  },
+  {
+    "id": "haute-route-walk",
+    "kind": "hike",
+    "name": "Walker's Haute Route",
+    "zone": "europe",
+    "noFlights": true,
+    "tags": [
+      "mountains",
+      "huts",
+      "glaciers",
+      "classic"
+    ],
+    "file": "destinations/haute-route-walk.json"
+  },
+  {
+    "id": "dolomites-ski",
+    "kind": "skitour",
+    "name": "Dolomites: Sella and Marmolada on skins",
+    "zone": "europe",
+    "noFlights": true,
+    "tags": [
+      "skitour",
+      "huts",
+      "moderate",
+      "italy",
+      "lifts"
+    ],
+    "file": "destinations/dolomites-ski.json"
+  },
+  {
+    "id": "ecrins-ski",
+    "kind": "skitour",
+    "name": "Écrins: Vallouise and the Glacier Blanc",
+    "zone": "europe",
+    "noFlights": true,
+    "tags": [
+      "skitour",
+      "huts",
+      "glaciers",
+      "france",
+      "big-days"
+    ],
+    "file": "destinations/ecrins-ski.json"
+  },
+  {
+    "id": "haute-route-ski",
+    "kind": "skitour",
+    "name": "Haute Route on skis (Chamonix–Zermatt)",
+    "zone": "europe",
+    "noFlights": true,
+    "tags": [
+      "skitour",
+      "huts",
+      "glaciers",
+      "classic",
+      "big-days"
+    ],
+    "file": "destinations/haute-route-ski.json"
+  },
+  {
+    "id": "lyngen-ski",
+    "kind": "skitour",
+    "name": "Lyngen Alps: sea to summit",
+    "zone": "europe",
+    "noFlights": false,
+    "tags": [
+      "skitour",
+      "lodge",
+      "arctic",
+      "fjords",
+      "no-huts"
+    ],
+    "file": "destinations/lyngen-ski.json"
+  },
+  {
+    "id": "ortler-ski",
+    "kind": "skitour",
+    "name": "Ortler group: Sulden and Cevedale",
+    "zone": "europe",
+    "noFlights": true,
+    "tags": [
+      "skitour",
+      "huts",
+      "glaciers",
+      "italy",
+      "spring"
+    ],
+    "file": "destinations/ortler-ski.json"
+  },
+  {
+    "id": "queyras-ski",
+    "kind": "skitour",
+    "name": "Queyras hut-to-hut",
+    "zone": "europe",
+    "noFlights": true,
+    "tags": [
+      "skitour",
+      "huts",
+      "gentle",
+      "france",
+      "sunny"
+    ],
+    "file": "destinations/queyras-ski.json"
+  },
+  {
+    "id": "silvretta-ski",
+    "kind": "skitour",
+    "name": "Silvretta hut-to-hut",
+    "zone": "europe",
+    "noFlights": true,
+    "tags": [
+      "skitour",
+      "huts",
+      "glaciers-easy",
+      "austria"
+    ],
+    "file": "destinations/silvretta-ski.json"
+  },
+  {
+    "id": "vanoise-ski",
+    "kind": "skitour",
+    "name": "Vanoise: Pralognan huts",
+    "zone": "europe",
+    "noFlights": true,
+    "tags": [
+      "skitour",
+      "huts",
+      "glaciers-easy",
+      "france"
+    ],
+    "file": "destinations/vanoise-ski.json"
+  }
+]

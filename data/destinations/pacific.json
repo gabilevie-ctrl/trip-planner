@@ -1,0 +1,437 @@
+{
+  "id": "pacific",
+  "name": "Vancouver + Olympic Peninsula",
+  "region": "Pacific Northwest",
+  "zone": "americas",
+  "tagline": "Rainforest, wild coast and First Nations art. Easiest logistics, highest hotel bills.",
+  "noFlights": false,
+  "palette": [
+    "#8fbdb3",
+    "#4f8a80",
+    "#2d5e5a",
+    "#1d3b3c",
+    "#dfe9e4"
+  ],
+  "access": [
+    {
+      "originRegion": "europe-west",
+      "originCity": "Brussels",
+      "mode": "flight",
+      "costPerPerson": 1200,
+      "route": "Brussels→Vancouver via Amsterdam, Frankfurt or Montreal; open-jaw Seattle in / Vancouver out costs the same"
+    },
+    {
+      "originRegion": "uk",
+      "originCity": "London",
+      "mode": "flight",
+      "costPerPerson": 900,
+      "route": "London→Vancouver direct (Air Canada, BA), 9.5 h; open-jaw Seattle"
+    }
+  ],
+  "rates": {
+    "city": 160,
+    "hike": 130,
+    "transit": 150
+  },
+  "nightsNote": "10–14°C on the coast, 5°C at Hurricane Ridge",
+  "whyNotes": "The only one of the seven in a region none of you has seen. Cool coast, zero altitude, and the hikes are long walks in old-growth forest rather than high passes.",
+  "fitNotes": "Perfect on altitude and heat. Crowds are the issue in Vancouver, Whistler and Seattle in July; the Olympic coast, Sunshine Coast and Vancouver Island are quiet. Over the €15,000 budget even with Airbnbs, because of flights and the car.",
+  "guides": [
+    {
+      "name": "Lonely Planet British Columbia",
+      "url": "https://www.lonelyplanet.com/canada/british-columbia"
+    },
+    {
+      "name": "Routard Canada",
+      "url": "https://www.routard.com/guide/code_dest/canada.htm"
+    },
+    {
+      "name": "Routard États-Unis",
+      "url": "https://www.routard.com/guide/code_dest/etats_unis.htm"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Balanced",
+      "picks": {
+        "vancouver": 3,
+        "olympicnp": 3,
+        "olycoast": 2,
+        "seattle": 2,
+        "tofino": 3,
+        "victoria": 1
+      }
+    },
+    {
+      "name": "Quietest",
+      "picks": {
+        "vancouver": 2,
+        "sunshine": 3,
+        "strathcona": 2,
+        "tofino": 3,
+        "townsend": 1,
+        "olycoast": 2,
+        "olympicnp": 2
+      }
+    },
+    {
+      "name": "Haida Gwaii",
+      "picks": {
+        "vancouver": 2,
+        "haida": 4,
+        "olympicnp": 3,
+        "olycoast": 2,
+        "seattle": 2
+      }
+    }
+  ],
+  "blocks": [
+    {
+      "id": "vancouver",
+      "type": "city",
+      "name": "Vancouver",
+      "place": "Museum of Anthropology, Stanley Park, Granville Island",
+      "defaultDays": 3,
+      "minDays": 1,
+      "maxDays": 4,
+      "maxAltitudeM": 0,
+      "dayHighC": 23,
+      "crowd": "high",
+      "transitHours": 0.5,
+      "history": "Coast Salish, Haida art",
+      "guidebookPick": true,
+      "see": [
+        "Museum of Anthropology at UBC (Haida poles, Bill Reid)",
+        "Stanley Park seawall by bike, early",
+        "Granville Island market on a weekday",
+        "Bill Reid Gallery",
+        "Lynn Canyon instead of Capilano"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "victoria",
+      "type": "city",
+      "name": "Victoria",
+      "place": "Royal BC Museum, Inner Harbour",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 0,
+      "dayHighC": 22,
+      "crowd": "med",
+      "transitHours": 3,
+      "history": "Colonial capital, First Peoples gallery",
+      "guidebookPick": false,
+      "see": [
+        "Royal BC Museum",
+        "Butchart Gardens late afternoon",
+        "Fisherman's Wharf"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "seattle",
+      "type": "city",
+      "name": "Seattle",
+      "place": "Chihuly Garden, MoPOP, Olympic Sculpture Park",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 0,
+      "dayHighC": 26,
+      "crowd": "high",
+      "transitHours": 3,
+      "history": null,
+      "guidebookPick": false,
+      "see": [
+        "Chihuly Garden and Glass",
+        "Olympic Sculpture Park and the waterfront",
+        "Seattle Art Museum",
+        "Pike Place at 8 am",
+        "Ferry to Bainbridge"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "townsend",
+      "type": "city",
+      "name": "Port Townsend",
+      "place": "Victorian seaport, gateway to the Olympics",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 0,
+      "dayHighC": 21,
+      "crowd": "low",
+      "transitHours": 2.5,
+      "history": "Victorian seaport",
+      "guidebookPick": false,
+      "see": [
+        "Victorian waterfront and bookshops",
+        "Fort Worden state park",
+        "Northwest Maritime Center"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "olympicnp",
+      "type": "hike",
+      "name": "Olympic NP: Hoh rainforest + Hurricane Ridge",
+      "place": "Old-growth temperate rainforest and alpine meadows",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 1600,
+      "dayHighC": 22,
+      "crowd": "med",
+      "transitHours": 3,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Hoh River trail (flat, as far as you like)",
+        "Hurricane Ridge: Klahhane ridge trail",
+        "Sol Duc falls and hot springs",
+        "Lake Crescent, Marymere falls"
+      ],
+      "note": "Stay in Forks or Lake Quinault to reach trails before the day crowds.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "olycoast",
+      "type": "hike",
+      "name": "Olympic wilderness coast",
+      "place": "Shi Shi, Rialto, the Ozette triangle",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 0,
+      "dayHighC": 19,
+      "crowd": "low",
+      "transitHours": 2,
+      "history": "Makah petroglyphs",
+      "guidebookPick": true,
+      "see": [
+        "Ozette triangle loop (15 km, boardwalk and beach, petroglyphs)",
+        "Rialto beach to Hole-in-the-Wall at low tide",
+        "Shi Shi beach and Point of Arches"
+      ],
+      "note": "Tide tables decide the day. Fog in the morning, sun by noon.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "tofino",
+      "type": "hike",
+      "name": "Tofino + Pacific Rim",
+      "place": "Vancouver Island west coast: rainforest trails, whales, surf",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 0,
+      "dayHighC": 19,
+      "crowd": "med",
+      "transitHours": 5,
+      "history": "Nuu-chah-nulth territory",
+      "guidebookPick": true,
+      "see": [
+        "Rainforest trail and Schooner Cove",
+        "Whale watching to Hot Springs Cove",
+        "Meares Island big-tree trail with a Tla-o-qui-aht guide",
+        "Wild Pacific Trail at Ucluelet"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "strathcona",
+      "type": "hike",
+      "name": "Strathcona Provincial Park",
+      "place": "Vancouver Island's alpine interior",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 1500,
+      "dayHighC": 21,
+      "crowd": "low",
+      "transitHours": 2,
+      "history": null,
+      "guidebookPick": false,
+      "see": [
+        "Forbidden Plateau to Lake Helen Mackenzie",
+        "Elk River trail",
+        "Myra Falls"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "sunshine",
+      "type": "hike",
+      "name": "Sunshine Coast Trail section",
+      "place": "Hut-to-hut, free huts, 180 km total; walk 3 days of it",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 1200,
+      "dayHighC": 23,
+      "crowd": "low",
+      "transitHours": 3,
+      "history": null,
+      "guidebookPick": false,
+      "see": [
+        "Tin Hat mountain hut (360° view)",
+        "Inland lake loop",
+        "Ferries from Horseshoe Bay; Powell River base"
+      ],
+      "note": "Canada's longest hut-to-hut trail and almost unknown outside BC.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "garibaldi",
+      "type": "hike",
+      "name": "Garibaldi + Joffre Lakes",
+      "place": "Sea-to-Sky corridor icons",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 2000,
+      "dayHighC": 22,
+      "crowd": "high",
+      "transitHours": 1.5,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Garibaldi lake and Panorama ridge",
+        "Joffre lakes (day pass required)"
+      ],
+      "note": "Beautiful and heaving in July. Strathcona gives the same alpine without the queue.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "haida",
+      "type": "hike",
+      "name": "Haida Gwaii",
+      "place": "Gwaii Haanas by boat: SGang Gwaay poles, rainforest, Haida culture",
+      "defaultDays": 4,
+      "minDays": 3,
+      "maxDays": 6,
+      "maxAltitudeM": 0,
+      "dayHighC": 18,
+      "crowd": "low",
+      "transitHours": 3,
+      "history": "Haida villages and poles (UNESCO)",
+      "guidebookPick": true,
+      "see": [
+        "Gwaii Haanas multi-day boat trip with Haida watchmen sites",
+        "Haida Heritage Centre at Kay Llnagaay",
+        "Naikoon beaches"
+      ],
+      "note": "Adds about €450 pp in flights plus a boat charter; the most memorable block on this page.",
+      "ratePerDay": null,
+      "extraTransportCost": 450
+    }
+  ],
+  "season": {
+    "fitByMonth": [
+      35,
+      35,
+      45,
+      60,
+      75,
+      85,
+      95,
+      85,
+      88,
+      65,
+      40,
+      35
+    ],
+    "events": [
+      {
+        "name": "Wildfire smoke risk (BC interior)",
+        "from": "07-25",
+        "to": "09-10",
+        "effect": "weather",
+        "note": "Coast usually clear"
+      }
+    ],
+    "notes": [
+      "Driest, warmest weeks of the year on the coast: 19–26°C, cold water, fog mornings.",
+      "Backcountry permits (Olympic NP, BC Parks) open months ahead; book in winter.",
+      "From late July the wildfire-smoke risk rises in the BC interior; the coast is usually clear.",
+      "Early August: BC Day long weekend (2 Aug) fills ferries and campgrounds."
+    ]
+  },
+  "kind": "explore",
+  "tags": [
+    "wildlife",
+    "coast",
+    "forest",
+    "cities"
+  ],
+  "lodgingAssumption": "Local B&B or Airbnb, two rooms for five, one meal out a day; shared van or hire car",
+  "climate": {
+    "representative": "Vancouver / Olympic coast",
+    "dayHighC": [
+      7,
+      8,
+      10,
+      13,
+      17,
+      20,
+      22,
+      22,
+      19,
+      14,
+      9,
+      6
+    ],
+    "nightLowC": [
+      1,
+      2,
+      3,
+      6,
+      9,
+      12,
+      14,
+      14,
+      11,
+      7,
+      4,
+      2
+    ],
+    "rainDays": [
+      20,
+      16,
+      17,
+      14,
+      12,
+      11,
+      6,
+      7,
+      9,
+      16,
+      20,
+      20
+    ],
+    "snowMonths": [
+      1,
+      2,
+      12
+    ]
+  }
+}

@@ -1,0 +1,272 @@
+{
+  "id": "ortler-ski",
+  "kind": "skitour",
+  "zone": "europe",
+  "name": "Ortler group: Sulden and Cevedale",
+  "region": "South Tyrol / Lombardy, Italy",
+  "noFlights": true,
+  "tagline": "Spring classic: the Casati hut at 3,254 m, Monte Cevedale 3,769 m, long glacier descents, Italian hut food.",
+  "tags": [
+    "skitour",
+    "huts",
+    "glaciers",
+    "italy",
+    "spring"
+  ],
+  "access": [
+    {
+      "originRegion": "europe-west",
+      "originCity": "Brussels",
+      "mode": "train",
+      "costPerPerson": 220,
+      "route": "Brussels→Munich→Innsbruck→Landeck or Meran, bus to Sulden (train 11 h); or drive 10 h"
+    },
+    {
+      "originRegion": "uk",
+      "originCity": "London",
+      "mode": "train",
+      "costPerPerson": 260,
+      "route": "Eurostar→Paris→Munich→Innsbruck→Meran→Sulden"
+    }
+  ],
+  "rates": {
+    "stage": 90,
+    "transit": 95,
+    "guide": 120
+  },
+  "lodgingAssumption": "Rifugi half board, hotel in Sulden",
+  "presets": [
+    {
+      "name": "Cevedale 4 days",
+      "picks": {
+        "sulden": 1,
+        "s1": 1,
+        "s2": 1,
+        "s3": 1,
+        "s4": 1
+      }
+    }
+  ],
+  "blocks": [
+    {
+      "id": "sulden",
+      "type": "city",
+      "name": "Sulden / Solda",
+      "place": "Base at 1,900 m under the Ortler",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 3,
+      "crowd": "low",
+      "transitHours": 11,
+      "maxAltitudeM": 1900,
+      "dayHighC": 3,
+      "see": [],
+      "history": null,
+      "guidebookPick": false
+    },
+    {
+      "id": "s1",
+      "type": "stage",
+      "name": "Day 1: Sulden to Rifugio Casati",
+      "place": "Lifts to the Schaubachhütte, skin to 3,254 m",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "low",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "ascentM": 700,
+      "descentM": 0,
+      "hours": 4,
+      "maxAltitudeM": 3254,
+      "difficulty": "WS+",
+      "hut": {
+        "name": "Rifugio Casati",
+        "bookAheadMonths": 3
+      },
+      "dayHighC": -6
+    },
+    {
+      "id": "s2",
+      "type": "stage",
+      "name": "Day 2: Monte Cevedale, to Rifugio Pizzini",
+      "place": "3,769 m, down the Forni side",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "low",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "ascentM": 600,
+      "descentM": 1100,
+      "hours": 6,
+      "maxAltitudeM": 3769,
+      "difficulty": "ZS",
+      "hut": {
+        "name": "Rifugio Pizzini",
+        "bookAheadMonths": 3
+      },
+      "dayHighC": -8
+    },
+    {
+      "id": "s3",
+      "type": "stage",
+      "name": "Day 3: Monte Pasquale or Palon de la Mare, to Rifugio Branca",
+      "place": "",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "low",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "ascentM": 1000,
+      "descentM": 1200,
+      "hours": 7,
+      "maxAltitudeM": 3553,
+      "difficulty": "ZS",
+      "hut": {
+        "name": "Rifugio Branca",
+        "bookAheadMonths": 3
+      },
+      "dayHighC": -6
+    },
+    {
+      "id": "s4",
+      "type": "stage",
+      "name": "Day 4: San Matteo or down to Santa Caterina",
+      "place": "3,678 m optional, then the valley",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "low",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "ascentM": 900,
+      "descentM": 1800,
+      "hours": 7,
+      "maxAltitudeM": 3678,
+      "difficulty": "ZS",
+      "hut": {
+        "name": "Hotel in Santa Caterina or Bormio",
+        "bookAheadMonths": 2
+      },
+      "dayHighC": 2
+    }
+  ],
+  "season": {
+    "fitByMonth": [
+      10,
+      40,
+      85,
+      95,
+      70,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "events": [],
+    "notes": [
+      "April into May: high huts, firn descents, long days.",
+      "Everything is above 3,000 m: acclimatise a night in Sulden, and watch the sun.",
+      "Bulletins: Avalanche.report (South Tyrol) and AINEVA Lombardia."
+    ]
+  },
+  "climate": {
+    "representative": "Huts at 2,500–3,250 m",
+    "dayHighC": [
+      -8,
+      -8,
+      -5,
+      -1,
+      4,
+      8,
+      11,
+      11,
+      7,
+      2,
+      -4,
+      -7
+    ],
+    "nightLowC": [
+      -17,
+      -17,
+      -14,
+      -10,
+      -5,
+      -1,
+      2,
+      2,
+      -1,
+      -6,
+      -12,
+      -16
+    ],
+    "rainDays": [
+      5,
+      5,
+      7,
+      8,
+      11,
+      12,
+      12,
+      11,
+      8,
+      7,
+      7,
+      6
+    ],
+    "snowMonths": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      9,
+      10,
+      11,
+      12
+    ]
+  },
+  "bulletins": [
+    {
+      "name": "Avalanche.report (Tyrol, South Tyrol, Trentino)",
+      "url": "https://avalanche.report/",
+      "type": "avalanche"
+    },
+    {
+      "name": "AINEVA bulletins (Italy)",
+      "url": "https://bollettini.aineva.it/",
+      "type": "avalanche"
+    },
+    {
+      "name": "meteoblue multimodel",
+      "url": "https://www.meteoblue.com/",
+      "type": "weather"
+    },
+    {
+      "name": "hut-reservation.org (SAC, DAV, ÖAV, CAI huts)",
+      "url": "https://www.hut-reservation.org/"
+    }
+  ],
+  "guides": [
+    {
+      "name": "Alpenvereinaktiv Ortler",
+      "url": "https://www.alpenvereinaktiv.com/"
+    }
+  ],
+  "lastReviewed": "2026-11-08",
+  "sources": []
+}

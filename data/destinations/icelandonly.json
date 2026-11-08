@@ -1,0 +1,432 @@
+{
+  "id": "icelandonly",
+  "name": "Iceland",
+  "region": "North Atlantic",
+  "zone": "europe",
+  "tagline": "Fjords with no roads, highland deserts, and nobody around if you avoid the south coast.",
+  "noFlights": false,
+  "palette": [
+    "#c5d5dc",
+    "#7fa3b4",
+    "#4a6b7c",
+    "#223440",
+    "#f1f5f6"
+  ],
+  "access": [
+    {
+      "originRegion": "europe-west",
+      "originCity": "Brussels",
+      "mode": "flight",
+      "costPerPerson": 600,
+      "route": "Icelandair direct Brussels→Keflavík, 3.5 h"
+    },
+    {
+      "originRegion": "uk",
+      "originCity": "London",
+      "mode": "flight",
+      "costPerPerson": 350,
+      "route": "London→Keflavík direct (Icelandair, easyJet), 3 h"
+    }
+  ],
+  "rates": {
+    "city": 170,
+    "hike": 200,
+    "transit": 170
+  },
+  "nightsNote": "5–9°C everywhere",
+  "whyNotes": "Closest to the Alta Via / Haute Route days: multi-day walking in huge landscapes, light packs, huts or a guide's camp. Least history of the seven, most scenery.",
+  "fitNotes": "No altitude, no heat (10–15°C). Crowds are severe on the south coast, Golden Circle and Laugavegur, so this version lives in the Westfjords, the east and the highlands. Around €17–20k for 16 days; under the cap at about 14 days with the self-guided Hornstrandir and a 2WD car.",
+  "guides": [
+    {
+      "name": "Lonely Planet Iceland",
+      "url": "https://www.lonelyplanet.com/iceland"
+    },
+    {
+      "name": "Routard Islande",
+      "url": "https://www.routard.com/guide/code_dest/islande.htm"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Iceland on a budget",
+      "picks": {
+        "reykjavik": 2,
+        "snaefellsnes": 2,
+        "westfjords": 2,
+        "hornself": 4,
+        "eastfjords": 2
+      }
+    },
+    {
+      "name": "Quiet Iceland",
+      "picks": {
+        "reykjavik": 2,
+        "westfjords": 3,
+        "hornstrandir": 4,
+        "highlands": 3,
+        "eastfjords": 2
+      }
+    },
+    {
+      "name": "North + East",
+      "picks": {
+        "reykjavik": 2,
+        "myvatn": 2,
+        "askja": 2,
+        "eastfjords": 2,
+        "highlands": 3
+      }
+    },
+    {
+      "name": "Classic (crowded)",
+      "picks": {
+        "reykjavik": 2,
+        "snaefellsnes": 2,
+        "laugavegur": 4,
+        "myvatn": 2,
+        "highlands": 2
+      }
+    }
+  ],
+  "blocks": [
+    {
+      "id": "reykjavik",
+      "type": "city",
+      "name": "Reykjavík",
+      "place": "National Museum, Settlement Exhibition, Harpa",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 0,
+      "dayHighC": 14,
+      "crowd": "med",
+      "transitHours": 0.75,
+      "history": "Viking settlement, sagas",
+      "guidebookPick": true,
+      "see": [
+        "National Museum of Iceland",
+        "Settlement Exhibition (10th-century longhouse in situ)",
+        "Harpa; check the summer programme",
+        "Reykjavík Art Museum",
+        "Vesturbæjarlaug pool with the locals"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "isafjordur",
+      "type": "city",
+      "name": "Ísafjörður",
+      "place": "Westfjords capital, base for Hornstrandir",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 0,
+      "dayHighC": 12,
+      "crowd": "low",
+      "transitHours": 5,
+      "history": "Fishing and whaling history",
+      "guidebookPick": false,
+      "see": [
+        "Westfjords Heritage Museum",
+        "Tjöruhúsið fish restaurant",
+        "Vigur island puffins by boat"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "myvatn",
+      "type": "city",
+      "name": "Akureyri + Mývatn",
+      "place": "North: whales from Húsavík, geothermal fields",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 300,
+      "dayHighC": 15,
+      "crowd": "med",
+      "transitHours": 6,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Húsavík whale watching (humpbacks)",
+        "Dimmuborgir and Hverir",
+        "Akureyri botanical garden and art museum",
+        "Goðafoss"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "eastfjords",
+      "type": "city",
+      "name": "East Fjords",
+      "place": "Seyðisfjörður, Borgarfjörður eystri",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 0,
+      "dayHighC": 13,
+      "crowd": "low",
+      "transitHours": 3,
+      "history": null,
+      "guidebookPick": false,
+      "see": [
+        "Seyðisfjörður art village and Skaftfell centre",
+        "Borgarfjörður eystri puffin cliff and Stórurð boulder walk",
+        "Petra's stone collection"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "hornstrandir",
+      "type": "hike",
+      "name": "Hornstrandir nature reserve",
+      "place": "Roadless peninsula, guided 4-day traverse, boat access",
+      "defaultDays": 4,
+      "minDays": 3,
+      "maxDays": 5,
+      "maxAltitudeM": 500,
+      "dayHighC": 11,
+      "crowd": "low",
+      "transitHours": 2,
+      "history": "Abandoned farms, 1950s",
+      "guidebookPick": true,
+      "see": [
+        "Hornbjarg cliffs (534 m straight into the sea)",
+        "Arctic foxes at Hornvík",
+        "Hesteyri abandoned village",
+        "Boat from Ísafjörður; guide and tents or the doctor's house"
+      ],
+      "note": "The emptiest hiking in Europe. Weather can hold the boat for a day; keep a buffer.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "hornself",
+      "type": "hike",
+      "name": "Hornstrandir self-guided",
+      "place": "Same traverse, your own tents and food, boat drop-off and pick-up",
+      "defaultDays": 4,
+      "minDays": 3,
+      "maxDays": 5,
+      "maxAltitudeM": 500,
+      "dayHighC": 11,
+      "crowd": "low",
+      "transitHours": 2,
+      "history": "Abandoned farms, 1950s",
+      "guidebookPick": false,
+      "see": [
+        "Veiðileysufjörður to Hornvík, Hornbjarg, out via Hesteyri",
+        "Camp at the ranger-staffed sites",
+        "Boat from Ísafjörður or Bolungarvík, book both legs"
+      ],
+      "note": "About €110 pp per day instead of €200 with a guide. Needs one confident navigator in the group and a weather buffer day.",
+      "ratePerDay": 110,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "westfjords",
+      "type": "hike",
+      "name": "Westfjords road trip",
+      "place": "Dynjandi, Látrabjarg, Rauðisandur",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 600,
+      "dayHighC": 13,
+      "crowd": "low",
+      "transitHours": 4,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Látrabjarg bird cliffs",
+        "Dynjandi waterfall staircase",
+        "Rauðisandur red beach",
+        "Gravel passes and day walks from the farmhouses"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "highlands",
+      "type": "hike",
+      "name": "Highlands: Kerlingarfjöll + Landmannalaugar",
+      "place": "F-roads, rhyolite mountains, geothermal valleys",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 1100,
+      "dayHighC": 12,
+      "crowd": "med",
+      "transitHours": 4,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Hveradalir geothermal valley at Kerlingarfjöll",
+        "Landmannalaugar day loop early on a weekday",
+        "Hveravellir hot pool between glaciers"
+      ],
+      "note": "Landmannalaugar is busy by 11 am; sleep at Kerlingarfjöll or Hrauneyjar and arrive at 8.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "laugavegur",
+      "type": "hike",
+      "name": "Laugavegur hut trek",
+      "place": "4-day classic, Landmannalaugar to Þórsmörk",
+      "defaultDays": 4,
+      "minDays": 3,
+      "maxDays": 5,
+      "maxAltitudeM": 1100,
+      "dayHighC": 11,
+      "crowd": "high",
+      "transitHours": 3,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Rhyolite, obsidian, ice caves and black desert in four days",
+        "Hut dorms booked out months ahead"
+      ],
+      "note": "Iceland's busiest trail. Hornstrandir gives the same drama with nobody there.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "askja",
+      "type": "hike",
+      "name": "Askja + Herðubreið",
+      "place": "Volcanic highlands, crater lake, super-jeep day",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 1100,
+      "dayHighC": 10,
+      "crowd": "low",
+      "transitHours": 5,
+      "history": null,
+      "guidebookPick": false,
+      "see": [
+        "Víti crater and Öskjuvatn",
+        "Herðubreiðarlindir oasis",
+        "Holuhraun lava field (2014)"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "snaefellsnes",
+      "type": "hike",
+      "name": "Snæfellsnes peninsula",
+      "place": "Glacier volcano, lava fields, fishing villages",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 700,
+      "dayHighC": 13,
+      "crowd": "med",
+      "transitHours": 2.5,
+      "history": "Saga sites",
+      "guidebookPick": true,
+      "see": [
+        "Snæfellsjökull national park coast walk",
+        "Stykkishólmur and Breiðafjörður islands",
+        "Arnarstapi cliffs"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    }
+  ],
+  "season": {
+    "fitByMonth": [
+      25,
+      25,
+      35,
+      45,
+      65,
+      88,
+      90,
+      88,
+      75,
+      55,
+      30,
+      25
+    ],
+    "events": [],
+    "notes": [
+      "F-roads and highland huts fully open across the window.",
+      "Hornstrandir boats run daily until mid-August; after that service thins.",
+      "First weekend of August is Iceland's big holiday weekend; campsites fill."
+    ]
+  },
+  "kind": "explore",
+  "tags": [
+    "mountains",
+    "coast",
+    "remote"
+  ],
+  "lodgingAssumption": "Local B&B or Airbnb, two rooms for five, one meal out a day; shared van or hire car",
+  "climate": {
+    "representative": "Ísafjörður / Reykjavík",
+    "dayHighC": [
+      2,
+      3,
+      3,
+      6,
+      9,
+      12,
+      14,
+      13,
+      10,
+      7,
+      4,
+      2
+    ],
+    "nightLowC": [
+      -3,
+      -2,
+      -2,
+      0,
+      4,
+      7,
+      9,
+      8,
+      5,
+      2,
+      -1,
+      -3
+    ],
+    "rainDays": [
+      13,
+      12,
+      13,
+      11,
+      9,
+      10,
+      10,
+      12,
+      13,
+      14,
+      13,
+      13
+    ],
+    "snowMonths": [
+      1,
+      2,
+      3,
+      4,
+      11,
+      12
+    ]
+  }
+}

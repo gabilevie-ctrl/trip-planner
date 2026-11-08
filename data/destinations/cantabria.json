@@ -1,0 +1,407 @@
+{
+  "id": "cantabria",
+  "name": "Basque Country, Asturias + Picos de Europa",
+  "region": "Northern Spain, by train",
+  "zone": "europe",
+  "tagline": "Guggenheim and pintxos, pre-Romanesque Oviedo, Altamira, and limestone peaks an hour from a cool Atlantic coast.",
+  "noFlights": true,
+  "palette": [
+    "#9bc3a3",
+    "#5f9a73",
+    "#3b6b56",
+    "#223f36",
+    "#e7efdf"
+  ],
+  "access": [
+    {
+      "originRegion": "europe-west",
+      "originCity": "Brussels",
+      "mode": "train",
+      "costPerPerson": 300,
+      "route": "Train: Brussels→Paris (1.5 h), TGV Paris→Hendaye/San Sebastián (5 h), then bus or train along the coast"
+    },
+    {
+      "originRegion": "uk",
+      "originCity": "London",
+      "mode": "ferry",
+      "costPerPerson": 260,
+      "route": "Portsmouth/Plymouth→Santander or Bilbao by Brittany Ferries (24 h), or Eurostar + TGV"
+    }
+  ],
+  "rates": {
+    "city": 100,
+    "hike": 85,
+    "transit": 100
+  },
+  "nightsNote": "10–13°C at the Picos huts, 16°C on the coast",
+  "whyNotes": "Spain again after Seville and Córdoba, but the opposite Spain: green, cool, Atlantic, and 23°C in late July. No flights at all, and the mountains are serious without ever going high.",
+  "fitNotes": "Excellent on all three of Mom's limits: highest point 2,400 m, coast at 23–26°C, and the crowds are confined to San Sebastián in August and the Cares gorge at midday. Short hops between stops.",
+  "guides": [
+    {
+      "name": "Lonely Planet Spain",
+      "url": "https://www.lonelyplanet.com/spain"
+    },
+    {
+      "name": "Routard Pays basque, Béarn",
+      "url": "https://www.routard.com/guide/code_dest/pays_basque_bearn.htm"
+    },
+    {
+      "name": "Routard Asturies, Cantabrie",
+      "url": "https://www.routard.com/guide/code_dest/asturies_cantabrie.htm"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Picos + Basque cities",
+      "picks": {
+        "sansebastian": 2,
+        "bilbao": 2,
+        "cares": 2,
+        "picoshut": 3,
+        "liebana": 2,
+        "santillana": 1
+      }
+    },
+    {
+      "name": "Quiet Asturias",
+      "picks": {
+        "bilbao": 1,
+        "oviedo": 2,
+        "somiedo": 2,
+        "picoshut": 3,
+        "cares": 1,
+        "santillana": 1,
+        "flysch": 1
+      }
+    },
+    {
+      "name": "Fewest hours in transit",
+      "picks": {
+        "sansebastian": 2,
+        "bilbao": 2,
+        "flysch": 1,
+        "cares": 2,
+        "liebana": 3
+      }
+    }
+  ],
+  "blocks": [
+    {
+      "id": "sansebastian",
+      "type": "city",
+      "name": "San Sebastián",
+      "place": "La Concha, San Telmo museum, pintxos in the Parte Vieja",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 0,
+      "dayHighC": 24,
+      "crowd": "high",
+      "transitHours": 7,
+      "history": "Belle Époque resort, Basque culture",
+      "guidebookPick": true,
+      "see": [
+        "San Telmo museum (Basque history in a convent)",
+        "Monte Urgull and Monte Igueldo walks",
+        "Pintxos crawl in the Parte Vieja",
+        "Chillida Leku sculpture park (20 min out)"
+      ],
+      "note": "Arrival point from the train. Busy in August; two nights midweek is right.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "bilbao",
+      "type": "city",
+      "name": "Bilbao",
+      "place": "Guggenheim, Fine Arts museum, Casco Viejo",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 0,
+      "dayHighC": 25,
+      "crowd": "med",
+      "transitHours": 1.5,
+      "history": "Industrial port reinvented",
+      "guidebookPick": true,
+      "see": [
+        "Guggenheim (book a morning slot)",
+        "Museo de Bellas Artes",
+        "Casco Viejo and the Ribera market",
+        "Vizcaya hanging bridge (UNESCO)",
+        "Gaztelugatxe at opening time"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "santillana",
+      "type": "city",
+      "name": "Santillana del Mar + Altamira",
+      "place": "Medieval village, the Altamira cave museum, Comillas",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 100,
+      "dayHighC": 23,
+      "crowd": "med",
+      "transitHours": 1.5,
+      "history": "Palaeolithic cave art, 36,000 years",
+      "guidebookPick": true,
+      "see": [
+        "Altamira museum and the neocave",
+        "Santillana's single stone street before 10 am",
+        "Gaudí's El Capricho in Comillas"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "oviedo",
+      "type": "city",
+      "name": "Oviedo + Gijón",
+      "place": "Pre-Romanesque churches, cider houses",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 230,
+      "dayHighC": 23,
+      "crowd": "low",
+      "transitHours": 3,
+      "history": "9th-century Asturian kingdom (UNESCO)",
+      "guidebookPick": true,
+      "see": [
+        "Santa María del Naranco and San Miguel de Lillo",
+        "Oviedo cathedral Cámara Santa",
+        "Gascona street cider houses",
+        "Gijón's Roman baths and Cimadevilla"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "cares",
+      "type": "hike",
+      "name": "Ruta del Cares + Bulnes",
+      "place": "The gorge path, 12 km each way, and the funicular village",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 1000,
+      "dayHighC": 24,
+      "crowd": "high",
+      "transitHours": 2,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Cares gorge from Poncebos, as far as Caín and back",
+        "Bulnes by the old path up (2 h) and the funicular down",
+        "Covadonga lakes early morning (shuttle in summer)"
+      ],
+      "note": "The Cares path is the busiest walk in the Picos: start at 8 am.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "picoshut",
+      "type": "hike",
+      "name": "Picos hut-to-hut",
+      "place": "Vega de Urriellu, Collado Jermoso, Vegarredonda; 2,000–2,400 m",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 2400,
+      "dayHighC": 18,
+      "crowd": "low",
+      "transitHours": 1,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Naranjo de Bulnes seen from the Urriellu hut",
+        "Collado Jermoso, the finest hut terrace in Spain",
+        "Vegarredonda and the Mirador de Ordiales",
+        "Guided or self-guided with a luggage transfer at each end"
+      ],
+      "note": "Cool at altitude, 18°C days, cloud can roll in from the sea. Huts book out by spring.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "liebana",
+      "type": "hike",
+      "name": "Fuente Dé + Liébana valley",
+      "place": "Cable car to 1,850 m, day walks, Potes and Santo Toribio",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 1900,
+      "dayHighC": 22,
+      "crowd": "med",
+      "transitHours": 1.5,
+      "history": "Santo Toribio monastery, 8th-century Beatus",
+      "guidebookPick": true,
+      "see": [
+        "Fuente Dé cable car and the Horcados Rojos walk",
+        "Potes old town",
+        "Santo Toribio de Liébana",
+        "Mogrovejo village"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "somiedo",
+      "type": "hike",
+      "name": "Somiedo natural park",
+      "place": "Brañas, thatched teito huts, brown bears, 1,800 m",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 1800,
+      "dayHighC": 21,
+      "crowd": "low",
+      "transitHours": 2.5,
+      "history": "Transhumance culture",
+      "guidebookPick": false,
+      "see": [
+        "Lagos de Saliencia walk",
+        "Braña de la Pornacal teitos",
+        "Bear-watching evening with a local guide (June–September)"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "flysch",
+      "type": "hike",
+      "name": "Basque coast: Zumaia to Deba flysch",
+      "place": "Geological coast walk on the Camino, 60 million years in the cliffs",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 200,
+      "dayHighC": 23,
+      "crowd": "med",
+      "transitHours": 1,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Zumaia to Deba along the cliffs (3–4 h)",
+        "Getaria and its anchovy and txakoli",
+        "Boat along the flysch at low tide"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "quebrada",
+      "type": "hike",
+      "name": "Costa Quebrada + Liencres dunes",
+      "place": "Cantabrian coast walks west of Santander",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 50,
+      "dayHighC": 23,
+      "crowd": "low",
+      "transitHours": 1,
+      "history": null,
+      "guidebookPick": false,
+      "see": [
+        "Liencres dunes and pine forest",
+        "Costa Quebrada cliffs and arches",
+        "Santander's Centro Botín"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    }
+  ],
+  "season": {
+    "fitByMonth": [
+      40,
+      40,
+      50,
+      60,
+      75,
+      85,
+      88,
+      80,
+      85,
+      75,
+      50,
+      40
+    ],
+    "events": [],
+    "notes": [
+      "The coast is 23–26°C, the Picos 18–22°C; Atlantic cloud some mornings, rarely all day.",
+      "Picos huts and the Fuente Dé cable car at full service; Covadonga lakes road closed to cars (shuttle).",
+      "Second half of July is the quieter half of the summer on this coast.",
+      "August: San Sebastián and the Cantabrian beaches fill with Spanish holidaymakers; the mountains do not."
+    ]
+  },
+  "kind": "explore",
+  "tags": [
+    "mountains",
+    "cities",
+    "coast",
+    "food"
+  ],
+  "lodgingAssumption": "Local B&B or Airbnb, two rooms for five, one meal out a day; shared van or hire car",
+  "climate": {
+    "representative": "Potes / Santander",
+    "dayHighC": [
+      13,
+      13,
+      15,
+      16,
+      18,
+      21,
+      23,
+      24,
+      22,
+      19,
+      15,
+      13
+    ],
+    "nightLowC": [
+      6,
+      6,
+      7,
+      8,
+      11,
+      14,
+      16,
+      16,
+      14,
+      12,
+      8,
+      7
+    ],
+    "rainDays": [
+      13,
+      12,
+      12,
+      13,
+      12,
+      8,
+      6,
+      7,
+      9,
+      12,
+      14,
+      13
+    ],
+    "snowMonths": [
+      1,
+      2,
+      12
+    ]
+  }
+}

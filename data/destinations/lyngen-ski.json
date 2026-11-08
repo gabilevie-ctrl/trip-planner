@@ -1,0 +1,299 @@
+{
+  "id": "lyngen-ski",
+  "kind": "skitour",
+  "zone": "europe",
+  "name": "Lyngen Alps: sea to summit",
+  "region": "Troms, Arctic Norway",
+  "noFlights": false,
+  "tagline": "Day tours from a lodge or a boat: skin from the fjord, ski back to the water, midnight light by late April.",
+  "tags": [
+    "skitour",
+    "lodge",
+    "arctic",
+    "fjords",
+    "no-huts"
+  ],
+  "access": [
+    {
+      "originRegion": "europe-west",
+      "originCity": "Brussels",
+      "mode": "flight",
+      "costPerPerson": 380,
+      "route": "Brussels→Oslo→Tromsø (SAS, Norwegian), hire car or transfer 2 h to Lyngseidet"
+    },
+    {
+      "originRegion": "uk",
+      "originCity": "London",
+      "mode": "flight",
+      "costPerPerson": 320,
+      "route": "London→Tromsø direct (Norwegian, seasonal) or via Oslo"
+    }
+  ],
+  "rates": {
+    "stage": 150,
+    "transit": 150,
+    "guide": 120
+  },
+  "lodgingAssumption": "Self-catering lodge or guesthouse shared by the group; no huts in Lyngen",
+  "presets": [
+    {
+      "name": "Lodge week, 5 tours",
+      "picks": {
+        "lyngseidet": 1,
+        "s1": 1,
+        "s2": 1,
+        "s3": 1,
+        "s4": 1,
+        "s5": 1
+      }
+    }
+  ],
+  "blocks": [
+    {
+      "id": "lyngseidet",
+      "type": "city",
+      "name": "Lyngseidet / Koppangen lodge",
+      "place": "Base on the fjord, bulletin, gear",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 3,
+      "crowd": "low",
+      "transitHours": 7,
+      "maxAltitudeM": 50,
+      "dayHighC": 2,
+      "see": [],
+      "history": null,
+      "guidebookPick": false
+    },
+    {
+      "id": "s1",
+      "type": "stage",
+      "name": "Rørnestinden",
+      "place": "1,041 m straight from the road",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "low",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "ascentM": 1040,
+      "descentM": 1040,
+      "hours": 5,
+      "maxAltitudeM": 1041,
+      "difficulty": "WS",
+      "hut": {
+        "name": "Lodge",
+        "bookAheadMonths": 4
+      },
+      "dayHighC": -1
+    },
+    {
+      "id": "s2",
+      "type": "stage",
+      "name": "Storgalten",
+      "place": "1,219 m, the classic",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "low",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "ascentM": 1220,
+      "descentM": 1220,
+      "hours": 6,
+      "maxAltitudeM": 1219,
+      "difficulty": "WS+",
+      "hut": {
+        "name": "Lodge",
+        "bookAheadMonths": 4
+      },
+      "dayHighC": -2
+    },
+    {
+      "id": "s3",
+      "type": "stage",
+      "name": "Kavringtinden",
+      "place": "1,289 m, long open slopes",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "low",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "ascentM": 1290,
+      "descentM": 1290,
+      "hours": 6,
+      "maxAltitudeM": 1289,
+      "difficulty": "ZS-",
+      "hut": {
+        "name": "Lodge",
+        "bookAheadMonths": 4
+      },
+      "dayHighC": -2
+    },
+    {
+      "id": "s4",
+      "type": "stage",
+      "name": "Tafeltinden or Daltinden",
+      "place": "Bigger days on the east side",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "low",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "ascentM": 1400,
+      "descentM": 1400,
+      "hours": 7,
+      "maxAltitudeM": 1395,
+      "difficulty": "ZS",
+      "hut": {
+        "name": "Lodge",
+        "bookAheadMonths": 4
+      },
+      "dayHighC": -3
+    },
+    {
+      "id": "s5",
+      "type": "stage",
+      "name": "Rest or boat day: Uløya from the ferry",
+      "place": "",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "low",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "ascentM": 1000,
+      "descentM": 1000,
+      "hours": 5,
+      "maxAltitudeM": 1114,
+      "difficulty": "WS",
+      "hut": {
+        "name": "Lodge",
+        "bookAheadMonths": 4
+      },
+      "dayHighC": 0
+    }
+  ],
+  "season": {
+    "fitByMonth": [
+      10,
+      40,
+      85,
+      95,
+      80,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      5
+    ],
+    "events": [
+      {
+        "name": "Easter week",
+        "from": "03-28",
+        "to": "04-06",
+        "effect": "crowds",
+        "note": "Norwegians go to the mountains; lodges full"
+      }
+    ],
+    "notes": [
+      "March for light-and-powder, April and early May for long days and spring snow to the sea.",
+      "No huts: everything from a lodge, so cooking and a hire car are part of the plan.",
+      "Bulletin: Varsom.no, Lyngen region, published daily."
+    ]
+  },
+  "climate": {
+    "representative": "Sea level to 1,300 m",
+    "dayHighC": [
+      -3,
+      -3,
+      -1,
+      3,
+      8,
+      13,
+      16,
+      15,
+      10,
+      4,
+      0,
+      -2
+    ],
+    "nightLowC": [
+      -9,
+      -9,
+      -7,
+      -3,
+      1,
+      6,
+      9,
+      8,
+      4,
+      0,
+      -5,
+      -8
+    ],
+    "rainDays": [
+      14,
+      12,
+      12,
+      10,
+      9,
+      10,
+      12,
+      13,
+      15,
+      16,
+      14,
+      14
+    ],
+    "snowMonths": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      10,
+      11,
+      12
+    ]
+  },
+  "bulletins": [
+    {
+      "name": "Varsom (Norway)",
+      "url": "https://www.varsom.no/en/avalanche-bulletins/",
+      "type": "avalanche"
+    },
+    {
+      "name": "yr.no",
+      "url": "https://www.yr.no/",
+      "type": "weather"
+    },
+    {
+      "name": "meteoblue multimodel",
+      "url": "https://www.meteoblue.com/",
+      "type": "weather"
+    }
+  ],
+  "guides": [
+    {
+      "name": "Lyngen Lodge / local guides",
+      "url": "https://www.visitlyngenfjord.com/"
+    }
+  ],
+  "lastReviewed": "2026-11-08",
+  "sources": []
+}

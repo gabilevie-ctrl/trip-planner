@@ -1,0 +1,347 @@
+{
+  "id": "sumatra",
+  "name": "North Sumatra: Lake Toba and the Batak highlands",
+  "region": "Medan, Berastagi, Samosir island, Bukit Lawang",
+  "zone": "asia",
+  "tagline": "The largest volcanic lake on earth, Batak villages of carved houses and stone council chairs, and orangutans in the forest two hours away.",
+  "noFlights": false,
+  "palette": [
+    "#b7d7a8",
+    "#6aa36b",
+    "#3f7352",
+    "#234a3b",
+    "#edf4e6"
+  ],
+  "access": [
+    {
+      "originRegion": "europe-west",
+      "originCity": "Brussels",
+      "mode": "flight",
+      "costPerPerson": 950,
+      "route": "Brussels→Medan via Kuala Lumpur or Singapore (15–16 h)"
+    },
+    {
+      "originRegion": "uk",
+      "originCity": "London",
+      "mode": "flight",
+      "costPerPerson": 850,
+      "route": "London→Kuala Lumpur direct, then Medan"
+    }
+  ],
+  "rates": {
+    "city": 55,
+    "hike": 70,
+    "transit": 75
+  },
+  "nightsNote": "14°C at Berastagi, 18°C on Samosir, 24°C in Medan",
+  "whyNotes": "The cheapest Asian trip here and the slowest: a week on an island inside a lake at 900 m, 26°C, with Batak villages to walk between and almost no foreigners since the 1990s. The Salzburg rhythm without the festival: one base, day walks, long evenings.",
+  "fitNotes": "Highest point 2,200 m (Sibayak volcano, optional). Toba is 26°C and dry; only Medan and Bukit Lawang are hot and humid. No crowds anywhere. Short hops of 2–3 h.",
+  "guides": [
+    {
+      "name": "Lonely Planet Sumatra",
+      "url": "https://www.lonelyplanet.com/indonesia/sumatra"
+    },
+    {
+      "name": "Routard Indonésie",
+      "url": "https://www.routard.com/guide/code_dest/indonesie.htm"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Toba + Batak highlands",
+      "picks": {
+        "medan": 1,
+        "berastagi": 2,
+        "sibayak": 1,
+        "toba": 3,
+        "holbung": 1,
+        "bukitlawang": 2
+      }
+    },
+    {
+      "name": "Toba slow",
+      "picks": {
+        "medan": 1,
+        "toba": 4,
+        "holbung": 1,
+        "berastagi": 2,
+        "sipiso": 1
+      }
+    },
+    {
+      "name": "Fewest hours in transit",
+      "picks": {
+        "medan": 1,
+        "berastagi": 2,
+        "sibayak": 1,
+        "toba": 3
+      }
+    }
+  ],
+  "blocks": [
+    {
+      "id": "medan",
+      "type": "city",
+      "name": "Medan",
+      "place": "Maimun palace, Tjong A Fie mansion, Great Mosque",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 30,
+      "dayHighC": 32,
+      "crowd": "low",
+      "transitHours": 2,
+      "history": "Deli sultanate, tobacco-plantation boom",
+      "guidebookPick": false,
+      "see": [
+        "Tjong A Fie mansion (Chinese tycoon's house, 1900)",
+        "Maimun palace and the Great Mosque",
+        "Kesawan street colonial buildings",
+        "Soto Medan for lunch, then leave for the hills"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "berastagi",
+      "type": "city",
+      "name": "Berastagi + Karo villages",
+      "place": "Hill town at 1,300 m between two volcanoes, Karo Batak houses at Lingga and Dokan",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 1400,
+      "dayHighC": 22,
+      "crowd": "low",
+      "transitHours": 2,
+      "history": "Karo Batak clans, Dutch hill station",
+      "guidebookPick": true,
+      "see": [
+        "Lingga and Dokan traditional Karo houses",
+        "Fruit and flower market",
+        "Sipiso-piso waterfall and the Tongging viewpoint over Toba",
+        "Lau Debuk-Debuk hot springs"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "toba",
+      "type": "city",
+      "name": "Samosir island, Lake Toba",
+      "place": "Tuk Tuk base at 900 m: Tomok stone chairs, Ambarita, Simanindo museum, swimming",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 5,
+      "maxAltitudeM": 1000,
+      "dayHighC": 26,
+      "crowd": "low",
+      "transitHours": 3,
+      "history": "Toba Batak kingdoms, 17th-century megaliths, Sisingamangaraja",
+      "guidebookPick": true,
+      "see": [
+        "Ambarita stone council chairs and the execution block",
+        "Tomok king's tombs",
+        "Simanindo Batak museum and sigale-gale dance",
+        "Swim in the lake, 24°C",
+        "Ulos weaving villages by scooter or bicycle"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "sibayak",
+      "type": "hike",
+      "name": "Sibayak volcano",
+      "place": "Active crater at 2,200 m, 2 h up from Berastagi, hot springs on the way down",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 1,
+      "maxAltitudeM": 2200,
+      "dayHighC": 18,
+      "crowd": "low",
+      "transitHours": 0.5,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Dawn climb through forest to the fumarole crater",
+        "Down the other side to the Semangat Gunung hot springs",
+        "Sinabung's new cone seen from the rim"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "holbung",
+      "type": "hike",
+      "name": "Holbung hill + Samosir interior",
+      "place": "Grass ridges over the lake, Pusuk Buhit sacred mountain, highland villages",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 1500,
+      "dayHighC": 24,
+      "crowd": "low",
+      "transitHours": 0.5,
+      "history": "Pusuk Buhit, Batak origin mountain",
+      "guidebookPick": false,
+      "see": [
+        "Holbung hill ridge walk",
+        "Pusuk Buhit (1,900 m) for the siblings",
+        "Sidihoni lake inside the island",
+        "Hot springs at Pangururan"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "bukitlawang",
+      "type": "hike",
+      "name": "Bukit Lawang orangutans",
+      "place": "Gunung Leuser national park: 1–2 day jungle walks, river tubing back",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 600,
+      "dayHighC": 30,
+      "crowd": "med",
+      "transitHours": 3,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Guided forest walk: semi-wild orangutans, Thomas leaf monkeys, hornbills",
+        "Overnight camp by the river for the longer version",
+        "Tube back down the Bohorok river"
+      ],
+      "note": "Hot and humid; the shortest hikes in the morning are the best.",
+      "ratePerDay": 90,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "sipiso",
+      "type": "hike",
+      "name": "Sipiso-piso + Tongging walks",
+      "place": "120 m waterfall into the lake's northern tip, lakeshore paths",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 1500,
+      "dayHighC": 23,
+      "crowd": "low",
+      "transitHours": 1.5,
+      "history": null,
+      "guidebookPick": false,
+      "see": [
+        "Steps down to the base of Sipiso-piso",
+        "Tongging to Silalahi lakeshore walk",
+        "Grilled lake fish for lunch"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "tangkahan",
+      "type": "hike",
+      "name": "Tangkahan",
+      "place": "Elephant patrol unit, river swimming, quiet forest edge",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 300,
+      "dayHighC": 30,
+      "crowd": "low",
+      "transitHours": 4,
+      "history": null,
+      "guidebookPick": false,
+      "see": [
+        "Bathing the patrol elephants in the river",
+        "Forest walk to the hot spring",
+        "Tube the Buluh river"
+      ],
+      "note": "Long rough road; only if Bukit Lawang is already in.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    }
+  ],
+  "season": {
+    "fitByMonth": [
+      55,
+      55,
+      60,
+      70,
+      80,
+      85,
+      85,
+      85,
+      80,
+      65,
+      55,
+      50
+    ],
+    "events": [],
+    "notes": [
+      "June to August is the driest stretch of the year in North Sumatra; still expect a shower.",
+      "Toba 26°C by day, 18°C at night; Berastagi cooler; Medan 32°C.",
+      "No tourist season to speak of: guesthouses are empty and prices stay low all summer."
+    ]
+  },
+  "kind": "explore",
+  "tags": [
+    "lake",
+    "villages",
+    "wildlife"
+  ],
+  "lodgingAssumption": "Local B&B or Airbnb, two rooms for five, one meal out a day; shared van or hire car",
+  "climate": {
+    "representative": "Lake Toba (900 m)",
+    "dayHighC": [
+      27,
+      28,
+      28,
+      28,
+      28,
+      28,
+      28,
+      28,
+      27,
+      27,
+      27,
+      26
+    ],
+    "nightLowC": [
+      18,
+      18,
+      18,
+      19,
+      19,
+      18,
+      18,
+      18,
+      18,
+      18,
+      18,
+      18
+    ],
+    "rainDays": [
+      14,
+      12,
+      15,
+      17,
+      14,
+      10,
+      9,
+      11,
+      15,
+      19,
+      20,
+      17
+    ],
+    "snowMonths": []
+  }
+}

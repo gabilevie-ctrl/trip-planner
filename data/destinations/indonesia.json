@@ -1,0 +1,401 @@
+{
+  "id": "indonesia",
+  "name": "Indonesia: Java highlands + Tana Toraja",
+  "region": "Yogyakarta, Dieng, volcanoes, Sulawesi highlands",
+  "zone": "asia",
+  "tagline": "Borobudur at dawn, temples older than Angkor on a 2,100 m plateau, volcanoes, then the highlands of Sulawesi in funeral season.",
+  "noFlights": false,
+  "palette": [
+    "#b7d4a0",
+    "#6ea35f",
+    "#3f7a4c",
+    "#24473a",
+    "#f0f3dc"
+  ],
+  "access": [
+    {
+      "originRegion": "europe-west",
+      "originCity": "Brussels",
+      "mode": "flight",
+      "costPerPerson": 1000,
+      "route": "Brussels→Yogyakarta via Doha, Singapore or Kuala Lumpur (16–18 h); Makassar by internal flight"
+    },
+    {
+      "originRegion": "uk",
+      "originCity": "London",
+      "mode": "flight",
+      "costPerPerson": 900,
+      "route": "London→Jakarta/Yogyakarta via Doha or Singapore"
+    }
+  ],
+  "rates": {
+    "city": 60,
+    "hike": 75,
+    "transit": 80
+  },
+  "nightsNote": "8–12°C at Dieng and Bromo, 18°C in Toraja, 24°C in Yogyakarta",
+  "whyNotes": "Dry season, cheap on the ground, and a culture none of you has seen: 8th-century Buddhist and Hindu Java, then Toraja, where July and August are the season of the great funeral ceremonies and the village trekking is at 1,300–1,600 m and 24°C.",
+  "fitNotes": "Altitude trivial (2,400 m max at the volcano rims). Heat is the limit: Yogyakarta and Makassar are 31°C and humid, so the city days are short and the highland days long. Borobudur and Bromo are crowded at sunrise; Dieng and Toraja are not. Long flights (16+ h) and an internal hop.",
+  "guides": [
+    {
+      "name": "Lonely Planet Indonesia",
+      "url": "https://www.lonelyplanet.com/indonesia"
+    },
+    {
+      "name": "Routard Indonésie",
+      "url": "https://www.routard.com/guide/code_dest/indonesie.htm"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Temples + Toraja",
+      "picks": {
+        "yogya": 3,
+        "dieng": 2,
+        "makassar": 1,
+        "toraja": 3,
+        "torajatrek": 3
+      }
+    },
+    {
+      "name": "Volcano loop",
+      "picks": {
+        "yogya": 3,
+        "dieng": 2,
+        "bromo": 2,
+        "ijen": 1,
+        "malang": 1
+      }
+    },
+    {
+      "name": "Fewest hours in transit",
+      "picks": {
+        "yogya": 3,
+        "solo": 1,
+        "dieng": 2,
+        "merapi": 1
+      }
+    }
+  ],
+  "blocks": [
+    {
+      "id": "yogya",
+      "type": "city",
+      "name": "Yogyakarta",
+      "place": "Borobudur, Prambanan, the Kraton, batik, Malioboro",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 100,
+      "dayHighC": 31,
+      "crowd": "high",
+      "transitHours": 2,
+      "history": "8th–9th-century Buddhist and Hindu kingdoms, Javanese sultanate",
+      "guidebookPick": true,
+      "see": [
+        "Borobudur at sunrise (limited climbing tickets, book ahead)",
+        "Prambanan late afternoon and the Ramayana ballet",
+        "Kraton and Taman Sari water castle",
+        "Batik workshop in Kota Gede",
+        "Ratu Boko at sunset"
+      ],
+      "note": "Hot and busy; do the sites at opening and the city after 4 pm.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "solo",
+      "type": "city",
+      "name": "Solo (Surakarta)",
+      "place": "Two keratons, gamelan, the quieter Javanese court city",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 100,
+      "dayHighC": 31,
+      "crowd": "low",
+      "transitHours": 1,
+      "history": "Mataram court culture",
+      "guidebookPick": false,
+      "see": [
+        "Mangkunegaran palace and its gamelan",
+        "Pasar Triwindu antiques market",
+        "Sangiran early-man museum (UNESCO)"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "malang",
+      "type": "city",
+      "name": "Malang + Batu",
+      "place": "Dutch colonial hill city at 450–1,000 m, apple orchards, temples",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 1000,
+      "dayHighC": 26,
+      "crowd": "low",
+      "transitHours": 2,
+      "history": "Singhasari kingdom temples",
+      "guidebookPick": false,
+      "see": [
+        "Jodipan rainbow village and the colonial quarter",
+        "Singosari and Jago temples",
+        "Coban Rondo waterfall"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "makassar",
+      "type": "city",
+      "name": "Makassar",
+      "place": "Fort Rotterdam, Bugis schooners at Paotere, seafood",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 0,
+      "dayHighC": 31,
+      "crowd": "low",
+      "transitHours": 2,
+      "history": "Spice-trade port, Dutch VOC fort",
+      "guidebookPick": false,
+      "see": [
+        "Fort Rotterdam and the La Galigo museum",
+        "Paotere harbour pinisi schooners",
+        "Rammang-Rammang karst by boat (half day)"
+      ],
+      "note": "Internal flight from Yogyakarta or Surabaya. Hot; one night.",
+      "ratePerDay": null,
+      "extraTransportCost": 120
+    },
+    {
+      "id": "toraja",
+      "type": "city",
+      "name": "Tana Toraja: Rantepao",
+      "place": "Tongkonan houses, cliff graves at Lemo and Londa, Kete Kesu, funeral ceremonies",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 900,
+      "dayHighC": 27,
+      "crowd": "low",
+      "transitHours": 8,
+      "history": "Toraja ancestor culture, Aluk To Dolo",
+      "guidebookPick": true,
+      "see": [
+        "A funeral ceremony with a local guide (July–August is the season; guests bring a gift)",
+        "Londa and Lemo cliff graves, tau-tau effigies",
+        "Kete Kesu village and rice barns",
+        "Bolu buffalo market (every six days)"
+      ],
+      "note": "8 h by road from Makassar, or the 1 h flight to Toraja airport when it runs. Cool, green, unhurried.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "torajatrek",
+      "type": "hike",
+      "name": "Toraja highland trekking",
+      "place": "Batutumonga, Lolai, Baruppu: rice terraces and villages at 1,300–1,600 m",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 1600,
+      "dayHighC": 24,
+      "crowd": "low",
+      "transitHours": 0.5,
+      "history": "Megalith fields, tongkonan villages",
+      "guidebookPick": true,
+      "see": [
+        "Batutumonga ridge walk above the valley",
+        "Village-to-village day stages with homestays",
+        "Lolai 'land above the clouds' at dawn",
+        "Bori Parinding megaliths"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "dieng",
+      "type": "hike",
+      "name": "Dieng plateau",
+      "place": "2,100 m volcanic plateau, Java's oldest temples, Sikunir sunrise, coloured lakes",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 2300,
+      "dayHighC": 18,
+      "crowd": "low",
+      "transitHours": 3,
+      "history": "7th–8th-century Hindu temples, the oldest on Java",
+      "guidebookPick": true,
+      "see": [
+        "Arjuna temple complex in the mist",
+        "Sikunir hill sunrise over the volcanoes",
+        "Telaga Warna lakes and Sikidang crater",
+        "Potato-farm villages, cold nights"
+      ],
+      "note": "Cool, cheap, almost no foreign visitors. 3 h from Yogyakarta.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "merapi",
+      "type": "hike",
+      "name": "Merapi slopes + Kaliurang",
+      "place": "Lava trails and the 2010 eruption museum",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 1500,
+      "dayHighC": 24,
+      "crowd": "med",
+      "transitHours": 1,
+      "history": "2010 eruption",
+      "guidebookPick": false,
+      "see": [
+        "Lava jeep tour and the Sisa Hartaku museum",
+        "Kaliurang forest walk",
+        "Ullen Sentalu Javanese culture museum"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "bromo",
+      "type": "hike",
+      "name": "Bromo–Tengger",
+      "place": "Sea of sand, crater rim, Penanjakan dawn viewpoint at 2,770 m",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 2770,
+      "dayHighC": 15,
+      "crowd": "high",
+      "transitHours": 3,
+      "history": "Tengger Hindu enclave",
+      "guidebookPick": true,
+      "see": [
+        "Dawn from Penanjakan or the quieter King Kong hill",
+        "Walk across the sand sea to the crater stairs",
+        "Cemoro Lawang village night"
+      ],
+      "note": "Iconic and packed at dawn. Dieng gives the same volcanic plateau without the jeep convoy.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "ijen",
+      "type": "hike",
+      "name": "Kawah Ijen",
+      "place": "Night walk to the blue-flame crater, sulphur miners, turquoise lake",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 2400,
+      "dayHighC": 16,
+      "crowd": "med",
+      "transitHours": 4,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "2 am start, 1.5 h up, blue flames before dawn",
+        "Crater lake at sunrise",
+        "Coffee plantations on the way down"
+      ],
+      "note": "Hard on the lungs (gas masks provided); optional for Mom.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    }
+  ],
+  "season": {
+    "fitByMonth": [
+      55,
+      50,
+      55,
+      65,
+      80,
+      88,
+      90,
+      90,
+      88,
+      75,
+      55,
+      50
+    ],
+    "events": [
+      {
+        "name": "Indonesian school holidays",
+        "from": "06-25",
+        "to": "07-18",
+        "effect": "crowds",
+        "note": "Borobudur and Bromo busiest"
+      }
+    ],
+    "notes": [
+      "Dry season across Java and South Sulawesi: 31°C and humid in the lowlands, 15–26°C in the highlands.",
+      "Toraja funeral ceremonies cluster in July and August, after the harvest.",
+      "Ramadan and Eid are in the first half of 2027, so no closures in this window.",
+      "Indonesian school holidays run to mid-July: Borobudur, Bromo and Yogyakarta are busiest before 18 July."
+    ]
+  },
+  "kind": "explore",
+  "tags": [
+    "history",
+    "volcanoes",
+    "culture"
+  ],
+  "lodgingAssumption": "Local B&B or Airbnb, two rooms for five, one meal out a day; shared van or hire car",
+  "climate": {
+    "representative": "Yogyakarta / Toraja (900 m)",
+    "dayHighC": [
+      30,
+      30,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      32,
+      32,
+      31,
+      30
+    ],
+    "nightLowC": [
+      23,
+      23,
+      23,
+      23,
+      23,
+      22,
+      22,
+      22,
+      22,
+      23,
+      23,
+      23
+    ],
+    "rainDays": [
+      25,
+      22,
+      20,
+      16,
+      10,
+      6,
+      4,
+      3,
+      4,
+      9,
+      17,
+      22
+    ],
+    "snowMonths": []
+  }
+}

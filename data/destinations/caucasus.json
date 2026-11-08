@@ -1,0 +1,425 @@
+{
+  "id": "caucasus",
+  "name": "Georgia + Armenia",
+  "region": "The Caucasus",
+  "zone": "asia",
+  "tagline": "Monasteries, wine and medieval tower villages between 2,000 and 3,000 m.",
+  "noFlights": false,
+  "palette": [
+    "#7fb89a",
+    "#4f8a68",
+    "#2f5d47",
+    "#1d3a2d",
+    "#e9d9a6"
+  ],
+  "access": [
+    {
+      "originRegion": "europe-west",
+      "originCity": "Brussels",
+      "mode": "flight",
+      "costPerPerson": 550,
+      "route": "Charleroi→Kutaisi (Wizz) or Brussels→Tbilisi via Istanbul; home from Yerevan via Vienna or Warsaw"
+    },
+    {
+      "originRegion": "uk",
+      "originCity": "London",
+      "mode": "flight",
+      "costPerPerson": 450,
+      "route": "London→Tbilisi via Istanbul or Warsaw; home from Yerevan"
+    }
+  ],
+  "rates": {
+    "city": 80,
+    "hike": 90,
+    "transit": 80
+  },
+  "nightsNote": "8–12°C in Svaneti and Tusheti guesthouses, 20°C in the cities",
+  "whyNotes": "Closest to the Colombia pattern: a road trip through old towns with one serious multi-day trek in the middle. Svaneti and Tusheti feel like the Alps did before anyone built a lift.",
+  "fitNotes": "Best overall fit for Mom: nothing above 3,000 m, almost no crowds outside two villages. The one thing to manage is city heat.",
+  "guides": [
+    {
+      "name": "Lonely Planet Georgia",
+      "url": "https://www.lonelyplanet.com/georgia"
+    },
+    {
+      "name": "Routard Géorgie",
+      "url": "https://www.routard.com/guide/code_dest/georgie.htm"
+    },
+    {
+      "name": "Routard Arménie",
+      "url": "https://www.routard.com/guide/code_dest/armenie.htm"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Balanced",
+      "picks": {
+        "tbilisi": 2,
+        "kakheti": 1,
+        "svaneti": 4,
+        "kazbegi": 1,
+        "yerevan": 2,
+        "dilijan": 2
+      }
+    },
+    {
+      "name": "Mountain-heavy",
+      "picks": {
+        "tbilisi": 1,
+        "tusheti": 4,
+        "svaneti": 4,
+        "yerevan": 2,
+        "dilijan": 2
+      }
+    },
+    {
+      "name": "Culture-heavy",
+      "picks": {
+        "tbilisi": 3,
+        "kakheti": 2,
+        "kutaisi": 1,
+        "svaneti": 3,
+        "yerevan": 3,
+        "dilijan": 2
+      }
+    },
+    {
+      "name": "Fewest hours in the car",
+      "picks": {
+        "tbilisi": 3,
+        "kakheti": 2,
+        "kazbegi": 2,
+        "dilijan": 3,
+        "dilijanhike": 2,
+        "yerevan": 2
+      }
+    }
+  ],
+  "blocks": [
+    {
+      "id": "tbilisi",
+      "type": "city",
+      "name": "Tbilisi",
+      "place": "Old Town, sulphur baths, Georgian National Museum",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 4,
+      "maxAltitudeM": 500,
+      "dayHighC": 34,
+      "crowd": "med",
+      "transitHours": 0.5,
+      "history": "Persian, Russian and Soviet layers",
+      "guidebookPick": true,
+      "see": [
+        "Narikala fortress and the Abanotubani bath district",
+        "Georgian National Museum: Colchian gold, Soviet occupation hall",
+        "Fabrika and the Vera district in the evening",
+        "Mtskheta day trip: Jvari and Svetitskhoveli (UNESCO)"
+      ],
+      "note": "Hot in the afternoon; museums 2–5 pm, old town after 6.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "kakheti",
+      "type": "city",
+      "name": "Kakheti wine country",
+      "place": "Sighnaghi, Telavi, qvevri cellars",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 800,
+      "dayHighC": 33,
+      "crowd": "low",
+      "transitHours": 2,
+      "history": "8,000 years of winemaking (UNESCO)",
+      "guidebookPick": true,
+      "see": [
+        "Sighnaghi hilltop town and Bodbe monastery",
+        "Alaverdi cathedral",
+        "Family qvevri wineries",
+        "Tsinandali estate"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "kutaisi",
+      "type": "city",
+      "name": "Kutaisi",
+      "place": "Gelati monastery, Prometheus cave",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 150,
+      "dayHighC": 33,
+      "crowd": "low",
+      "transitHours": 3.5,
+      "history": "Medieval Georgian kingdom",
+      "guidebookPick": false,
+      "see": [
+        "Gelati monastery (UNESCO) and Bagrati cathedral",
+        "Okatse canyon walkway",
+        "Martvili canyon by boat"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "yerevan",
+      "type": "city",
+      "name": "Yerevan",
+      "place": "Cascade, Matenadaran, Garni + Geghard",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 4,
+      "maxAltitudeM": 1000,
+      "dayHighC": 36,
+      "crowd": "med",
+      "transitHours": 5,
+      "history": "Urartu to the Armenian genocide",
+      "guidebookPick": true,
+      "see": [
+        "Matenadaran manuscript library",
+        "Cafesjian Center at the Cascade",
+        "Genocide memorial and museum",
+        "Garni temple and Geghard rock monastery (half day)",
+        "Vernissage market"
+      ],
+      "note": "Hottest stop of the trip. Two nights is enough; sleep in Dilijan for the rest.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "dilijan",
+      "type": "city",
+      "name": "Dilijan + Lake Sevan",
+      "place": "Forested spa town at 1,250 m, cooler base",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 1900,
+      "dayHighC": 27,
+      "crowd": "low",
+      "transitHours": 1.5,
+      "history": "Medieval monasteries, cross-stones",
+      "guidebookPick": true,
+      "see": [
+        "Haghartsin and Goshavank monasteries",
+        "Sevanavank on the lake peninsula",
+        "Noratus khachkar field",
+        "Dilijan old street crafts"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "svaneti",
+      "type": "hike",
+      "name": "Svaneti: Mestia to Ushguli",
+      "place": "4-day village-to-village trek, guesthouses",
+      "defaultDays": 4,
+      "minDays": 2,
+      "maxDays": 5,
+      "maxAltitudeM": 2700,
+      "dayHighC": 22,
+      "crowd": "med",
+      "transitHours": 5,
+      "history": "Medieval defensive towers (UNESCO)",
+      "guidebookPick": true,
+      "see": [
+        "Day stages of 5–7 h between tower villages",
+        "Ushguli, Europe's highest permanently inhabited village (2,100 m)",
+        "Koruldi lakes viewpoint from Mestia",
+        "Svaneti museum: gold icons"
+      ],
+      "note": "Mestia itself gets busy in July; the trail does not. Luggage goes by car between villages.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "tusheti",
+      "type": "hike",
+      "name": "Tusheti",
+      "place": "Omalo, Dartlo, Shenako; 4x4 access only",
+      "defaultDays": 4,
+      "minDays": 3,
+      "maxDays": 5,
+      "maxAltitudeM": 2900,
+      "dayHighC": 21,
+      "crowd": "low",
+      "transitHours": 6,
+      "history": "Pagan-Christian highland culture",
+      "guidebookPick": true,
+      "see": [
+        "Abano pass road (one of the great mountain drives)",
+        "Dartlo stone towers and Diklo",
+        "Day walks on the Transcaucasian Trail",
+        "Guesthouse life: khinkali, Tushetian cheese"
+      ],
+      "note": "Road open roughly June to September. Almost no other visitors. Pairs with Kakheti below it.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "kazbegi",
+      "type": "hike",
+      "name": "Kazbegi + Juta valley",
+      "place": "Gergeti Trinity church, Chaukhi massif",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 3300,
+      "dayHighC": 20,
+      "crowd": "high",
+      "transitHours": 3,
+      "history": "Georgian Military Highway",
+      "guidebookPick": true,
+      "see": [
+        "Gergeti Trinity (walk up, 2 h)",
+        "Juta to the Chaukhi pass base (day hike, 3,000 m)",
+        "Truso valley travertines"
+      ],
+      "note": "Stepantsminda is the most crowded place in Georgia in July. One night maximum, or skip.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "dilijanhike",
+      "type": "hike",
+      "name": "Dilijan National Park trails",
+      "place": "Transcaucasian Trail day walks",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 2000,
+      "dayHighC": 25,
+      "crowd": "low",
+      "transitHours": 0,
+      "history": null,
+      "guidebookPick": false,
+      "see": [
+        "Parz lake to Gosh lake",
+        "Dilijan to Haghartsin through beech forest",
+        "Apakeqar ridge"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "lagodekhi",
+      "type": "hike",
+      "name": "Lagodekhi reserve",
+      "place": "Waterfalls and the Black Rock lake trail",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 2800,
+      "dayHighC": 24,
+      "crowd": "low",
+      "transitHours": 2.5,
+      "history": null,
+      "guidebookPick": false,
+      "see": [
+        "Ninoskhevi waterfall day walk",
+        "3-day Black Rock lake trek (ranger hut)"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    }
+  ],
+  "season": {
+    "fitByMonth": [
+      40,
+      40,
+      55,
+      75,
+      90,
+      85,
+      70,
+      70,
+      90,
+      90,
+      70,
+      45
+    ],
+    "events": [
+      {
+        "name": "Mariamoba",
+        "from": "08-15",
+        "to": "08-16",
+        "effect": "crowds",
+        "note": "Georgian families head to the mountains"
+      }
+    ],
+    "notes": [
+      "Tbilisi and Yerevan sit at 33–37°C for the whole window; August is not cooler.",
+      "Tusheti and Svaneti roads and trails are fully open across the window.",
+      "Mid-August: Mariamoba (15 Aug) sends Georgian families to the mountains for a few days."
+    ]
+  },
+  "kind": "explore",
+  "tags": [
+    "mountains",
+    "history",
+    "food",
+    "roadtrip"
+  ],
+  "lodgingAssumption": "Local B&B or Airbnb, two rooms for five, one meal out a day; shared van or hire car",
+  "climate": {
+    "representative": "Mestia (1,500 m) / Tbilisi",
+    "dayHighC": [
+      6,
+      8,
+      13,
+      18,
+      23,
+      27,
+      30,
+      30,
+      25,
+      19,
+      12,
+      8
+    ],
+    "nightLowC": [
+      -2,
+      -1,
+      3,
+      7,
+      11,
+      15,
+      18,
+      18,
+      14,
+      9,
+      4,
+      0
+    ],
+    "rainDays": [
+      8,
+      8,
+      10,
+      11,
+      13,
+      12,
+      9,
+      8,
+      8,
+      9,
+      8,
+      8
+    ],
+    "snowMonths": [
+      1,
+      2,
+      3,
+      12
+    ]
+  }
+}

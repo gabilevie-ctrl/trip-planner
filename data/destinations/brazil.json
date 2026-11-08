@@ -1,0 +1,441 @@
+{
+  "id": "brazil",
+  "name": "Brazil: Minas, Bahia and the Chapada",
+  "region": "South-east and north-east Brazil",
+  "zone": "americas",
+  "tagline": "Baroque gold towns, Afro-Brazilian Salvador, and dry-season trekking in the Chapada Diamantina.",
+  "noFlights": false,
+  "palette": [
+    "#8fc48f",
+    "#4e9a5a",
+    "#2d6b4a",
+    "#1e3f33",
+    "#f1e7b5"
+  ],
+  "access": [
+    {
+      "originRegion": "europe-west",
+      "originCity": "Brussels",
+      "mode": "flight",
+      "costPerPerson": 1000,
+      "route": "Brussels→Rio or São Paulo via Lisbon, Paris or Amsterdam (TAP, Air France, KLM), 12–13 h; internal flights on top"
+    },
+    {
+      "originRegion": "uk",
+      "originCity": "London",
+      "mode": "flight",
+      "costPerPerson": 850,
+      "route": "London→Rio or São Paulo direct (BA, LATAM), 11.5 h"
+    }
+  ],
+  "rates": {
+    "city": 75,
+    "hike": 95,
+    "transit": 100
+  },
+  "nightsNote": "10–14°C in the Chapada and Minas towns, 18°C in Rio and Salvador",
+  "whyNotes": "The other Latin America option, and the one with the right season: July and August are the dry southern winter, 22–27°C, no altitude anywhere, and the Chapada Diamantina trek is as good as Ciudad Perdida with cabins instead of hammocks.",
+  "fitNotes": "Easy on Mom's three limits except Rio, which is crowded; keep it to two days. The cost is distance: you fly between regions, which adds about €270 of internal flights and some airport days.",
+  "guides": [
+    {
+      "name": "Lonely Planet Brazil",
+      "url": "https://www.lonelyplanet.com/brazil"
+    },
+    {
+      "name": "Routard Brésil",
+      "url": "https://www.routard.com/guide/code_dest/bresil.htm"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Minas + Chapada",
+      "picks": {
+        "rio": 2,
+        "ouropreto": 2,
+        "tiradentes": 2,
+        "cipo": 2,
+        "salvador": 2,
+        "chapada": 4
+      }
+    },
+    {
+      "name": "Coast + history",
+      "picks": {
+        "rio": 3,
+        "paraty": 2,
+        "ilhagrande": 2,
+        "ouropreto": 2,
+        "tiradentes": 2,
+        "inhotim": 1
+      }
+    },
+    {
+      "name": "Chapada-heavy",
+      "picks": {
+        "salvador": 2,
+        "chapada": 5,
+        "rio": 2,
+        "ouropreto": 2,
+        "cipo": 2
+      }
+    },
+    {
+      "name": "Fewest hours in transit",
+      "picks": {
+        "rio": 3,
+        "ouropreto": 3,
+        "tiradentes": 2,
+        "cipo": 2,
+        "inhotim": 1,
+        "itatiaia": 2
+      }
+    }
+  ],
+  "blocks": [
+    {
+      "id": "rio",
+      "type": "city",
+      "name": "Rio de Janeiro",
+      "place": "MAR, Museu do Amanhã, Santa Teresa, Tijuca forest",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 4,
+      "maxAltitudeM": 0,
+      "dayHighC": 26,
+      "crowd": "high",
+      "transitHours": 0.5,
+      "history": "Imperial capital, port of the slave trade",
+      "guidebookPick": true,
+      "see": [
+        "Museu de Arte do Rio and Museu do Amanhã on the renewed port",
+        "Valongo wharf (UNESCO) and Little Africa walking tour",
+        "Santa Teresa and the Selarón steps early",
+        "Pedra Bonita or Dois Irmãos walk instead of the Christ queue",
+        "Sugarloaf at sunset"
+      ],
+      "note": "Crowded and expensive by Brazilian standards. Two days, and arrive here or leave from here.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "ouropreto",
+      "type": "city",
+      "name": "Ouro Preto + Mariana",
+      "place": "Baroque gold-rush capital, Aleijadinho's churches",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 1150,
+      "dayHighC": 23,
+      "crowd": "med",
+      "transitHours": 2,
+      "history": "18th-century gold cycle, Inconfidência",
+      "guidebookPick": true,
+      "see": [
+        "São Francisco de Assis and Pilar churches",
+        "Museu da Inconfidência",
+        "Mina da Passagem gold mine",
+        "Steam train to Mariana"
+      ],
+      "note": "Hilly cobbles everywhere; good shoes. Fly Rio–Belo Horizonte 1 h, then 2 h.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "tiradentes",
+      "type": "city",
+      "name": "Tiradentes + São João del-Rei",
+      "place": "Quietest of the colonial towns, Maria Fumaça steam train",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 900,
+      "dayHighC": 22,
+      "crowd": "low",
+      "transitHours": 3,
+      "history": "Colonial Minas, Portuguese baroque",
+      "guidebookPick": true,
+      "see": [
+        "Matriz de Santo Antônio (gold interior)",
+        "Maria Fumaça steam train to São João del-Rei",
+        "Serra de São José trail above the town",
+        "Mineiro cooking classes"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "inhotim",
+      "type": "city",
+      "name": "Belo Horizonte + Inhotim",
+      "place": "The largest open-air contemporary art park in the world",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 850,
+      "dayHighC": 25,
+      "crowd": "med",
+      "transitHours": 1.5,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Inhotim pavilions in a botanical garden (full day)",
+        "Pampulha church by Niemeyer (UNESCO)",
+        "Mercado Central"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "salvador",
+      "type": "city",
+      "name": "Salvador da Bahia",
+      "place": "Pelourinho, Afro-Brazilian museum, capoeira, Bonfim",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 0,
+      "dayHighC": 27,
+      "crowd": "med",
+      "transitHours": 2.5,
+      "history": "First Brazilian capital, Afro-Brazilian heritage",
+      "guidebookPick": true,
+      "see": [
+        "Pelourinho and São Francisco church (gold interior)",
+        "Museu Afro-Brasileiro",
+        "Capoeira and a candomblé evening with a local host",
+        "Mercado Modelo and the Lacerda elevator",
+        "Bonfim church ribbons"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 120
+    },
+    {
+      "id": "paraty",
+      "type": "city",
+      "name": "Paraty",
+      "place": "Colonial port of the gold road, schooner bay",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 0,
+      "dayHighC": 24,
+      "crowd": "med",
+      "transitHours": 4,
+      "history": "Caminho do Ouro port",
+      "guidebookPick": true,
+      "see": [
+        "Car-free historic centre",
+        "Caminho do Ouro stone road walk",
+        "Schooner day in the bay",
+        "Cachaça distilleries"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "chapada",
+      "type": "hike",
+      "name": "Chapada Diamantina",
+      "place": "Vale do Pati trek, Fumaça waterfall, Pai Inácio",
+      "defaultDays": 4,
+      "minDays": 3,
+      "maxDays": 6,
+      "maxAltitudeM": 1700,
+      "dayHighC": 25,
+      "crowd": "low",
+      "transitHours": 6,
+      "history": "Diamond-rush ghost towns",
+      "guidebookPick": true,
+      "see": [
+        "Vale do Pati 3-day trek sleeping in farmhouses (guide mandatory)",
+        "Cachoeira da Fumaça from the top",
+        "Morro do Pai Inácio at sunset",
+        "Lençóis town, Poço Azul blue cave"
+      ],
+      "note": "Dry season, 25°C days, cold nights. Reach Lençóis by 1 h flight from Salvador or 6 h bus.",
+      "ratePerDay": null,
+      "extraTransportCost": 150
+    },
+    {
+      "id": "cipo",
+      "type": "hike",
+      "name": "Serra do Cipó",
+      "place": "Highland savanna, waterfalls, 1,300 m, near Belo Horizonte",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 1400,
+      "dayHighC": 24,
+      "crowd": "low",
+      "transitHours": 2,
+      "history": null,
+      "guidebookPick": false,
+      "see": [
+        "Cânion das Bandeirinhas",
+        "Cachoeira Grande",
+        "Travessia Lapinha–Tabuleiro (a day of it)"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "itatiaia",
+      "type": "hike",
+      "name": "Itatiaia National Park",
+      "place": "Brazil's oldest park, Atlantic forest to 2,700 m plateau",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 2700,
+      "dayHighC": 20,
+      "crowd": "low",
+      "transitHours": 3,
+      "history": null,
+      "guidebookPick": false,
+      "see": [
+        "Lower park waterfalls and forest trails",
+        "Upper plateau: Prateleiras rock walk",
+        "Penedo village, Finnish colony"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "ilhagrande",
+      "type": "hike",
+      "name": "Ilha Grande",
+      "place": "Car-free island, forest trails to empty beaches",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 300,
+      "dayHighC": 25,
+      "crowd": "med",
+      "transitHours": 3,
+      "history": null,
+      "guidebookPick": false,
+      "see": [
+        "Lopes Mendes trail",
+        "Abraão to Dois Rios old prison walk",
+        "Boat to the lagoons"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "canastra",
+      "type": "hike",
+      "name": "Serra da Canastra",
+      "place": "Source of the São Francisco, Casca d'Anta falls, cheese country",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 1500,
+      "dayHighC": 24,
+      "crowd": "low",
+      "transitHours": 5,
+      "history": null,
+      "guidebookPick": false,
+      "see": [
+        "Casca d'Anta waterfall from above and below",
+        "São Roque de Minas cheese farms",
+        "Open plateau with maned wolves"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    }
+  ],
+  "season": {
+    "fitByMonth": [
+      60,
+      60,
+      65,
+      75,
+      85,
+      90,
+      90,
+      92,
+      90,
+      80,
+      70,
+      60
+    ],
+    "events": [
+      {
+        "name": "Brazilian school holidays",
+        "from": "07-01",
+        "to": "07-31",
+        "effect": "crowds",
+        "note": "Chapada and Paraty busier"
+      }
+    ],
+    "notes": [
+      "Dry winter season in Minas, Bahia and the Chapada: 22–27°C, cold clear nights.",
+      "Rio can get a cold front: 18°C and rain for two days. Keep Rio flexible.",
+      "Brazilian school holidays run to late July; the Chapada and Paraty are busier before 1 August."
+    ]
+  },
+  "kind": "explore",
+  "tags": [
+    "history",
+    "cities",
+    "mountains",
+    "beach"
+  ],
+  "lodgingAssumption": "Local B&B or Airbnb, two rooms for five, one meal out a day; shared van or hire car",
+  "climate": {
+    "representative": "Ouro Preto (1,150 m) / Chapada",
+    "dayHighC": [
+      26,
+      27,
+      26,
+      25,
+      23,
+      22,
+      22,
+      24,
+      25,
+      26,
+      25,
+      25
+    ],
+    "nightLowC": [
+      17,
+      17,
+      17,
+      15,
+      13,
+      11,
+      11,
+      12,
+      14,
+      15,
+      16,
+      17
+    ],
+    "rainDays": [
+      18,
+      13,
+      12,
+      7,
+      4,
+      2,
+      2,
+      2,
+      5,
+      10,
+      15,
+      19
+    ],
+    "snowMonths": []
+  }
+}

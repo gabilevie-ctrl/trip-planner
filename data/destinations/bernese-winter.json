@@ -1,0 +1,248 @@
+{
+  "id": "bernese-winter",
+  "kind": "explore",
+  "zone": "europe",
+  "name": "Bernese Oberland in winter, by train",
+  "region": "Interlaken, Lauterbrunnen, Wengen, Mürren",
+  "noFlights": true,
+  "tagline": "Car-free villages under the Eiger, winter walking and sledging trails, the Jungfrau railway, all by train from London in a day.",
+  "tags": [
+    "mountains",
+    "villages",
+    "winter",
+    "trains",
+    "short"
+  ],
+  "access": [
+    {
+      "originRegion": "uk",
+      "originCity": "London",
+      "mode": "train",
+      "costPerPerson": 220,
+      "route": "Eurostar→Paris, TGV Lyria→Basel, →Interlaken Ost (total 8 h)"
+    },
+    {
+      "originRegion": "europe-west",
+      "originCity": "Brussels",
+      "mode": "train",
+      "costPerPerson": 180,
+      "route": "Brussels→Basel→Interlaken (6 h)"
+    }
+  ],
+  "rates": {
+    "city": 160,
+    "hike": 150,
+    "transit": 140
+  },
+  "lodgingAssumption": "Apartment in Wengen or Mürren for the week; cook most evenings",
+  "presets": [
+    {
+      "name": "Wengen week",
+      "picks": {
+        "interlaken": 1,
+        "wengen": 2,
+        "mannlichen": 1,
+        "murren": 2,
+        "grindelwald": 1
+      }
+    }
+  ],
+  "blocks": [
+    {
+      "id": "interlaken",
+      "type": "city",
+      "name": "Interlaken + Thun",
+      "place": "Lakes, Thun castle, arrival",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 3,
+      "crowd": "med",
+      "transitHours": 8,
+      "maxAltitudeM": 500,
+      "dayHighC": 4,
+      "see": [],
+      "history": "Thun castle, Bernese patricians",
+      "guidebookPick": false
+    },
+    {
+      "id": "wengen",
+      "type": "city",
+      "name": "Wengen (car-free, 1,274 m)",
+      "place": "Base; winter walking paths, sledging to Lauterbrunnen",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 3,
+      "crowd": "med",
+      "transitHours": 0.5,
+      "maxAltitudeM": 1274,
+      "dayHighC": 2,
+      "see": [],
+      "history": null,
+      "guidebookPick": false
+    },
+    {
+      "id": "murren",
+      "type": "city",
+      "name": "Mürren (car-free, 1,650 m)",
+      "place": "Across the valley, Schilthorn, the Allmendhubel loop",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 3,
+      "crowd": "low",
+      "transitHours": 1,
+      "maxAltitudeM": 2970,
+      "dayHighC": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": false
+    },
+    {
+      "id": "mannlichen",
+      "type": "hike",
+      "name": "Männlichen to Kleine Scheidegg panorama trail",
+      "place": "Groomed winter path at 2,100 m under the Eiger",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 2230,
+      "dayHighC": -3,
+      "crowd": "high",
+      "transitHours": 0.5,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Royal Walk to the Männlichen summit",
+        "Panorama trail to Kleine Scheidegg (1.5 h, easy)",
+        "Sledge run down to Wengen"
+      ]
+    },
+    {
+      "id": "grindelwald",
+      "type": "hike",
+      "name": "Grindelwald: First and the Bachalpsee, Jungfraujoch",
+      "place": "Winter walk to Bachalpsee; the Jungfrau railway to 3,454 m (optional, expensive)",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 3454,
+      "dayHighC": -8,
+      "crowd": "high",
+      "transitHours": 0.5,
+      "history": "Jungfrau railway, 1912",
+      "guidebookPick": true,
+      "see": [
+        "First to Bachalpsee winter trail",
+        "Jungfraujoch only on a clear day (CHF 200+)",
+        "Grindelwald–Pfingstegg sledge run"
+      ],
+      "note": "3,454 m is a lift, not a walk: fine for a day if nobody has an altitude limit below it."
+    }
+  ],
+  "season": {
+    "fitByMonth": [
+      85,
+      90,
+      80,
+      50,
+      60,
+      85,
+      90,
+      90,
+      90,
+      75,
+      40,
+      80
+    ],
+    "events": [
+      {
+        "name": "Lauberhorn ski races, Wengen",
+        "from": "01-14",
+        "to": "01-19",
+        "effect": "crowds",
+        "note": "Village full; dates vary each January"
+      }
+    ],
+    "notes": [
+      "January: cold and often clear above the fog line (Wengen and Mürren sit above it), snow guaranteed.",
+      "Winter walking paths are groomed and signed; no skis needed. Half-fare card pays for itself in two days.",
+      "Swiss prices: self-catering keeps a week under budget."
+    ]
+  },
+  "climate": {
+    "representative": "Wengen (1,274 m); trails 1,800–2,200 m about 5°C colder",
+    "dayHighC": [
+      1,
+      2,
+      5,
+      9,
+      13,
+      17,
+      19,
+      19,
+      15,
+      11,
+      5,
+      2
+    ],
+    "nightLowC": [
+      -6,
+      -6,
+      -4,
+      -1,
+      3,
+      6,
+      9,
+      9,
+      6,
+      2,
+      -2,
+      -5
+    ],
+    "rainDays": [
+      8,
+      7,
+      9,
+      10,
+      13,
+      14,
+      13,
+      13,
+      10,
+      9,
+      9,
+      9
+    ],
+    "snowMonths": [
+      1,
+      2,
+      3,
+      4,
+      11,
+      12
+    ]
+  },
+  "bulletins": [
+    {
+      "name": "MeteoSwiss",
+      "url": "https://www.meteoswiss.admin.ch/",
+      "type": "weather"
+    },
+    {
+      "name": "SLF avalanche bulletin (for off-path plans)",
+      "url": "https://www.slf.ch/en/avalanche-bulletin-and-snow-situation.html",
+      "type": "avalanche"
+    }
+  ],
+  "guides": [
+    {
+      "name": "Lonely Planet Bernese Oberland",
+      "url": "https://www.lonelyplanet.com/switzerland/bernese-oberland"
+    },
+    {
+      "name": "Routard Suisse",
+      "url": "https://www.routard.com/guide/code_dest/suisse.htm"
+    }
+  ],
+  "lastReviewed": "2026-11-08",
+  "sources": []
+}

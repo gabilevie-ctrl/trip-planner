@@ -1,0 +1,417 @@
+{
+  "id": "borneo",
+  "name": "Malaysian Borneo: Sarawak + Sabah",
+  "region": "Kuching, Mulu, Kinabalu, the Kinabatangan",
+  "zone": "asia",
+  "tagline": "Rainforest with the big animals still in it, the largest cave chamber on earth, longhouses, and a 4,095 m mountain the siblings can climb.",
+  "noFlights": false,
+  "palette": [
+    "#9fd09a",
+    "#55a05a",
+    "#2f6e46",
+    "#1b4332",
+    "#eaf4e4"
+  ],
+  "access": [
+    {
+      "originRegion": "europe-west",
+      "originCity": "Brussels",
+      "mode": "flight",
+      "costPerPerson": 950,
+      "route": "Brussels→Kuching or Kota Kinabalu via Kuala Lumpur (15–16 h); internal flights between the two states"
+    },
+    {
+      "originRegion": "uk",
+      "originCity": "London",
+      "mode": "flight",
+      "costPerPerson": 850,
+      "route": "London→Kuala Lumpur direct, then Kuching or Kota Kinabalu"
+    }
+  ],
+  "rates": {
+    "city": 70,
+    "hike": 110,
+    "transit": 90
+  },
+  "nightsNote": "15°C at Kinabalu park, 24°C in the lowlands",
+  "whyNotes": "The wildlife trip none of you has done: orangutans, proboscis monkeys, pygmy elephants and hornbills seen from boats and canopy walkways rather than from a vehicle. Drier season in July and August, English spoken everywhere, easy logistics.",
+  "fitNotes": "Altitude is a choice: the Kinabalu park trails sit at 1,500–1,900 m and the summit (4,095 m, within the ceiling but a fast two-day climb) is a sibling option. Heat is the constraint: 30–32°C and humid in the lowlands. Crowds low everywhere except the Kinabalu summit trail.",
+  "guides": [
+    {
+      "name": "Lonely Planet Borneo",
+      "url": "https://www.lonelyplanet.com/borneo"
+    },
+    {
+      "name": "Routard Malaisie",
+      "url": "https://www.routard.com/guide/code_dest/malaisie.htm"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Sarawak + Sabah",
+      "picks": {
+        "kuching": 2,
+        "bako": 1,
+        "mulu": 3,
+        "kk": 1,
+        "kinabalupark": 2,
+        "kinabatangan": 2,
+        "sandakan": 1
+      }
+    },
+    {
+      "name": "Sabah wildlife",
+      "picks": {
+        "kk": 1,
+        "kinabalupark": 2,
+        "sandakan": 1,
+        "kinabatangan": 2,
+        "danum": 3
+      }
+    },
+    {
+      "name": "Fewest hours in transit",
+      "picks": {
+        "kuching": 2,
+        "bako": 1,
+        "batangai": 2,
+        "mulu": 3
+      }
+    }
+  ],
+  "blocks": [
+    {
+      "id": "kuching",
+      "type": "city",
+      "name": "Kuching",
+      "place": "Borneo Cultures Museum, the waterfront, Semenggoh orangutans",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 0,
+      "dayHighC": 32,
+      "crowd": "low",
+      "transitHours": 2,
+      "history": "White Rajahs: the Brooke dynasty, 1841–1946",
+      "guidebookPick": true,
+      "see": [
+        "Borneo Cultures Museum (the best in Malaysia)",
+        "Semenggoh orangutan feeding, 9 am",
+        "Sarawak river waterfront and Fort Margherita",
+        "Sarawak laksa, kolo mee"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "kk",
+      "type": "city",
+      "name": "Kota Kinabalu",
+      "place": "Sabah's capital: Sunday market, Mari Mari cultural village, islands",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 0,
+      "dayHighC": 32,
+      "crowd": "med",
+      "transitHours": 2,
+      "history": "WWII destruction and rebuild",
+      "guidebookPick": false,
+      "see": [
+        "Gaya Street Sunday market",
+        "Sabah museum",
+        "Sunset at Tanjung Aru",
+        "Mari Mari cultural village (five ethnic houses)"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 90
+    },
+    {
+      "id": "sandakan",
+      "type": "city",
+      "name": "Sandakan + Sepilok",
+      "place": "Death-march memorial, Agnes Keith house, Sepilok orangutans and sun bears",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 0,
+      "dayHighC": 32,
+      "crowd": "low",
+      "transitHours": 1,
+      "history": "WWII Sandakan–Ranau death marches",
+      "guidebookPick": true,
+      "see": [
+        "Sepilok orangutan rehabilitation centre and the sun bear centre next door",
+        "Rainforest Discovery Centre canopy walk at dusk (flying squirrels)",
+        "Sandakan memorial park",
+        "Agnes Keith house and the English tea house"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "kinabalupark",
+      "type": "hike",
+      "name": "Kinabalu park trails",
+      "place": "Montane forest walks at 1,500–1,900 m, Poring hot springs, Mesilau",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 1900,
+      "dayHighC": 20,
+      "crowd": "med",
+      "transitHours": 2,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Silau-Silau and Liwagu river trails",
+        "Botanical garden: pitcher plants, orchids",
+        "Poring canopy walkway and hot springs",
+        "Kundasang war memorial"
+      ],
+      "note": "Cool at last: 20°C by day, 15°C at night. The village below has guesthouses with a view of the mountain.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "kinabalusummit",
+      "type": "hike",
+      "name": "Kinabalu summit (for the siblings)",
+      "place": "Two days: Timpohon gate 1,866 m to Laban Rata 3,270 m, summit 4,095 m at dawn",
+      "defaultDays": 2,
+      "minDays": 2,
+      "maxDays": 2,
+      "maxAltitudeM": 4095,
+      "dayHighC": 8,
+      "crowd": "high",
+      "transitHours": 0.5,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Day 1: 6 km and 1,400 m up to Laban Rata",
+        "Day 2: 2 am start, summit at dawn, down by afternoon",
+        "Permits limited to ~150 a day; book in January"
+      ],
+      "note": "Within the ceiling on paper, but the climb goes from 1,866 m to 4,095 m in 24 hours: not for Mom. She can do two days of park trails meanwhile.",
+      "ratePerDay": 180,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "kinabatangan",
+      "type": "hike",
+      "name": "Kinabatangan river",
+      "place": "Boat safaris: pygmy elephants, proboscis monkeys, hornbills, crocodiles",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 0,
+      "dayHighC": 31,
+      "crowd": "med",
+      "transitHours": 2.5,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Dawn and dusk boat cruises from a riverside lodge",
+        "Night walk for frogs and civets",
+        "Gomantong caves swiftlets and bats"
+      ],
+      "note": "Hot and humid; the boats run at the cool ends of the day.",
+      "ratePerDay": 100,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "danum",
+      "type": "hike",
+      "name": "Danum Valley",
+      "place": "Primary rainforest, canopy walkway, wild orangutans, 130 million years old",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 500,
+      "dayHighC": 30,
+      "crowd": "low",
+      "transitHours": 3,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Canopy walkway at dawn",
+        "Guided trails: wild orangutans, gibbons, red leaf monkeys",
+        "Night drives, Coffin Cliff viewpoint"
+      ],
+      "note": "The lodge is the expensive line (~€220 pp per day all-in); the field centre is the cheaper, simpler alternative.",
+      "ratePerDay": 220,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "mulu",
+      "type": "hike",
+      "name": "Gunung Mulu caves",
+      "place": "Deer cave bat exodus, Clearwater cave, canopy walk, the Pinnacles for the siblings",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 1200,
+      "dayHighC": 32,
+      "crowd": "med",
+      "transitHours": 2,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Deer cave and the 3-million-bat exodus at dusk",
+        "Clearwater and Wind caves by longboat",
+        "Mulu canopy skywalk",
+        "Pinnacles (3 days, 1,200 m, ladders) for the siblings"
+      ],
+      "note": "Fly-in park (Mulu airport). Hot and humid at valley level; caves are cool.",
+      "ratePerDay": null,
+      "extraTransportCost": 150
+    },
+    {
+      "id": "bako",
+      "type": "hike",
+      "name": "Bako national park",
+      "place": "Boat-in park: proboscis monkeys, bearded pigs, coastal trails",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 200,
+      "dayHighC": 31,
+      "crowd": "med",
+      "transitHours": 1,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Telok Pandan Kecil trail to the sea stack",
+        "Proboscis monkeys at the mangroves at dusk",
+        "Overnight in the park chalets for the night walk"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "batangai",
+      "type": "hike",
+      "name": "Iban longhouse, Batang Ai",
+      "place": "Longboat up the river, two nights in a longhouse, forest walks",
+      "defaultDays": 2,
+      "minDays": 2,
+      "maxDays": 3,
+      "maxAltitudeM": 300,
+      "dayHighC": 31,
+      "crowd": "low",
+      "transitHours": 4,
+      "history": "Iban culture, former headhunters",
+      "guidebookPick": true,
+      "see": [
+        "Longboat up the Batang Ai reservoir and rivers",
+        "Longhouse evening: tuak, dance, stories",
+        "Forest walk to a waterfall with an Iban guide"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "crocker",
+      "type": "hike",
+      "name": "Crocker Range + Tambunan",
+      "place": "Rafflesia reserve, Kadazandusun villages, 1,500 m",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 1500,
+      "dayHighC": 24,
+      "crowd": "low",
+      "transitHours": 2,
+      "history": "Mat Salleh rebellion, 1890s",
+      "guidebookPick": false,
+      "see": [
+        "Rafflesia in bloom if lucky (ask the reserve)",
+        "Mahua waterfall",
+        "Tambunan valley rice terraces"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    }
+  ],
+  "season": {
+    "fitByMonth": [
+      55,
+      55,
+      60,
+      70,
+      80,
+      85,
+      85,
+      85,
+      80,
+      70,
+      55,
+      50
+    ],
+    "events": [],
+    "notes": [
+      "Drier season in both states: 30–32°C, humid, a shower most afternoons in the hills.",
+      "Wildlife viewing is best at dawn and dusk; the middle of the day is for pools and museums.",
+      "Kinabalu summit permits and Danum lodges book out months ahead for July and August."
+    ]
+  },
+  "kind": "explore",
+  "tags": [
+    "wildlife",
+    "rainforest",
+    "caves"
+  ],
+  "lodgingAssumption": "Local B&B or Airbnb, two rooms for five, one meal out a day; shared van or hire car",
+  "climate": {
+    "representative": "Kota Kinabalu / Kinabalu park (1,500 m)",
+    "dayHighC": [
+      30,
+      30,
+      31,
+      32,
+      32,
+      32,
+      32,
+      32,
+      31,
+      31,
+      31,
+      30
+    ],
+    "nightLowC": [
+      23,
+      23,
+      23,
+      24,
+      24,
+      24,
+      24,
+      24,
+      23,
+      23,
+      23,
+      23
+    ],
+    "rainDays": [
+      12,
+      8,
+      8,
+      10,
+      12,
+      13,
+      12,
+      13,
+      16,
+      19,
+      18,
+      17
+    ],
+    "snowMonths": []
+  }
+}

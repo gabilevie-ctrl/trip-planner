@@ -1,0 +1,457 @@
+{
+  "id": "norway",
+  "name": "Norway: cities, a festival and the fjells",
+  "region": "Central and Arctic Norway",
+  "zone": "europe",
+  "tagline": "Oslo's museums, Trondheim's St Olav festival, then hut-to-hut in Jotunheimen or the Arctic islands.",
+  "noFlights": false,
+  "palette": [
+    "#9cb8c6",
+    "#5e8299",
+    "#36546b",
+    "#1b2e3d",
+    "#e8eef1"
+  ],
+  "access": [
+    {
+      "originRegion": "europe-west",
+      "originCity": "Brussels",
+      "mode": "flight",
+      "costPerPerson": 350,
+      "route": "Brussels→Oslo direct (SAS, Norwegian), 2 h; home from Tromsø or Bergen via Oslo"
+    },
+    {
+      "originRegion": "uk",
+      "originCity": "London",
+      "mode": "flight",
+      "costPerPerson": 200,
+      "route": "London→Oslo direct (Norwegian, SAS, BA), 2 h"
+    }
+  ],
+  "rates": {
+    "city": 130,
+    "hike": 140,
+    "transit": 140
+  },
+  "nightsNote": "6–10°C at the huts, 12°C in the cities",
+  "whyNotes": "The Salzburg pattern: a real festival in a cathedral city, then mountains. Olavsfest (28 Jul–3 Aug) is concerts in Nidaros cathedral plus a medieval market, and the fjells start an hour away.",
+  "fitNotes": "Nothing above 2,000 m, cool weather, and the DNT hut network means Mom never carries more than a day pack. Crowds only in Lofoten and on Besseggen; both have quieter neighbours. Fits the budget with cabins and hut half-board; hotels would break it.",
+  "guides": [
+    {
+      "name": "Lonely Planet Norway",
+      "url": "https://www.lonelyplanet.com/norway"
+    },
+    {
+      "name": "Routard Norvège",
+      "url": "https://www.routard.com/guide/code_dest/norvege.htm"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Festival + fjells",
+      "picks": {
+        "oslo": 2,
+        "trondheim": 3,
+        "roros": 1,
+        "jotunheimen": 4,
+        "sunnmore": 3,
+        "bergen": 2
+      }
+    },
+    {
+      "name": "Arctic",
+      "picks": {
+        "oslo": 1,
+        "trondheim": 3,
+        "senja": 4,
+        "lofoten": 2,
+        "bergen": 2
+      }
+    },
+    {
+      "name": "Fjords and huts",
+      "picks": {
+        "bergen": 2,
+        "hardanger": 3,
+        "aurland": 2,
+        "jotunheimen": 4,
+        "oslo": 2
+      }
+    }
+  ],
+  "blocks": [
+    {
+      "id": "oslo",
+      "type": "city",
+      "name": "Oslo",
+      "place": "Munch, National Museum, Vigeland, Fram",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 0,
+      "dayHighC": 22,
+      "crowd": "med",
+      "transitHours": 0.5,
+      "history": "Polar exploration, Munch",
+      "guidebookPick": true,
+      "see": [
+        "National Museum (The Scream, Scandinavian design)",
+        "Munch museum on the waterfront",
+        "Fram and Kon-Tiki museums at Bygdøy",
+        "Vigeland park at 8 pm light"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "bergen",
+      "type": "city",
+      "name": "Bergen",
+      "place": "Bryggen, KODE museums, Grieg's Troldhaugen",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 0,
+      "dayHighC": 19,
+      "crowd": "high",
+      "transitHours": 6,
+      "history": "Hanseatic League (UNESCO)",
+      "guidebookPick": true,
+      "see": [
+        "KODE 3 for Munch and Astrup",
+        "Troldhaugen lunchtime concert",
+        "Fløyen walk down through the forest",
+        "Bryggen before 9 am"
+      ],
+      "note": "Crowded on cruise days; check the port schedule.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "trondheim",
+      "type": "city",
+      "name": "Trondheim + Olavsfest",
+      "place": "Nidaros cathedral, St Olav festival 28 Jul–3 Aug, Bakklandet",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 0,
+      "dayHighC": 20,
+      "crowd": "med",
+      "transitHours": 6,
+      "history": "Medieval pilgrimage capital",
+      "guidebookPick": true,
+      "see": [
+        "Olavsfest: evening concerts in Nidaros cathedral, medieval market",
+        "Nidaros cathedral and the Archbishop's palace museum",
+        "Rockheim",
+        "Bakklandet wooden quarter",
+        "Munkholmen island by boat"
+      ],
+      "note": "Only the festival makes this a 3-day stop; outside the dates, 2 days.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "roros",
+      "type": "city",
+      "name": "Røros",
+      "place": "UNESCO copper-mining town, 17th-century timber streets",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 650,
+      "dayHighC": 19,
+      "crowd": "low",
+      "transitHours": 2.5,
+      "history": "Copper mining town (UNESCO)",
+      "guidebookPick": true,
+      "see": [
+        "Olavsgruva mine tour",
+        "Smelthytta museum",
+        "The church and the slag heaps"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "alesund",
+      "type": "city",
+      "name": "Ålesund",
+      "place": "Art Nouveau town rebuilt after the 1904 fire",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 0,
+      "dayHighC": 18,
+      "crowd": "med",
+      "transitHours": 1.5,
+      "history": "Art Nouveau rebuild, 1904",
+      "guidebookPick": false,
+      "see": [
+        "Jugendstilsenteret",
+        "Aksla viewpoint steps",
+        "Atlantic Sea Park"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "jotunheimen",
+      "type": "hike",
+      "name": "Jotunheimen hut-to-hut",
+      "place": "DNT huts: Gjendesheim, Memurubu, Gjendebu, Leirvassbu",
+      "defaultDays": 4,
+      "minDays": 3,
+      "maxDays": 5,
+      "maxAltitudeM": 1900,
+      "dayHighC": 16,
+      "crowd": "med",
+      "transitHours": 4,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Boat to Memurubu, walk to Gjendebu along the lake (quiet alternative to Besseggen)",
+        "Bukkelægret or Svartdalen pass",
+        "Besseggen ridge for the siblings (crowded)",
+        "Three-course dinners at staffed huts"
+      ],
+      "note": "Staffed DNT huts mean day packs only. Book huts in January.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "senja",
+      "type": "hike",
+      "name": "Senja",
+      "place": "Arctic island: Segla, Hesten, Husfjellet; midnight sun",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 5,
+      "maxAltitudeM": 900,
+      "dayHighC": 15,
+      "crowd": "low",
+      "transitHours": 4,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Hesten summit facing Segla (4 h)",
+        "Husfjellet ridge",
+        "Tungeneset and the Okshornan peaks",
+        "Fishing village stays in Hamn or Mefjordvær"
+      ],
+      "note": "Lofoten's scenery with a fifth of the visitors. Fly Oslo–Bardufoss or Tromsø.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "lofoten",
+      "type": "hike",
+      "name": "Lofoten",
+      "place": "Reine, Reinebringen, Kvalvika beach",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 700,
+      "dayHighC": 15,
+      "crowd": "high",
+      "transitHours": 4,
+      "history": "Viking chieftain's hall at Borg",
+      "guidebookPick": true,
+      "see": [
+        "Reinebringen stairs at 6 am",
+        "Kvalvika beach and Ryten",
+        "Lofotr Viking museum at Borg",
+        "Å fishing village"
+      ],
+      "note": "Busiest place in northern Norway in July. Two nights, or swap for Senja.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "hardanger",
+      "type": "hike",
+      "name": "Hardangervidda plateau",
+      "place": "Europe's largest mountain plateau, DNT huts, reindeer",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 1300,
+      "dayHighC": 14,
+      "crowd": "low",
+      "transitHours": 4,
+      "history": null,
+      "guidebookPick": false,
+      "see": [
+        "Finse to Rembesdalseter under the Hardangerjøkulen glacier",
+        "Kinsarvik to Stavali through the four waterfalls",
+        "Trolltunga is here too (crowded; skip or go at 5 am)"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "sunnmore",
+      "type": "hike",
+      "name": "Sunnmøre Alps + Hjørundfjord",
+      "place": "Steep fjord peaks from Ålesund, boat-and-walk days",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 1500,
+      "dayHighC": 17,
+      "crowd": "low",
+      "transitHours": 1.5,
+      "history": null,
+      "guidebookPick": false,
+      "see": [
+        "Slogen or the easier Saksa",
+        "Hjørundfjord by boat to Trandal or Sæbø",
+        "Hotel Union Øye, 1891"
+      ],
+      "note": "Combine with Ålesund. The fjord nobody photographs.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "aurland",
+      "type": "hike",
+      "name": "Aurlandsdalen",
+      "place": "Two-day valley walk from Østerbø to Vassbygdi",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 1200,
+      "dayHighC": 17,
+      "crowd": "med",
+      "transitHours": 3,
+      "history": "Old farm road to the fjord",
+      "guidebookPick": true,
+      "see": [
+        "Day 1 Finse or Geiterygghytta to Østerbø",
+        "Day 2 the valley to Vassbygdi: ledges, farms, the Vetlahelleren overhang",
+        "Flåm railway as the exit"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "rondane",
+      "type": "hike",
+      "name": "Rondane",
+      "place": "Rounded 2,000 m peaks, reindeer, quiet DNT huts",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 2000,
+      "dayHighC": 16,
+      "crowd": "low",
+      "transitHours": 4,
+      "history": null,
+      "guidebookPick": false,
+      "see": [
+        "Rondvassbu base, Storronden summit (2,138 m, walk-up)",
+        "Rondvatnet boat and the Rondslottet cirque",
+        "Peer Gynt country"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    }
+  ],
+  "season": {
+    "fitByMonth": [
+      30,
+      30,
+      40,
+      55,
+      75,
+      88,
+      85,
+      82,
+      78,
+      55,
+      30,
+      30
+    ],
+    "events": [
+      {
+        "name": "Olavsfest, Trondheim",
+        "from": "07-28",
+        "to": "08-03",
+        "effect": "festival",
+        "note": "Concerts in Nidaros cathedral"
+      }
+    ],
+    "notes": [
+      "Norwegian school holidays end about 15 August; huts and ferries are busiest 15 July–5 August.",
+      "Senja and Lofoten: midnight sun until about 25 July, then long golden evenings."
+    ]
+  },
+  "kind": "explore",
+  "tags": [
+    "cities",
+    "festival",
+    "mountains",
+    "fjords"
+  ],
+  "lodgingAssumption": "Local B&B or Airbnb, two rooms for five, one meal out a day; shared van or hire car",
+  "climate": {
+    "representative": "Trondheim / Jotunheimen huts (1,000 m)",
+    "dayHighC": [
+      0,
+      1,
+      4,
+      8,
+      13,
+      17,
+      19,
+      18,
+      13,
+      8,
+      3,
+      1
+    ],
+    "nightLowC": [
+      -5,
+      -5,
+      -3,
+      1,
+      5,
+      9,
+      12,
+      11,
+      7,
+      3,
+      -2,
+      -4
+    ],
+    "rainDays": [
+      14,
+      12,
+      13,
+      11,
+      11,
+      12,
+      14,
+      15,
+      16,
+      16,
+      14,
+      14
+    ],
+    "snowMonths": [
+      1,
+      2,
+      3,
+      4,
+      11,
+      12
+    ]
+  }
+}

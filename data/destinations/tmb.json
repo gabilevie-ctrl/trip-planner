@@ -1,0 +1,433 @@
+{
+  "id": "tmb",
+  "kind": "hike",
+  "zone": "europe",
+  "name": "Tour du Mont Blanc",
+  "region": "France, Italy, Switzerland",
+  "noFlights": true,
+  "tagline": "170 km round the massif in ten or eleven days; refuges, three countries, the most walked long route in the Alps.",
+  "tags": [
+    "mountains",
+    "huts",
+    "classic",
+    "glaciers"
+  ],
+  "access": [
+    {
+      "originRegion": "europe-west",
+      "originCity": "Brussels",
+      "mode": "train",
+      "costPerPerson": 220,
+      "route": "Brussels→Paris→Saint-Gervais→Chamonix / Les Houches, 7 h"
+    },
+    {
+      "originRegion": "uk",
+      "originCity": "London",
+      "mode": "train",
+      "costPerPerson": 240,
+      "route": "Eurostar→Paris→Saint-Gervais→Les Houches, 8 h"
+    }
+  ],
+  "rates": {
+    "stage": 95,
+    "city": 130,
+    "transit": 110,
+    "guide": 70
+  },
+  "lodgingAssumption": "Refuge half board (dortoir or small rooms); hotels in Courmayeur and Chamonix",
+  "presets": [
+    {
+      "name": "Full tour (10 stages)",
+      "picks": {
+        "s1": 1,
+        "s2": 1,
+        "s3": 1,
+        "s4": 1,
+        "s5": 1,
+        "s6": 1,
+        "s7": 1,
+        "s8": 1,
+        "s9": 1,
+        "s10": 1
+      }
+    },
+    {
+      "name": "Italian and Swiss half",
+      "picks": {
+        "s3": 1,
+        "s4": 1,
+        "s5": 1,
+        "s6": 1,
+        "s7": 1,
+        "s8": 1
+      }
+    }
+  ],
+  "blocks": [
+    {
+      "id": "s1",
+      "type": "stage",
+      "name": "Stage 1: Les Houches to Les Contamines",
+      "place": "Col de Voza or the Col de Tricot variant",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "high",
+      "transitHours": 7,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "distanceKm": 16,
+      "ascentM": 650,
+      "descentM": 900,
+      "hours": 6,
+      "maxAltitudeM": 2120,
+      "difficulty": "T2",
+      "hut": {
+        "name": "Refuge Nant Borrant or hotel in Les Contamines",
+        "bookAheadMonths": 5
+      },
+      "dayHighC": 20
+    },
+    {
+      "id": "s2",
+      "type": "stage",
+      "name": "Stage 2: to Les Chapieux",
+      "place": "Col du Bonhomme and Col de la Croix du Bonhomme",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "high",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "distanceKm": 18,
+      "ascentM": 1300,
+      "descentM": 950,
+      "hours": 7,
+      "maxAltitudeM": 2479,
+      "difficulty": "T2",
+      "hut": {
+        "name": "Refuge de la Croix du Bonhomme / Les Chapieux",
+        "bookAheadMonths": 5
+      },
+      "dayHighC": 15
+    },
+    {
+      "id": "s3",
+      "type": "stage",
+      "name": "Stage 3: to Rifugio Elisabetta",
+      "place": "Col de la Seigne into Italy",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "high",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "distanceKm": 15,
+      "ascentM": 1000,
+      "descentM": 400,
+      "hours": 6,
+      "maxAltitudeM": 2516,
+      "difficulty": "T2",
+      "hut": {
+        "name": "Rifugio Elisabetta",
+        "bookAheadMonths": 5
+      },
+      "dayHighC": 14
+    },
+    {
+      "id": "s4",
+      "type": "stage",
+      "name": "Stage 4: to Courmayeur",
+      "place": "The balcony path under the Italian face, Mont Favre",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "high",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "distanceKm": 17,
+      "ascentM": 500,
+      "descentM": 1500,
+      "hours": 6,
+      "maxAltitudeM": 2430,
+      "difficulty": "T2",
+      "hut": {
+        "name": "Hotel in Courmayeur",
+        "bookAheadMonths": 3
+      },
+      "dayHighC": 22
+    },
+    {
+      "id": "s5",
+      "type": "stage",
+      "name": "Stage 5: to Rifugio Bonatti",
+      "place": "Val Ferret balcony",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "high",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "distanceKm": 12,
+      "ascentM": 900,
+      "descentM": 100,
+      "hours": 5,
+      "maxAltitudeM": 2025,
+      "difficulty": "T2",
+      "hut": {
+        "name": "Rifugio Bonatti",
+        "bookAheadMonths": 5
+      },
+      "dayHighC": 16
+    },
+    {
+      "id": "s6",
+      "type": "stage",
+      "name": "Stage 6: to La Fouly",
+      "place": "Grand Col Ferret into Switzerland",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "med",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "distanceKm": 20,
+      "ascentM": 800,
+      "descentM": 1200,
+      "hours": 7,
+      "maxAltitudeM": 2537,
+      "difficulty": "T2",
+      "hut": {
+        "name": "Auberge in La Fouly",
+        "bookAheadMonths": 3
+      },
+      "dayHighC": 15
+    },
+    {
+      "id": "s7",
+      "type": "stage",
+      "name": "Stage 7: to Champex",
+      "place": "Valley walk through Swiss villages",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "low",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "distanceKm": 15,
+      "ascentM": 400,
+      "descentM": 500,
+      "hours": 5,
+      "maxAltitudeM": 1600,
+      "difficulty": "T1",
+      "hut": {
+        "name": "Hotel or dortoir in Champex",
+        "bookAheadMonths": 3
+      },
+      "dayHighC": 20
+    },
+    {
+      "id": "s8",
+      "type": "stage",
+      "name": "Stage 8: to Trient",
+      "place": "Bovine (easy) or Fenêtre d'Arpette (hard)",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "med",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "distanceKm": 16,
+      "ascentM": 1200,
+      "descentM": 1400,
+      "hours": 7,
+      "maxAltitudeM": 2665,
+      "difficulty": "T3",
+      "hut": {
+        "name": "Auberge Mont Blanc, Trient",
+        "bookAheadMonths": 4
+      },
+      "dayHighC": 16,
+      "note": "Arpette is a boulder field at 2,665 m; Bovine is the gentle alternative."
+    },
+    {
+      "id": "s9",
+      "type": "stage",
+      "name": "Stage 9: to Tré-le-Champ",
+      "place": "Col de Balme back into France",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "high",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "distanceKm": 13,
+      "ascentM": 1000,
+      "descentM": 900,
+      "hours": 5,
+      "maxAltitudeM": 2191,
+      "difficulty": "T2",
+      "hut": {
+        "name": "Auberge La Boerne, Tré-le-Champ",
+        "bookAheadMonths": 4
+      },
+      "dayHighC": 17
+    },
+    {
+      "id": "s10",
+      "type": "stage",
+      "name": "Stage 10: to Les Houches",
+      "place": "Aiguilles Rouges balcony, Lac Blanc, the Brévent",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "high",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "distanceKm": 18,
+      "ascentM": 1200,
+      "descentM": 1700,
+      "hours": 8,
+      "maxAltitudeM": 2525,
+      "difficulty": "T3",
+      "hut": {
+        "name": "Refuge de Bellachat or hotel",
+        "bookAheadMonths": 4
+      },
+      "dayHighC": 17,
+      "note": "Ladders on the Aiguillette d'Argentière section; a path variant avoids them."
+    }
+  ],
+  "season": {
+    "fitByMonth": [
+      0,
+      0,
+      0,
+      0,
+      20,
+      70,
+      90,
+      90,
+      85,
+      40,
+      0,
+      0
+    ],
+    "events": [
+      {
+        "name": "UTMB week",
+        "from": "08-24",
+        "to": "09-01",
+        "effect": "crowds",
+        "note": "Chamonix full; trail busy with runners"
+      }
+    ],
+    "notes": [
+      "Refuges open mid-June to mid-September.",
+      "The busiest route in the Alps: book every night by February.",
+      "Clockwise is quieter than the classic anticlockwise."
+    ]
+  },
+  "climate": {
+    "representative": "Refuges at 1,800–2,500 m",
+    "dayHighC": [
+      -2,
+      -1,
+      2,
+      6,
+      11,
+      15,
+      18,
+      18,
+      14,
+      9,
+      3,
+      -1
+    ],
+    "nightLowC": [
+      -10,
+      -10,
+      -7,
+      -3,
+      1,
+      5,
+      8,
+      8,
+      5,
+      1,
+      -4,
+      -8
+    ],
+    "rainDays": [
+      8,
+      7,
+      9,
+      10,
+      13,
+      13,
+      12,
+      12,
+      10,
+      10,
+      9,
+      9
+    ],
+    "snowMonths": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      10,
+      11,
+      12
+    ]
+  },
+  "bulletins": [
+    {
+      "name": "Météo-France montagne (Chamonix)",
+      "url": "https://meteofrance.com/meteo-montagne",
+      "type": "weather"
+    },
+    {
+      "name": "Chamoniarde conditions",
+      "url": "https://www.chamoniarde.com/",
+      "type": "conditions"
+    },
+    {
+      "name": "hut-reservation.org (SAC, DAV, ÖAV, CAI huts)",
+      "url": "https://www.hut-reservation.org/"
+    }
+  ],
+  "guides": [
+    {
+      "name": "Cicerone: Tour of Mont Blanc",
+      "url": "https://www.cicerone.co.uk/"
+    },
+    {
+      "name": "autourdumontblanc.com (official booking)",
+      "url": "https://www.autourdumontblanc.com/"
+    }
+  ],
+  "lastReviewed": "2026-11-08",
+  "sources": []
+}

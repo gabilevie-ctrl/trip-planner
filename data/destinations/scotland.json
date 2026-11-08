@@ -1,0 +1,410 @@
+{
+  "id": "scotland",
+  "name": "Scotland: Highlands and Orkney by sleeper",
+  "region": "Scotland, by train and ferry",
+  "zone": "europe",
+  "tagline": "The Caledonian Sleeper north, Neolithic Orkney, and empty mountains in Torridon and Assynt.",
+  "noFlights": true,
+  "palette": [
+    "#a3b7a0",
+    "#6b8577",
+    "#45584f",
+    "#2a3630",
+    "#e4e9df"
+  ],
+  "access": [
+    {
+      "originRegion": "europe-west",
+      "originCity": "Brussels",
+      "mode": "train",
+      "costPerPerson": 420,
+      "route": "Train: Eurostar Brussels→London (2 h), then LNER to Edinburgh (4.5 h) or the Caledonian Sleeper to Inverness or Fort William"
+    },
+    {
+      "originRegion": "uk",
+      "originCity": "London",
+      "mode": "train",
+      "costPerPerson": 180,
+      "route": "LNER to Edinburgh (4.5 h) or the Caledonian Sleeper to Inverness or Fort William"
+    }
+  ],
+  "rates": {
+    "city": 110,
+    "hike": 95,
+    "transit": 110
+  },
+  "nightsNote": "8–11°C",
+  "whyNotes": "The funkiest no-fly option: an overnight train, a ferry to islands with 5,000-year-old villages, and hills that feel bigger than their height. Cool at 15–19°C.",
+  "fitNotes": "No altitude, no heat. Crowds: Edinburgh during the August festivals and Skye are the two to avoid; Orkney, Torridon, Assynt and Knoydart are as empty as anywhere on this page. Midges on still evenings in the west.",
+  "guides": [
+    {
+      "name": "Lonely Planet Scotland",
+      "url": "https://www.lonelyplanet.com/scotland"
+    },
+    {
+      "name": "Routard Écosse",
+      "url": "https://www.routard.com/guide/code_dest/ecosse.htm"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Orkney + the north-west",
+      "picks": {
+        "edinburgh": 2,
+        "orkney": 3,
+        "assynt": 2,
+        "torridon": 3,
+        "inverness": 1,
+        "glasgow": 1
+      }
+    },
+    {
+      "name": "Highlands classic",
+      "picks": {
+        "edinburgh": 2,
+        "cairngorms": 3,
+        "skye": 2,
+        "torridon": 3,
+        "glasgow": 1
+      }
+    },
+    {
+      "name": "Fewest hours in transit",
+      "picks": {
+        "edinburgh": 2,
+        "cairngorms": 3,
+        "inverness": 1,
+        "orkney": 3
+      }
+    }
+  ],
+  "blocks": [
+    {
+      "id": "edinburgh",
+      "type": "city",
+      "name": "Edinburgh",
+      "place": "Old Town, National Museum, Arthur's Seat",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 250,
+      "dayHighC": 19,
+      "crowd": "high",
+      "transitHours": 7,
+      "history": "Scottish Enlightenment, Reformation",
+      "guidebookPick": true,
+      "see": [
+        "National Museum of Scotland",
+        "Old Town closes and the castle early",
+        "Arthur's Seat at 7 am",
+        "Scottish National Gallery",
+        "Leith for dinner"
+      ],
+      "note": "The festivals run most of August and triple the crowds. Before 5 August it is a normal busy city.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "glasgow",
+      "type": "city",
+      "name": "Glasgow",
+      "place": "Kelvingrove, the Burrell, Mackintosh",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 20,
+      "dayHighC": 18,
+      "crowd": "med",
+      "transitHours": 1,
+      "history": "Victorian industrial city, Mackintosh",
+      "guidebookPick": true,
+      "see": [
+        "Kelvingrove art gallery",
+        "Burrell Collection",
+        "Mackintosh at the Willow and the Hunterian"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "inverness",
+      "type": "city",
+      "name": "Inverness + Culloden",
+      "place": "Highland capital, the 1746 battlefield",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 20,
+      "dayHighC": 17,
+      "crowd": "med",
+      "transitHours": 3.5,
+      "history": "Jacobite rising, Clava cairns",
+      "guidebookPick": false,
+      "see": [
+        "Culloden visitor centre and moor",
+        "Clava cairns (4,000 years old)",
+        "Ness islands walk"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "orkney",
+      "type": "city",
+      "name": "Orkney",
+      "place": "Skara Brae, Ring of Brodgar, Maeshowe, St Magnus cathedral",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 0,
+      "dayHighC": 15,
+      "crowd": "low",
+      "transitHours": 4,
+      "history": "Neolithic heart of Orkney (UNESCO), Vikings, Scapa Flow",
+      "guidebookPick": true,
+      "see": [
+        "Skara Brae, the 5,000-year-old village",
+        "Ring of Brodgar and the Ness of Brodgar dig (open July–August)",
+        "Maeshowe chambered tomb (book)",
+        "St Magnus cathedral in Kirkwall",
+        "Italian chapel and Scapa Flow museum",
+        "Yesnaby cliff walk, Hoy's Old Man if the ferry fits"
+      ],
+      "note": "Ferry from Scrabster or Gills Bay, 1–1.5 h. Windy, cool, no crowds, extraordinary history.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "torridon",
+      "type": "hike",
+      "name": "Torridon + Applecross",
+      "place": "Beinn Alligin, Beinn Eighe, the Bealach na Bà road",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 1000,
+      "dayHighC": 16,
+      "crowd": "low",
+      "transitHours": 2.5,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Beinn Eighe mountain trail (the easy option, 550 m)",
+        "Beinn Alligin horns for the siblings",
+        "Coire Mhic Fhearchair walk",
+        "Applecross inn via the Bealach na Bà"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "assynt",
+      "type": "hike",
+      "name": "Assynt + Suilven",
+      "place": "Lochinver, Suilven, Achmelvich, Clachtoll",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 730,
+      "dayHighC": 16,
+      "crowd": "low",
+      "transitHours": 2,
+      "history": "Highland Clearances landscape",
+      "guidebookPick": true,
+      "see": [
+        "Suilven (long but not technical)",
+        "Bone caves of Inchnadamph",
+        "Achmelvich and Clachtoll beaches",
+        "Knockan Crag geology trail"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "cairngorms",
+      "type": "hike",
+      "name": "Cairngorms",
+      "place": "Rothiemurchus forest, Loch an Eilein, Lairig Ghru, 1,300 m plateau",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 1300,
+      "dayHighC": 17,
+      "crowd": "med",
+      "transitHours": 2,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Loch an Eilein and the Caledonian pine forest",
+        "Lairig Ghru as far as the Pools of Dee",
+        "Meall a' Bhuachaille from Glenmore",
+        "Highland Folk Museum at Newtonmore"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "skye",
+      "type": "hike",
+      "name": "Skye",
+      "place": "Quiraing, Old Man of Storr, Fairy Pools",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 700,
+      "dayHighC": 16,
+      "crowd": "high",
+      "transitHours": 2.5,
+      "history": "Clan MacLeod, Dunvegan",
+      "guidebookPick": true,
+      "see": [
+        "Quiraing loop early",
+        "Old Man of Storr before 8 am",
+        "Dunvegan castle",
+        "Elgol boat to Loch Coruisk"
+      ],
+      "note": "The most crowded place in the Highlands in summer. Two nights, or swap for Torridon and Assynt.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "knoydart",
+      "type": "hike",
+      "name": "Knoydart",
+      "place": "Mainland peninsula reached only by boat from Mallaig; Inverie, Ladhar Bheinn",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 1020,
+      "dayHighC": 16,
+      "crowd": "low",
+      "transitHours": 3,
+      "history": "Clearances, 1948 land raid",
+      "guidebookPick": false,
+      "see": [
+        "Boat from Mallaig to Inverie",
+        "Ladhar Bheinn for the siblings, Loch an Dubh-Lochain walk for everyone",
+        "Britain's remotest pub, The Old Forge"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "glencoe",
+      "type": "hike",
+      "name": "Glencoe + Fort William section of the West Highland Way",
+      "place": "Devil's Staircase, Kinlochleven, Ben Nevis base",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 850,
+      "dayHighC": 17,
+      "crowd": "med",
+      "transitHours": 1,
+      "history": "1692 massacre",
+      "guidebookPick": true,
+      "see": [
+        "Glencoe Lochan and the Lost Valley",
+        "Devil's Staircase to Kinlochleven (a WHW day)",
+        "Steall falls in Glen Nevis"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    }
+  ],
+  "season": {
+    "fitByMonth": [
+      30,
+      30,
+      40,
+      60,
+      80,
+      85,
+      75,
+      65,
+      75,
+      60,
+      35,
+      30
+    ],
+    "events": [
+      {
+        "name": "Edinburgh festivals",
+        "from": "08-06",
+        "to": "08-30",
+        "effect": "crowds",
+        "note": "Hotels triple"
+      }
+    ],
+    "notes": [
+      "Long days (sunset after 10 pm in July), 15–19°C, rain somewhere most days; pack for it and the walking is excellent.",
+      "Midges in the west on still evenings, July and August both.",
+      "Edinburgh's festivals start in the first week of August: hotels triple, streets fill. Put Edinburgh at the start or keep it to one night."
+    ]
+  },
+  "kind": "explore",
+  "tags": [
+    "history",
+    "islands",
+    "mountains"
+  ],
+  "lodgingAssumption": "Local B&B or Airbnb, two rooms for five, one meal out a day; shared van or hire car",
+  "climate": {
+    "representative": "Fort William / Edinburgh",
+    "dayHighC": [
+      6,
+      7,
+      9,
+      12,
+      15,
+      17,
+      19,
+      18,
+      16,
+      12,
+      9,
+      7
+    ],
+    "nightLowC": [
+      1,
+      1,
+      2,
+      3,
+      6,
+      9,
+      11,
+      11,
+      9,
+      6,
+      3,
+      1
+    ],
+    "rainDays": [
+      19,
+      15,
+      17,
+      13,
+      13,
+      13,
+      15,
+      15,
+      16,
+      19,
+      18,
+      19
+    ],
+    "snowMonths": [
+      1,
+      2,
+      3,
+      12
+    ]
+  }
+}

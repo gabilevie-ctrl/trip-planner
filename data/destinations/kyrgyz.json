@@ -1,0 +1,410 @@
+{
+  "id": "kyrgyz",
+  "name": "Kyrgyzstan",
+  "region": "Central Asia, Tien Shan",
+  "zone": "asia",
+  "tagline": "Yurts, horses and alpine valleys with nobody in them. Altitude needs choosing carefully.",
+  "noFlights": false,
+  "palette": [
+    "#d9c27a",
+    "#a98a4c",
+    "#5f7a8f",
+    "#2e4a5e",
+    "#f1ead2"
+  ],
+  "access": [
+    {
+      "originRegion": "europe-west",
+      "originCity": "Brussels",
+      "mode": "flight",
+      "costPerPerson": 800,
+      "route": "Brussels→Bishkek via Istanbul (Turkish or Pegasus), 8–9 h total"
+    },
+    {
+      "originRegion": "uk",
+      "originCity": "London",
+      "mode": "flight",
+      "costPerPerson": 700,
+      "route": "London→Bishkek via Istanbul (Turkish, Pegasus)"
+    }
+  ],
+  "rates": {
+    "city": 70,
+    "hike": 100,
+    "transit": 90
+  },
+  "nightsNote": "0–5°C at Song-Kul, 8–12°C in the valleys, 20°C in Bishkek",
+  "whyNotes": "The most adventurous of the seven and the furthest from anything you have done. Same rhythm as the Ciudad Perdida days: guide, horses carrying the bags, a camp at the end.",
+  "fitNotes": "Watch the altitudes. Jyrgalan, Chon-Kemin and Sary-Chelek stay under 3,000 m; Song-Kul and Tash Rabat sit at 3,000–3,300 m, fine after a couple of easier days first. Roads are long and rough.",
+  "guides": [
+    {
+      "name": "Lonely Planet Kyrgyzstan",
+      "url": "https://www.lonelyplanet.com/kyrgyzstan"
+    },
+    {
+      "name": "Routard Kirghizistan",
+      "url": "https://www.routard.com/guide/code_dest/kirghizistan.htm"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Lowest altitude",
+      "picks": {
+        "bishkek": 1,
+        "karakol": 2,
+        "jyrgalan": 3,
+        "chonkemin": 2,
+        "sarychelek": 2,
+        "arashan": 2
+      }
+    },
+    {
+      "name": "Balanced",
+      "picks": {
+        "bishkek": 1,
+        "karakol": 2,
+        "jyrgalan": 3,
+        "songkul": 2,
+        "chonkemin": 2,
+        "arashan": 3
+      }
+    },
+    {
+      "name": "Silk Road add-on",
+      "picks": {
+        "bishkek": 1,
+        "karakol": 2,
+        "jyrgalan": 3,
+        "songkul": 2,
+        "tashrabat": 1,
+        "osh": 1,
+        "uzbek": 4
+      }
+    },
+    {
+      "name": "Fewest hours in the car",
+      "picks": {
+        "bishkek": 1,
+        "chonkemin": 2,
+        "karakol": 2,
+        "jyrgalan": 3,
+        "arashan": 3
+      }
+    }
+  ],
+  "blocks": [
+    {
+      "id": "bishkek",
+      "type": "city",
+      "name": "Bishkek",
+      "place": "Osh bazaar, State History Museum, Ala-Archa gorge",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 800,
+      "dayHighC": 33,
+      "crowd": "low",
+      "transitHours": 0.5,
+      "history": "Soviet Central Asia",
+      "guidebookPick": false,
+      "see": [
+        "State History Museum (Soviet-era murals)",
+        "Osh bazaar",
+        "Ala-Archa gorge day walk (2,100 m), 40 min from town"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "karakol",
+      "type": "city",
+      "name": "Karakol",
+      "place": "Dungan mosque, wooden Orthodox church, Sunday animal market",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 1700,
+      "dayHighC": 27,
+      "crowd": "low",
+      "transitHours": 6,
+      "history": "Russian frontier town, Dungan refugees",
+      "guidebookPick": true,
+      "see": [
+        "Dungan mosque built without nails",
+        "Holy Trinity wooden cathedral",
+        "Przhevalsky museum",
+        "Sunday livestock market (7 am)",
+        "Dungan family dinner (ashlan-fu)"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "osh",
+      "type": "city",
+      "name": "Osh",
+      "place": "Sulaiman-Too sacred mountain, 2,000-year-old bazaar",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 1000,
+      "dayHighC": 36,
+      "crowd": "low",
+      "transitHours": 1.5,
+      "history": "Silk Road, 3,000 years",
+      "guidebookPick": true,
+      "see": [
+        "Sulaiman-Too (UNESCO) and its cave museum",
+        "Jayma bazaar along the river"
+      ],
+      "note": "Hot. Only worth it on the Silk Road routing.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "uzbek",
+      "type": "city",
+      "name": "Uzbekistan add-on: Samarkand + Bukhara",
+      "place": "Registan, Shah-i-Zinda, Bukhara old town",
+      "defaultDays": 4,
+      "minDays": 3,
+      "maxDays": 5,
+      "maxAltitudeM": 700,
+      "dayHighC": 39,
+      "crowd": "med",
+      "transitHours": 4,
+      "history": "Timurid Silk Road capitals",
+      "guidebookPick": true,
+      "see": [
+        "Registan square at dusk",
+        "Shah-i-Zinda necropolis",
+        "Bukhara: Poi Kalyan, Lyabi-Hauz, trading domes",
+        "Afrosiyob train between them"
+      ],
+      "note": "Extraordinary, but 38–40°C in late July. Against Mom's heat limit; here so you can see the cost.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "jyrgalan",
+      "type": "hike",
+      "name": "Jyrgalan valley",
+      "place": "Village-based hiking and horse trekking, 2,500–3,000 m",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 3000,
+      "dayHighC": 21,
+      "crowd": "low",
+      "transitHours": 1.5,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Eki-Chat and Tulpar-Tash day hikes",
+        "Overnight at a yurt camp by horse",
+        "Former coal village turned community-tourism base"
+      ],
+      "note": "The best low-altitude trekking base in the country.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "chonkemin",
+      "type": "hike",
+      "name": "Chon-Kemin valley",
+      "place": "Spruce forests and river valley, 2,000–2,600 m",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 2600,
+      "dayHighC": 23,
+      "crowd": "low",
+      "transitHours": 2.5,
+      "history": null,
+      "guidebookPick": false,
+      "see": [
+        "Horse ride to Kol-Tor lake",
+        "Guesthouse village stays",
+        "Easy acclimatisation near Bishkek"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "songkul",
+      "type": "hike",
+      "name": "Song-Kul lake yurt camp",
+      "place": "High summer pasture at 3,016 m, horses, shepherd families",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 3100,
+      "dayHighC": 17,
+      "crowd": "low",
+      "transitHours": 5,
+      "history": "Nomadic jailoo life",
+      "guidebookPick": true,
+      "see": [
+        "Horse trek along the shore",
+        "Kyrgyz horse games at the camps",
+        "Night sky with no light for 100 km"
+      ],
+      "note": "Cold nights (0–5°C). Two nights at 3,000 m is fine for most people after a few days lower down.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "arashan",
+      "type": "hike",
+      "name": "Karakol valley + Altyn Arashan",
+      "place": "Hot springs valley, 2,600–3,000 m; Ala-Kul pass avoidable",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 3000,
+      "dayHighC": 20,
+      "crowd": "med",
+      "transitHours": 1,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Altyn Arashan hot springs (walk in, 4 h)",
+        "Karakol valley gorge",
+        "Ala-Kul lake (3,560 m) as an optional day for the siblings; the pass is 3,860 m"
+      ],
+      "note": "The Ala-Kul crossing is the busiest trail in Kyrgyzstan. Skip the pass and it is quiet.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "sarychelek",
+      "type": "hike",
+      "name": "Sary-Chelek lake",
+      "place": "Walnut forests and a turquoise lake at 1,900 m",
+      "defaultDays": 2,
+      "minDays": 2,
+      "maxDays": 3,
+      "maxAltitudeM": 2200,
+      "dayHighC": 26,
+      "crowd": "low",
+      "transitHours": 8,
+      "history": null,
+      "guidebookPick": false,
+      "see": [
+        "Lake walk and boat",
+        "Arslanbob walnut forest (the world's largest) nearby"
+      ],
+      "note": "Long drive (8 h from Bishkek); fits a southern routing.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "tashrabat",
+      "type": "hike",
+      "name": "Tash Rabat caravanserai",
+      "place": "15th-century stone caravanserai at 3,200 m",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 3300,
+      "dayHighC": 16,
+      "crowd": "low",
+      "transitHours": 6,
+      "history": "Silk Road caravanserai",
+      "guidebookPick": true,
+      "see": [
+        "The caravanserai itself",
+        "Horse ride to the Chatyr-Kul pass viewpoint"
+      ],
+      "note": "At 3,200 m, sleep one night only.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    }
+  ],
+  "season": {
+    "fitByMonth": [
+      20,
+      20,
+      30,
+      45,
+      65,
+      85,
+      92,
+      90,
+      80,
+      55,
+      30,
+      20
+    ],
+    "events": [],
+    "notes": [
+      "Peak trekking season across the whole window; passes and jailoo pastures open.",
+      "Issyk-Kul north shore (Cholpon-Ata) is a crowded beach resort in July and August: route around it.",
+      "After 5 August, Song-Kul nights drop toward freezing; yurt camps supply blankets.",
+      "Bishkek 33°C, Osh 36°C; mountain valleys 17–25°C."
+    ]
+  },
+  "kind": "explore",
+  "tags": [
+    "mountains",
+    "horses",
+    "nomad",
+    "remote"
+  ],
+  "lodgingAssumption": "Local B&B or Airbnb, two rooms for five, one meal out a day; shared van or hire car",
+  "climate": {
+    "representative": "Karakol (1,700 m)",
+    "dayHighC": [
+      -2,
+      0,
+      7,
+      15,
+      20,
+      24,
+      27,
+      26,
+      21,
+      13,
+      5,
+      0
+    ],
+    "nightLowC": [
+      -14,
+      -12,
+      -5,
+      2,
+      7,
+      11,
+      13,
+      12,
+      7,
+      1,
+      -6,
+      -11
+    ],
+    "rainDays": [
+      4,
+      4,
+      6,
+      9,
+      11,
+      11,
+      9,
+      7,
+      5,
+      6,
+      5,
+      4
+    ],
+    "snowMonths": [
+      1,
+      2,
+      3,
+      11,
+      12
+    ]
+  }
+}

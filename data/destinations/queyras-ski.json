@@ -1,0 +1,305 @@
+{
+  "id": "queyras-ski",
+  "kind": "skitour",
+  "zone": "europe",
+  "name": "Queyras hut-to-hut",
+  "region": "Hautes-Alpes, France / Italian border",
+  "noFlights": true,
+  "tagline": "The gentlest hut-to-hut on skis in the French Alps: sun, larch forests, 3,000 m summits without glaciers.",
+  "tags": [
+    "skitour",
+    "huts",
+    "gentle",
+    "france",
+    "sunny"
+  ],
+  "access": [
+    {
+      "originRegion": "europe-west",
+      "originCity": "Brussels",
+      "mode": "train",
+      "costPerPerson": 170,
+      "route": "Brussels→Paris→Montdauphin-Guillestre (night train), bus or taxi to Saint-Véran / Ceillac"
+    },
+    {
+      "originRegion": "uk",
+      "originCity": "London",
+      "mode": "train",
+      "costPerPerson": 200,
+      "route": "Eurostar→Paris→Montdauphin-Guillestre night train"
+    }
+  ],
+  "rates": {
+    "stage": 80,
+    "transit": 85,
+    "guide": 100
+  },
+  "lodgingAssumption": "Staffed refuges half board, gîtes in the villages",
+  "presets": [
+    {
+      "name": "5-day traverse",
+      "picks": {
+        "ceillac": 1,
+        "s1": 1,
+        "s2": 1,
+        "s3": 1,
+        "s4": 1,
+        "s5": 1
+      }
+    },
+    {
+      "name": "Long weekend from Saint-Véran",
+      "picks": {
+        "s2": 1,
+        "s3": 1,
+        "s4": 1
+      }
+    }
+  ],
+  "blocks": [
+    {
+      "id": "ceillac",
+      "type": "city",
+      "name": "Ceillac",
+      "place": "Village base at 1,640 m",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 3,
+      "crowd": "low",
+      "transitHours": 10,
+      "maxAltitudeM": 1640,
+      "dayHighC": 3,
+      "see": [],
+      "history": null,
+      "guidebookPick": false
+    },
+    {
+      "id": "s1",
+      "type": "stage",
+      "name": "Day 1: Ceillac to Refuge de Furfande",
+      "place": "Col de Bramousse",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "low",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "ascentM": 1100,
+      "descentM": 500,
+      "hours": 5,
+      "maxAltitudeM": 2430,
+      "difficulty": "WS",
+      "hut": {
+        "name": "Refuge de Furfande",
+        "bookAheadMonths": 2
+      },
+      "dayHighC": 0
+    },
+    {
+      "id": "s2",
+      "type": "stage",
+      "name": "Day 2: to Saint-Véran",
+      "place": "Col de Furfande, the Aigue Blanche valley",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "low",
+      "transitHours": 0,
+      "see": [],
+      "history": "Highest commune in Europe, sundials",
+      "guidebookPick": true,
+      "ascentM": 900,
+      "descentM": 1200,
+      "hours": 6,
+      "maxAltitudeM": 2500,
+      "difficulty": "WS",
+      "hut": {
+        "name": "Gîte in Saint-Véran (2,042 m)",
+        "bookAheadMonths": 2
+      },
+      "dayHighC": 1
+    },
+    {
+      "id": "s3",
+      "type": "stage",
+      "name": "Day 3: to Refuge de la Blanche",
+      "place": "Pic de Caramantran 3,025 m optional",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "low",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "ascentM": 1000,
+      "descentM": 500,
+      "hours": 5,
+      "maxAltitudeM": 3025,
+      "difficulty": "WS+",
+      "hut": {
+        "name": "Refuge de la Blanche",
+        "bookAheadMonths": 2
+      },
+      "dayHighC": -3
+    },
+    {
+      "id": "s4",
+      "type": "stage",
+      "name": "Day 4: to Refuge Agnel",
+      "place": "Col Vieux, Pain de Sucre 3,208 m for the keen",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "low",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "ascentM": 900,
+      "descentM": 800,
+      "hours": 6,
+      "maxAltitudeM": 3208,
+      "difficulty": "ZS-",
+      "hut": {
+        "name": "Refuge Agnel",
+        "bookAheadMonths": 2
+      },
+      "dayHighC": -4
+    },
+    {
+      "id": "s5",
+      "type": "stage",
+      "name": "Day 5: Col Agnel or Pic de Foréant, down to Abriès",
+      "place": "",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "low",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "ascentM": 600,
+      "descentM": 1500,
+      "hours": 5,
+      "maxAltitudeM": 3081,
+      "difficulty": "WS+",
+      "hut": {
+        "name": "Gîte in Abriès",
+        "bookAheadMonths": 1
+      },
+      "dayHighC": 3
+    }
+  ],
+  "season": {
+    "fitByMonth": [
+      55,
+      85,
+      95,
+      85,
+      30,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      40
+    ],
+    "events": [
+      {
+        "name": "French school holidays",
+        "from": "02-08",
+        "to": "03-09",
+        "effect": "crowds",
+        "note": "Busier huts"
+      }
+    ],
+    "notes": [
+      "February to early April; the Queyras is the sunniest and driest corner of the French Alps.",
+      "No glaciers on the standard route: the week that suits a mixed group.",
+      "Bulletin: Météo-France BRA Queyras."
+    ]
+  },
+  "climate": {
+    "representative": "Huts at 2,400–2,600 m",
+    "dayHighC": [
+      -3,
+      -2,
+      1,
+      5,
+      10,
+      14,
+      17,
+      17,
+      13,
+      8,
+      2,
+      -2
+    ],
+    "nightLowC": [
+      -13,
+      -13,
+      -10,
+      -6,
+      -1,
+      3,
+      6,
+      6,
+      3,
+      -2,
+      -8,
+      -12
+    ],
+    "rainDays": [
+      5,
+      5,
+      6,
+      7,
+      9,
+      9,
+      8,
+      8,
+      7,
+      7,
+      6,
+      6
+    ],
+    "snowMonths": [
+      1,
+      2,
+      3,
+      4,
+      11,
+      12
+    ]
+  },
+  "bulletins": [
+    {
+      "name": "Météo-France avalanche bulletin (BRA)",
+      "url": "https://meteofrance.com/meteo-montagne",
+      "type": "avalanche"
+    },
+    {
+      "name": "Météo-France montagne",
+      "url": "https://meteofrance.com/meteo-montagne",
+      "type": "weather"
+    },
+    {
+      "name": "meteoblue multimodel",
+      "url": "https://www.meteoblue.com/",
+      "type": "weather"
+    }
+  ],
+  "guides": [
+    {
+      "name": "Skitour.fr Queyras",
+      "url": "https://skitour.fr/"
+    }
+  ],
+  "lastReviewed": "2026-11-08",
+  "sources": []
+}

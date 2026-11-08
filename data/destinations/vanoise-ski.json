@@ -1,0 +1,317 @@
+{
+  "id": "vanoise-ski",
+  "kind": "skitour",
+  "zone": "europe",
+  "name": "Vanoise: Pralognan huts",
+  "region": "Savoie, France",
+  "noFlights": true,
+  "tagline": "Gentle-to-moderate hut tours around the Grande Casse and the Dôme de Chasseforêt; a classic first week on skins.",
+  "tags": [
+    "skitour",
+    "huts",
+    "glaciers-easy",
+    "france"
+  ],
+  "access": [
+    {
+      "originRegion": "europe-west",
+      "originCity": "Brussels",
+      "mode": "train",
+      "costPerPerson": 160,
+      "route": "Brussels→Paris→Moûtiers (TGV, 6 h), bus to Pralognan; or drive 9 h"
+    },
+    {
+      "originRegion": "uk",
+      "originCity": "London",
+      "mode": "train",
+      "costPerPerson": 190,
+      "route": "Eurostar→Paris→Moûtiers, bus to Pralognan"
+    }
+  ],
+  "rates": {
+    "stage": 85,
+    "transit": 90,
+    "guide": 110
+  },
+  "lodgingAssumption": "Refuge half board in winter rooms (gardien present at the main huts in spring); gîte in Pralognan",
+  "presets": [
+    {
+      "name": "Classic 5-day loop",
+      "picks": {
+        "pralognan": 1,
+        "s1": 1,
+        "s2": 1,
+        "s3": 1,
+        "s4": 1,
+        "s5": 1
+      }
+    },
+    {
+      "name": "Long weekend",
+      "picks": {
+        "pralognan": 1,
+        "s1": 1,
+        "s2": 1,
+        "s5": 1
+      }
+    }
+  ],
+  "blocks": [
+    {
+      "id": "pralognan",
+      "type": "city",
+      "name": "Pralognan-la-Vanoise",
+      "place": "Base village at 1,420 m; gear check, bulletin, first short tour",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 3,
+      "crowd": "med",
+      "transitHours": 7,
+      "maxAltitudeM": 1420,
+      "dayHighC": 4,
+      "see": [],
+      "history": null,
+      "guidebookPick": false
+    },
+    {
+      "id": "s1",
+      "type": "stage",
+      "name": "Day 1: to Refuge du Col de la Vanoise",
+      "place": "Up the Glière valley, 2,516 m",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "low",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "ascentM": 1100,
+      "descentM": 0,
+      "hours": 4,
+      "maxAltitudeM": 2516,
+      "difficulty": "WS",
+      "hut": {
+        "name": "Refuge du Col de la Vanoise (CAF)",
+        "url": "https://refugecoldelavanoise.ffcam.fr/",
+        "bookAheadMonths": 2
+      },
+      "dayHighC": -2
+    },
+    {
+      "id": "s2",
+      "type": "stage",
+      "name": "Day 2: Pointe de la Réchasse, to Refuge de l'Arpont",
+      "place": "3,212 m summit, descent to the Arpont",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "low",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "ascentM": 900,
+      "descentM": 1100,
+      "hours": 6,
+      "maxAltitudeM": 3212,
+      "difficulty": "ZS-",
+      "hut": {
+        "name": "Refuge de l'Arpont",
+        "bookAheadMonths": 2
+      },
+      "dayHighC": -4
+    },
+    {
+      "id": "s3",
+      "type": "stage",
+      "name": "Day 3: Dôme de Chasseforêt, to Refuge de la Dent Parrachée",
+      "place": "Glacier plateau to 3,586 m, long descent",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "low",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "ascentM": 1300,
+      "descentM": 1200,
+      "hours": 7,
+      "maxAltitudeM": 3586,
+      "difficulty": "ZS",
+      "hut": {
+        "name": "Refuge de la Dent Parrachée",
+        "bookAheadMonths": 2
+      },
+      "dayHighC": -6,
+      "note": "Glaciated but gentle; rope up in poor visibility."
+    },
+    {
+      "id": "s4",
+      "type": "stage",
+      "name": "Day 4: Col d'Aussois, to Refuge de Péclet-Polset",
+      "place": "Over to the Polset side",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "low",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "ascentM": 1000,
+      "descentM": 900,
+      "hours": 6,
+      "maxAltitudeM": 2916,
+      "difficulty": "WS+",
+      "hut": {
+        "name": "Refuge de Péclet-Polset",
+        "bookAheadMonths": 2
+      },
+      "dayHighC": -2
+    },
+    {
+      "id": "s5",
+      "type": "stage",
+      "name": "Day 5: Col du Soufre and back to Pralognan",
+      "place": "Down the Chavière valley",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "low",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "ascentM": 500,
+      "descentM": 1500,
+      "hours": 5,
+      "maxAltitudeM": 2817,
+      "difficulty": "WS",
+      "hut": {
+        "name": "Gîte in Pralognan",
+        "bookAheadMonths": 1
+      },
+      "dayHighC": 2
+    }
+  ],
+  "season": {
+    "fitByMonth": [
+      50,
+      80,
+      95,
+      90,
+      40,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      30
+    ],
+    "events": [
+      {
+        "name": "French school holidays (zone rotation)",
+        "from": "02-08",
+        "to": "03-09",
+        "effect": "crowds",
+        "note": "Huts and gîtes busier; roads slow on Saturdays"
+      }
+    ],
+    "notes": [
+      "March and early April: the huts are staffed and the snowpack has settled.",
+      "Pralognan is one of the gentler Vanoise bases; the Grande Casse itself is a harder objective.",
+      "Bulletin: Météo-France BRA Vanoise, published daily at 16:00."
+    ]
+  },
+  "climate": {
+    "representative": "Huts at 2,500 m",
+    "dayHighC": [
+      -5,
+      -4,
+      -1,
+      3,
+      8,
+      12,
+      15,
+      15,
+      11,
+      6,
+      0,
+      -4
+    ],
+    "nightLowC": [
+      -13,
+      -13,
+      -10,
+      -6,
+      -2,
+      2,
+      5,
+      5,
+      2,
+      -2,
+      -8,
+      -12
+    ],
+    "rainDays": [
+      8,
+      7,
+      8,
+      9,
+      12,
+      12,
+      11,
+      11,
+      9,
+      9,
+      8,
+      8
+    ],
+    "snowMonths": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      11,
+      12
+    ]
+  },
+  "bulletins": [
+    {
+      "name": "Météo-France avalanche bulletin (BRA)",
+      "url": "https://meteofrance.com/meteo-montagne",
+      "type": "avalanche"
+    },
+    {
+      "name": "Météo-France montagne",
+      "url": "https://meteofrance.com/meteo-montagne",
+      "type": "weather"
+    },
+    {
+      "name": "meteoblue multimodel",
+      "url": "https://www.meteoblue.com/",
+      "type": "weather"
+    },
+    {
+      "name": "FFCAM refuge booking",
+      "url": "https://www.ffcam.fr/",
+      "type": "huts"
+    }
+  ],
+  "guides": [
+    {
+      "name": "Camptocamp Vanoise outings",
+      "url": "https://www.camptocamp.org/"
+    },
+    {
+      "name": "Skitour.fr",
+      "url": "https://skitour.fr/"
+    }
+  ],
+  "lastReviewed": "2026-11-08",
+  "sources": []
+}

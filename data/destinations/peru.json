@@ -1,0 +1,547 @@
+{
+  "id": "peru",
+  "name": "Peru, acclimatised",
+  "region": "Lima, Arequipa, Sacred Valley, Cusco, Titicaca",
+  "zone": "americas",
+  "tagline": "Inca and pre-Inca Peru built as a slow climb: coast, 2,300 m, 2,900 m, then Cusco, the Inca Trail or Choquequirao, and Titicaca last.",
+  "noFlights": false,
+  "palette": [
+    "#d7b47a",
+    "#a87b45",
+    "#6b5236",
+    "#3a2f26",
+    "#f3e7cf"
+  ],
+  "access": [
+    {
+      "originRegion": "europe-west",
+      "originCity": "Brussels",
+      "mode": "flight",
+      "costPerPerson": 1100,
+      "route": "Brussels→Lima via Madrid, Paris or Amsterdam (Iberia, Air France, KLM), 13–14 h; internal flights on top"
+    },
+    {
+      "originRegion": "uk",
+      "originCity": "London",
+      "mode": "flight",
+      "costPerPerson": 950,
+      "route": "London→Lima via Madrid or Amsterdam, 15 h"
+    }
+  ],
+  "rates": {
+    "city": 75,
+    "hike": 100,
+    "transit": 90
+  },
+  "nightsNote": "0–5°C in the Sacred Valley and on the trek, 14°C in Lima",
+  "whyNotes": "The other great Latin America option and the strongest history on the page after Mexico. July is the dry season: blue skies, cold nights, the best walking weather of the year.",
+  "fitNotes": "Works if the order is respected: Lima (sea level), Arequipa (2,335 m), Sacred Valley (2,900 m) for three nights, then Cusco (3,400 m), and only after a week the Inca Trail's one pass at 4,215 m or Titicaca at 3,810 m. Still out: Lares, Salkantay and Ausangate (4,400–5,000 m) and the Colca road (4,910 m). Choquequirao is the low-altitude alternative to the Inca Trail. Crowds at Machu Picchu and in Cusco; nowhere else.",
+  "guides": [
+    {
+      "name": "Lonely Planet Peru",
+      "url": "https://www.lonelyplanet.com/peru"
+    },
+    {
+      "name": "Routard Pérou",
+      "url": "https://www.routard.com/guide/code_dest/perou.htm"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Slow climb to the Inca Trail",
+      "picks": {
+        "lima": 2,
+        "arequipa": 2,
+        "sacredvalley": 3,
+        "cuscostay": 2,
+        "incatrail": 4,
+        "machupicchu": 1
+      }
+    },
+    {
+      "name": "Slow climb + Titicaca (19+ days)",
+      "picks": {
+        "lima": 2,
+        "arequipa": 2,
+        "sacredvalley": 3,
+        "cuscostay": 2,
+        "incatrail": 4,
+        "machupicchu": 1,
+        "titicaca": 2
+      }
+    },
+    {
+      "name": "Sacred Valley + Choquequirao",
+      "picks": {
+        "lima": 2,
+        "sacredvalley": 3,
+        "choquequirao": 5,
+        "machupicchu": 2,
+        "arequipa": 2
+      }
+    },
+    {
+      "name": "Lowest altitude: north + coast",
+      "picks": {
+        "lima": 2,
+        "chachapoyas": 3,
+        "gocta": 2,
+        "trujillo": 1,
+        "sacredvalley": 2,
+        "shortinca": 1,
+        "machupicchu": 2
+      }
+    },
+    {
+      "name": "Fewest hours in transit",
+      "picks": {
+        "lima": 1,
+        "sacredvalley": 3,
+        "valleyhikes": 2,
+        "shortinca": 1,
+        "machupicchu": 2,
+        "cusco": 1
+      }
+    }
+  ],
+  "blocks": [
+    {
+      "id": "lima",
+      "type": "city",
+      "name": "Lima",
+      "place": "Larco museum, MALI, Barranco, Huaca Pucllana",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 100,
+      "dayHighC": 19,
+      "crowd": "med",
+      "transitHours": 0.5,
+      "history": "Pre-Inca cultures, viceregal capital",
+      "guidebookPick": true,
+      "see": [
+        "Museo Larco (pre-Columbian collection, the best introduction to the trip)",
+        "MALI and the historic centre: San Francisco catacombs, Plaza Mayor",
+        "Barranco at dusk, Huaca Pucllana pyramid in Miraflores",
+        "Cevichería lunch, never dinner"
+      ],
+      "note": "Winter garúa: grey, 16–19°C, no rain. Sea level: the easy start.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "arequipa",
+      "type": "city",
+      "name": "Arequipa",
+      "place": "White sillar city at 2,335 m, Santa Catalina monastery",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 2400,
+      "dayHighC": 21,
+      "crowd": "med",
+      "transitHours": 2,
+      "history": "Colonial baroque, Juanita the ice maiden",
+      "guidebookPick": true,
+      "see": [
+        "Santa Catalina monastery (a walled town inside the city)",
+        "Museo Santuarios Andinos: Juanita",
+        "Yanahuara viewpoint and the three volcanoes",
+        "Picanterías for rocoto relleno"
+      ],
+      "note": "A good first altitude step at 2,335 m. The Colca canyon road crosses 4,910 m, so Colca is left out.",
+      "ratePerDay": null,
+      "extraTransportCost": 110
+    },
+    {
+      "id": "sacredvalley",
+      "type": "city",
+      "name": "Sacred Valley base (Urubamba, Ollantaytambo)",
+      "place": "Sleep at 2,900 m; Pisac, Ollantaytambo, Moray, Maras by day",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 3500,
+      "dayHighC": 20,
+      "crowd": "med",
+      "transitHours": 2.5,
+      "history": "Inca heartland",
+      "guidebookPick": true,
+      "see": [
+        "Ollantaytambo fortress and living Inca town",
+        "Pisac ruins (3,300 m) and Sunday market",
+        "Moray terraces (3,500 m) and the Maras salt pans",
+        "Chinchero weavers",
+        "Go slowly: this is where the body adapts"
+      ],
+      "note": "Fly Lima→Cusco (1.5 h) and drive straight down to the valley, 1.5 h. Day trips touch 3,500 m; nights stay at 2,900 m.",
+      "ratePerDay": null,
+      "extraTransportCost": 120
+    },
+    {
+      "id": "machupicchu",
+      "type": "city",
+      "name": "Machu Picchu + Aguas Calientes",
+      "place": "The citadel at 2,430 m; train in, overnight, early entry",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 2700,
+      "dayHighC": 22,
+      "crowd": "high",
+      "transitHours": 2,
+      "history": "15th-century Inca estate",
+      "guidebookPick": true,
+      "see": [
+        "First-entry slot (6 am) on circuit 2 for the classic view",
+        "Huayna Picchu or Machu Picchu mountain for the siblings (separate ticket)",
+        "Inca bridge walk",
+        "Machu Picchu site museum below the ruins"
+      ],
+      "note": "Timed tickets sell out 2–3 months ahead in July; the train is the other thing to book early.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "cuscostay",
+      "type": "city",
+      "name": "Cusco, two nights",
+      "place": "Qorikancha, cathedral, San Blas, Sacsayhuamán; sleep at 3,400 m after the valley",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 3700,
+      "dayHighC": 19,
+      "crowd": "high",
+      "transitHours": 1.5,
+      "history": "Inca capital under a Spanish one",
+      "guidebookPick": true,
+      "see": [
+        "Qorikancha sun temple and the Santo Domingo convent built on it",
+        "Cathedral, Plaza de Armas, San Blas workshops",
+        "Sacsayhuamán, Q'enqo, Tambomachay (3,700 m, short)",
+        "Museo Inka, San Pedro market, Pre-Columbian Art museum"
+      ],
+      "note": "Only after three nights in the valley. This is the acclimatisation step that makes the Inca Trail possible.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "titicaca",
+      "type": "city",
+      "name": "Lake Titicaca",
+      "place": "Puno at 3,810 m, Uros reed islands, Taquile, Amantaní homestay",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 3950,
+      "dayHighC": 16,
+      "crowd": "med",
+      "transitHours": 7,
+      "history": "Tiwanaku and Inca origin myth, Sillustani tombs",
+      "guidebookPick": true,
+      "see": [
+        "Boat to Taquile (textile UNESCO) and a night with a family on Amantaní",
+        "Uros floating islands early, before the day boats",
+        "Sillustani chullpa towers on the way in"
+      ],
+      "note": "Highest sleeping altitude of the trip (3,810–3,950 m). Last stop, never first. Scenic train or 7 h bus from Cusco, 1 h flight back to Lima from Juliaca.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "cusco",
+      "type": "city",
+      "name": "Cusco (day visit)",
+      "place": "Qorikancha, cathedral, San Blas, Sacsayhuamán",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 3700,
+      "dayHighC": 19,
+      "crowd": "high",
+      "transitHours": 1.5,
+      "history": "Inca capital under a Spanish one",
+      "guidebookPick": true,
+      "see": [
+        "Qorikancha sun temple",
+        "Cathedral and Plaza de Armas",
+        "Sacsayhuamán (3,700 m, stay short)",
+        "San Pedro market"
+      ],
+      "note": "3,400 m, and 3,700 m at Sacsayhuamán. A day trip from the valley rather than an overnight is kinder to Mom. One night at most.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "chachapoyas",
+      "type": "city",
+      "name": "Chachapoyas + Kuélap",
+      "place": "Cloud-forest highlands at 2,300 m, the walled city of Kuélap, Leymebamba mummies",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 3000,
+      "dayHighC": 22,
+      "crowd": "low",
+      "transitHours": 5,
+      "history": "Chachapoya culture, pre-Inca",
+      "guidebookPick": true,
+      "see": [
+        "Kuélap fortress by cable car (3,000 m)",
+        "Karajía cliff sarcophagi",
+        "Leymebamba museum (200 mummies) and the Revash tombs",
+        "Chachapoyas town, nothing touristic about it"
+      ],
+      "note": "Fly Lima→Jaén (1.5 h), then 4 h by road. Few visitors, lower altitude, real distance.",
+      "ratePerDay": null,
+      "extraTransportCost": 180
+    },
+    {
+      "id": "trujillo",
+      "type": "city",
+      "name": "Trujillo: Chan Chan + Huaca de la Luna",
+      "place": "Largest adobe city in the world, Moche temples, Huanchaco reed boats",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 50,
+      "dayHighC": 20,
+      "crowd": "low",
+      "transitHours": 1.5,
+      "history": "Moche and Chimú kingdoms",
+      "guidebookPick": true,
+      "see": [
+        "Chan Chan Tschudi complex",
+        "Huaca de la Luna murals and museum",
+        "Huanchaco caballitos de totora"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 100
+    },
+    {
+      "id": "incatrail",
+      "type": "hike",
+      "name": "Classic Inca Trail",
+      "place": "4 days, 43 km, Dead Woman's Pass 4,215 m on day 2, into Machu Picchu by the Sun Gate",
+      "defaultDays": 4,
+      "minDays": 4,
+      "maxDays": 4,
+      "maxAltitudeM": 4215,
+      "dayHighC": 18,
+      "crowd": "high",
+      "transitHours": 1.5,
+      "history": "The Inca road itself: Runkurakay, Sayacmarca, Phuyupatamarca, Wiñay Wayna",
+      "guidebookPick": true,
+      "see": [
+        "Day 2: the pass at 4,215 m, up slowly from a 3,000 m camp, down to 3,600 m to sleep",
+        "Days 3–4: cloud-forest ruins, the Sun Gate at dawn",
+        "Porters carry everything; a 5-day version adds a rest day for Mom",
+        "Permits: 500 a day including staff, sold out for July by February"
+      ],
+      "note": "Only pass over 4,000 m on this page that is inside the ceiling. Do it after a week at altitude, choose the 5-day option, and keep the Short Inca Trail as the fallback.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "choquequirao",
+      "type": "hike",
+      "name": "Choquequirao trek",
+      "place": "4–5 days from Cachora: down to the Apurímac (1,500 m), up to the ruins (3,050 m), back",
+      "defaultDays": 5,
+      "minDays": 4,
+      "maxDays": 5,
+      "maxAltitudeM": 3050,
+      "dayHighC": 24,
+      "crowd": "low",
+      "transitHours": 4,
+      "history": "Inca city still being excavated",
+      "guidebookPick": true,
+      "see": [
+        "Day 1 down 1,500 m to the river camp, day 2 up to Marampata",
+        "A full day in the ruins: the llama terraces, almost no one else",
+        "Mules carry everything; a cook and guide come with the group",
+        "Return the same way, or 3 extra days through to Machu Picchu"
+      ],
+      "note": "Low altitude but hard legs: 1,500 m of descent then ascent each way, hot in the canyon. The siblings' kind of trek; Mom can stop at Marampata and still see the ruins.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "valleyhikes",
+      "type": "hike",
+      "name": "Sacred Valley day walks",
+      "place": "Pumamarca, the Inca quarry trail, Huchuy Qosqo from Lamay",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 3500,
+      "dayHighC": 20,
+      "crowd": "low",
+      "transitHours": 0.5,
+      "history": "Inca roads and terraces",
+      "guidebookPick": false,
+      "see": [
+        "Ollantaytambo to Pumamarca ruins (3 h, 3,400 m)",
+        "Inca quarry trail across the river",
+        "Huchuy Qosqo (3,650 m) with a horse option back"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "shortinca",
+      "type": "hike",
+      "name": "Short Inca Trail (KM 104)",
+      "place": "One day, Wiñay Wayna, entry through the Sun Gate at 2,700 m",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 1,
+      "maxAltitudeM": 2750,
+      "dayHighC": 22,
+      "crowd": "med",
+      "transitHours": 1,
+      "history": "Inca road",
+      "guidebookPick": true,
+      "see": [
+        "Chachabamba to Wiñay Wayna terraces",
+        "Intipunku (Sun Gate) arrival into Machu Picchu in the afternoon"
+      ],
+      "note": "The Inca Trail without the 4,215 m pass. Permits are limited; book with the Machu Picchu tickets.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "gocta",
+      "type": "hike",
+      "name": "Gocta waterfall + Kuélap valleys",
+      "place": "771 m cataract, cloud forest, 2,000–2,900 m",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 2900,
+      "dayHighC": 22,
+      "crowd": "low",
+      "transitHours": 0.5,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Cocachimba to the base of Gocta (5 h round trip)",
+        "Yumbilla falls, taller and emptier",
+        "Huancas canyon viewpoint"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "colca",
+      "type": "hike",
+      "name": "Colca canyon",
+      "place": "Condors at Cruz del Cóndor, terraces, canyon-floor walk",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 4910,
+      "dayHighC": 20,
+      "crowd": "med",
+      "transitHours": 4,
+      "history": "Collagua terraces",
+      "guidebookPick": true,
+      "see": [
+        "Cruz del Cóndor at 8 am",
+        "Canyon-floor walk to Sangalle",
+        "Chivay hot springs"
+      ],
+      "note": "Beautiful, and the road from Arequipa crosses the Patapampa pass at 4,910 m. Over Mom's limit; here so the choice is explicit.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    }
+  ],
+  "season": {
+    "fitByMonth": [
+      50,
+      45,
+      50,
+      65,
+      85,
+      95,
+      95,
+      95,
+      90,
+      80,
+      70,
+      55
+    ],
+    "events": [
+      {
+        "name": "Fiestas Patrias",
+        "from": "07-28",
+        "to": "07-29",
+        "effect": "crowds",
+        "note": "Domestic travel peak"
+      }
+    ],
+    "notes": [
+      "Dry season across the Andes: sun by day, 0–5°C nights in the valley and on the trek.",
+      "Lima is grey and 16–19°C all winter; no rain.",
+      "Machu Picchu entry tickets and the Choquequirao mules need booking 2–3 months ahead for July.",
+      "Fiestas Patrias (28–29 July) fall inside these dates: Peruvians travel, Cusco and the valley fill, prices rise for that week."
+    ]
+  },
+  "kind": "explore",
+  "tags": [
+    "history",
+    "mountains",
+    "cities"
+  ],
+  "lodgingAssumption": "Local B&B or Airbnb, two rooms for five, one meal out a day; shared van or hire car",
+  "climate": {
+    "representative": "Sacred Valley (2,900 m)",
+    "dayHighC": [
+      20,
+      20,
+      20,
+      21,
+      21,
+      20,
+      20,
+      21,
+      21,
+      22,
+      22,
+      21
+    ],
+    "nightLowC": [
+      7,
+      7,
+      7,
+      5,
+      3,
+      1,
+      0,
+      2,
+      4,
+      6,
+      6,
+      7
+    ],
+    "rainDays": [
+      18,
+      17,
+      15,
+      8,
+      3,
+      2,
+      1,
+      2,
+      4,
+      8,
+      10,
+      14
+    ],
+    "snowMonths": []
+  }
+}

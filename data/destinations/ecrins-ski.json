@@ -1,0 +1,391 @@
+{
+  "id": "ecrins-ski",
+  "kind": "skitour",
+  "zone": "europe",
+  "name": "Écrins: Vallouise and the Glacier Blanc",
+  "region": "Hautes-Alpes, France",
+  "noFlights": true,
+  "tagline": "A serious week: Refuge des Écrins, the Barre's glaciers, Dôme de Neige 4,015 m for the strong, quieter valleys for everyone else.",
+  "tags": [
+    "skitour",
+    "huts",
+    "glaciers",
+    "france",
+    "big-days"
+  ],
+  "access": [
+    {
+      "originRegion": "europe-west",
+      "originCity": "Brussels",
+      "mode": "train",
+      "costPerPerson": 170,
+      "route": "Brussels→Paris→Grenoble or Briançon (train), bus to Vallouise / Ailefroide; or drive 10 h"
+    },
+    {
+      "originRegion": "uk",
+      "originCity": "London",
+      "mode": "train",
+      "costPerPerson": 200,
+      "route": "Eurostar→Paris→Briançon (night train), bus to Vallouise"
+    }
+  ],
+  "rates": {
+    "stage": 85,
+    "transit": 90,
+    "guide": 120
+  },
+  "lodgingAssumption": "Refuge winter rooms and staffed huts in spring; gîte in Vallouise",
+  "presets": [
+    {
+      "name": "Glacier Blanc week",
+      "picks": {
+        "vallouise": 1,
+        "s1": 1,
+        "s2": 1,
+        "s3": 1,
+        "s4": 1,
+        "s5": 1
+      }
+    },
+    {
+      "name": "Gentler: Fournel and Freissinières",
+      "picks": {
+        "vallouise": 1,
+        "s6": 1,
+        "s7": 1,
+        "s8": 1
+      }
+    }
+  ],
+  "blocks": [
+    {
+      "id": "vallouise",
+      "type": "city",
+      "name": "Vallouise / Ailefroide",
+      "place": "Base at 1,160–1,500 m, bulletin and gear day",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 3,
+      "crowd": "low",
+      "transitHours": 8,
+      "maxAltitudeM": 1500,
+      "dayHighC": 5,
+      "see": [],
+      "history": null,
+      "guidebookPick": false
+    },
+    {
+      "id": "s1",
+      "type": "stage",
+      "name": "Day 1: Pré de Madame Carle to Refuge du Glacier Blanc",
+      "place": "2,542 m",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "low",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "ascentM": 700,
+      "descentM": 0,
+      "hours": 3,
+      "maxAltitudeM": 2542,
+      "difficulty": "WS",
+      "hut": {
+        "name": "Refuge du Glacier Blanc (CAF)",
+        "bookAheadMonths": 2
+      },
+      "dayHighC": -1
+    },
+    {
+      "id": "s2",
+      "type": "stage",
+      "name": "Day 2: to Refuge des Écrins",
+      "place": "Up the Glacier Blanc to 3,170 m",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "low",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "ascentM": 650,
+      "descentM": 0,
+      "hours": 4,
+      "maxAltitudeM": 3170,
+      "difficulty": "WS+",
+      "hut": {
+        "name": "Refuge des Écrins (CAF)",
+        "bookAheadMonths": 2
+      },
+      "dayHighC": -5
+    },
+    {
+      "id": "s3",
+      "type": "stage",
+      "name": "Day 3: Dôme de Neige des Écrins",
+      "place": "4,015 m by the Glacier Blanc; crevassed, cold, early",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "low",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "ascentM": 850,
+      "descentM": 850,
+      "hours": 7,
+      "maxAltitudeM": 4015,
+      "difficulty": "ZS+",
+      "hut": {
+        "name": "Refuge des Écrins",
+        "bookAheadMonths": 2
+      },
+      "dayHighC": -10,
+      "note": "A 4,000 m summit on skis: guide, rope, crampons. The Roche Faurio (3,730 m) is the easier day from the same hut."
+    },
+    {
+      "id": "s4",
+      "type": "stage",
+      "name": "Day 4: Col des Écrins or Roche Faurio, down to Glacier Blanc hut",
+      "place": "",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "low",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "ascentM": 500,
+      "descentM": 1100,
+      "hours": 5,
+      "maxAltitudeM": 3730,
+      "difficulty": "ZS",
+      "hut": {
+        "name": "Refuge du Glacier Blanc",
+        "bookAheadMonths": 2
+      },
+      "dayHighC": -6
+    },
+    {
+      "id": "s5",
+      "type": "stage",
+      "name": "Day 5: descent to Ailefroide, Pelvoux slopes",
+      "place": "",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "low",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "ascentM": 300,
+      "descentM": 1300,
+      "hours": 4,
+      "maxAltitudeM": 2600,
+      "difficulty": "WS",
+      "hut": {
+        "name": "Gîte in Vallouise",
+        "bookAheadMonths": 1
+      },
+      "dayHighC": 3
+    },
+    {
+      "id": "s6",
+      "type": "stage",
+      "name": "Fournel valley: Refuge de Dormillouse",
+      "place": "Gentle valley tours, no glacier",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "low",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "ascentM": 900,
+      "descentM": 900,
+      "hours": 5,
+      "maxAltitudeM": 2800,
+      "difficulty": "WS",
+      "hut": {
+        "name": "Refuge de Dormillouse / gîte",
+        "bookAheadMonths": 1
+      },
+      "dayHighC": 1
+    },
+    {
+      "id": "s7",
+      "type": "stage",
+      "name": "Freissinières: Tête de Vautisse",
+      "place": "3,156 m, open slopes",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "low",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "ascentM": 1300,
+      "descentM": 1300,
+      "hours": 6,
+      "maxAltitudeM": 3156,
+      "difficulty": "WS+",
+      "hut": {
+        "name": "Gîte in Freissinières",
+        "bookAheadMonths": 1
+      },
+      "dayHighC": -2
+    },
+    {
+      "id": "s8",
+      "type": "stage",
+      "name": "Puy Saint-Vincent: Pointe de Clapouse",
+      "place": "Day tour from the road",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "low",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "ascentM": 1100,
+      "descentM": 1100,
+      "hours": 5,
+      "maxAltitudeM": 2990,
+      "difficulty": "WS",
+      "hut": {
+        "name": "Gîte in Vallouise",
+        "bookAheadMonths": 1
+      },
+      "dayHighC": 0
+    }
+  ],
+  "season": {
+    "fitByMonth": [
+      45,
+      75,
+      95,
+      90,
+      50,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      25
+    ],
+    "events": [
+      {
+        "name": "French school holidays",
+        "from": "02-08",
+        "to": "03-09",
+        "effect": "crowds",
+        "note": "Huts busier at weekends"
+      }
+    ],
+    "notes": [
+      "Late March to early May for the glacier tours; the Écrins hut opens for the spring season in March.",
+      "Cold north faces keep powder into April; south slopes go to spring snow by 10 am.",
+      "Bulletin: Météo-France BRA Écrins and Pelvoux."
+    ]
+  },
+  "climate": {
+    "representative": "Huts at 2,500–3,200 m",
+    "dayHighC": [
+      -7,
+      -6,
+      -3,
+      1,
+      6,
+      10,
+      13,
+      13,
+      9,
+      4,
+      -2,
+      -6
+    ],
+    "nightLowC": [
+      -15,
+      -15,
+      -12,
+      -8,
+      -3,
+      1,
+      4,
+      4,
+      1,
+      -4,
+      -10,
+      -14
+    ],
+    "rainDays": [
+      7,
+      6,
+      7,
+      8,
+      10,
+      10,
+      9,
+      9,
+      8,
+      8,
+      7,
+      7
+    ],
+    "snowMonths": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      10,
+      11,
+      12
+    ]
+  },
+  "bulletins": [
+    {
+      "name": "Météo-France avalanche bulletin (BRA)",
+      "url": "https://meteofrance.com/meteo-montagne",
+      "type": "avalanche"
+    },
+    {
+      "name": "Météo-France montagne",
+      "url": "https://meteofrance.com/meteo-montagne",
+      "type": "weather"
+    },
+    {
+      "name": "meteoblue multimodel",
+      "url": "https://www.meteoblue.com/",
+      "type": "weather"
+    },
+    {
+      "name": "FFCAM refuge booking",
+      "url": "https://www.ffcam.fr/",
+      "type": "huts"
+    }
+  ],
+  "guides": [
+    {
+      "name": "Camptocamp Écrins",
+      "url": "https://www.camptocamp.org/"
+    },
+    {
+      "name": "Skitour.fr",
+      "url": "https://skitour.fr/"
+    }
+  ],
+  "lastReviewed": "2026-11-08",
+  "sources": []
+}

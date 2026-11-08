@@ -1,0 +1,474 @@
+{
+  "id": "haute-route-walk",
+  "kind": "hike",
+  "zone": "europe",
+  "name": "Walker's Haute Route",
+  "region": "Chamonix to Zermatt, Switzerland",
+  "noFlights": true,
+  "tagline": "Twelve or thirteen stages across eleven passes from Mont Blanc to the Matterhorn; harder, higher and emptier than the TMB.",
+  "tags": [
+    "mountains",
+    "huts",
+    "glaciers",
+    "classic"
+  ],
+  "access": [
+    {
+      "originRegion": "europe-west",
+      "originCity": "Brussels",
+      "mode": "train",
+      "costPerPerson": 240,
+      "route": "Brussels→Paris→Chamonix; home Zermatt→Visp→Basel→Brussels"
+    },
+    {
+      "originRegion": "uk",
+      "originCity": "London",
+      "mode": "train",
+      "costPerPerson": 260,
+      "route": "Eurostar→Paris→Chamonix; home via Basel"
+    }
+  ],
+  "rates": {
+    "stage": 115,
+    "city": 150,
+    "transit": 120,
+    "guide": 80
+  },
+  "lodgingAssumption": "Swiss cabanes and village dortoirs, half board",
+  "presets": [
+    {
+      "name": "Full route (12 stages)",
+      "picks": {
+        "s1": 1,
+        "s2": 1,
+        "s3": 1,
+        "s4": 1,
+        "s5": 1,
+        "s6": 1,
+        "s7": 1,
+        "s8": 1,
+        "s9": 1,
+        "s10": 1,
+        "s11": 1,
+        "s12": 1
+      }
+    },
+    {
+      "name": "Second half: Arolla to Zermatt",
+      "picks": {
+        "s7": 1,
+        "s8": 1,
+        "s9": 1,
+        "s10": 1,
+        "s11": 1,
+        "s12": 1
+      }
+    }
+  ],
+  "blocks": [
+    {
+      "id": "s1",
+      "type": "stage",
+      "name": "Stage 1: Chamonix to Trient",
+      "place": "Col de Balme",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "med",
+      "transitHours": 7,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "distanceKm": 18,
+      "ascentM": 1300,
+      "descentM": 1000,
+      "hours": 7,
+      "maxAltitudeM": 2191,
+      "difficulty": "T2",
+      "hut": {
+        "name": "Auberge Mont Blanc, Trient",
+        "bookAheadMonths": 4
+      },
+      "dayHighC": 17
+    },
+    {
+      "id": "s2",
+      "type": "stage",
+      "name": "Stage 2: to Champex",
+      "place": "Fenêtre d'Arpette (or Bovine)",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "med",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "distanceKm": 14,
+      "ascentM": 1400,
+      "descentM": 1200,
+      "hours": 7,
+      "maxAltitudeM": 2665,
+      "difficulty": "T3",
+      "hut": {
+        "name": "Dortoir in Champex",
+        "bookAheadMonths": 3
+      },
+      "dayHighC": 16
+    },
+    {
+      "id": "s3",
+      "type": "stage",
+      "name": "Stage 3: to Le Châble",
+      "place": "Down the Val de Bagnes",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "low",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "distanceKm": 14,
+      "ascentM": 200,
+      "descentM": 900,
+      "hours": 4,
+      "maxAltitudeM": 1500,
+      "difficulty": "T1",
+      "hut": {
+        "name": "Hotel in Le Châble",
+        "bookAheadMonths": 2
+      },
+      "dayHighC": 22
+    },
+    {
+      "id": "s4",
+      "type": "stage",
+      "name": "Stage 4: to Cabane du Mont Fort",
+      "place": "Up through Verbier's pastures",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "med",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "distanceKm": 12,
+      "ascentM": 1650,
+      "descentM": 0,
+      "hours": 6,
+      "maxAltitudeM": 2457,
+      "difficulty": "T2",
+      "hut": {
+        "name": "Cabane du Mont Fort",
+        "bookAheadMonths": 4
+      },
+      "dayHighC": 15
+    },
+    {
+      "id": "s5",
+      "type": "stage",
+      "name": "Stage 5: to Cabane de Prafleuri",
+      "place": "Col Termin, Col de Louvie, Col de Prafleuri",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "med",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "distanceKm": 14,
+      "ascentM": 900,
+      "descentM": 700,
+      "hours": 7,
+      "maxAltitudeM": 2965,
+      "difficulty": "T3",
+      "hut": {
+        "name": "Cabane de Prafleuri",
+        "bookAheadMonths": 4
+      },
+      "dayHighC": 12,
+      "note": "Highest point of the route; boulder fields, snow patches into July."
+    },
+    {
+      "id": "s6",
+      "type": "stage",
+      "name": "Stage 6: to Arolla",
+      "place": "Lac des Dix, Col de Riedmatten or Pas de Chèvres ladders",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "med",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "distanceKm": 17,
+      "ascentM": 900,
+      "descentM": 1200,
+      "hours": 7,
+      "maxAltitudeM": 2919,
+      "difficulty": "T3",
+      "hut": {
+        "name": "Hotel or dortoir in Arolla",
+        "bookAheadMonths": 3
+      },
+      "dayHighC": 14
+    },
+    {
+      "id": "s7",
+      "type": "stage",
+      "name": "Stage 7: to La Sage",
+      "place": "Lac Bleu, Les Haudères",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "low",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "distanceKm": 11,
+      "ascentM": 350,
+      "descentM": 700,
+      "hours": 4,
+      "maxAltitudeM": 2100,
+      "difficulty": "T1",
+      "hut": {
+        "name": "Hotel in La Sage",
+        "bookAheadMonths": 2
+      },
+      "dayHighC": 20
+    },
+    {
+      "id": "s8",
+      "type": "stage",
+      "name": "Stage 8: to Cabane de Moiry",
+      "place": "Col de Torrent, Lac de Moiry",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "med",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "distanceKm": 16,
+      "ascentM": 1300,
+      "descentM": 600,
+      "hours": 7,
+      "maxAltitudeM": 2919,
+      "difficulty": "T2",
+      "hut": {
+        "name": "Cabane de Moiry",
+        "bookAheadMonths": 4
+      },
+      "dayHighC": 12
+    },
+    {
+      "id": "s9",
+      "type": "stage",
+      "name": "Stage 9: to Zinal",
+      "place": "Col de Sorebois",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "med",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "distanceKm": 12,
+      "ascentM": 450,
+      "descentM": 1600,
+      "hours": 5,
+      "maxAltitudeM": 2835,
+      "difficulty": "T2",
+      "hut": {
+        "name": "Hotel or dortoir in Zinal",
+        "bookAheadMonths": 2
+      },
+      "dayHighC": 18
+    },
+    {
+      "id": "s10",
+      "type": "stage",
+      "name": "Stage 10: to Gruben",
+      "place": "Forcletta into the Turtmanntal",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "low",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "distanceKm": 14,
+      "ascentM": 1200,
+      "descentM": 1050,
+      "hours": 6,
+      "maxAltitudeM": 2874,
+      "difficulty": "T2",
+      "hut": {
+        "name": "Hotel Schwarzhorn, Gruben",
+        "bookAheadMonths": 3
+      },
+      "dayHighC": 16
+    },
+    {
+      "id": "s11",
+      "type": "stage",
+      "name": "Stage 11: to St Niklaus / Gasenried",
+      "place": "Augstbordpass",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "low",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "distanceKm": 16,
+      "ascentM": 1100,
+      "descentM": 1700,
+      "hours": 7,
+      "maxAltitudeM": 2894,
+      "difficulty": "T2",
+      "hut": {
+        "name": "Hotel in St Niklaus or Gasenried",
+        "bookAheadMonths": 2
+      },
+      "dayHighC": 20
+    },
+    {
+      "id": "s12",
+      "type": "stage",
+      "name": "Stage 12: Europaweg to Zermatt",
+      "place": "Europahütte, the Charles Kuonen suspension bridge, Zermatt",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "med",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "distanceKm": 20,
+      "ascentM": 900,
+      "descentM": 1100,
+      "hours": 8,
+      "maxAltitudeM": 2300,
+      "difficulty": "T3",
+      "hut": {
+        "name": "Europahütte (night before) / Zermatt",
+        "bookAheadMonths": 4
+      },
+      "dayHighC": 17,
+      "note": "Usually split over two days with a night at the Europahütte."
+    }
+  ],
+  "season": {
+    "fitByMonth": [
+      0,
+      0,
+      0,
+      0,
+      10,
+      60,
+      90,
+      90,
+      85,
+      30,
+      0,
+      0
+    ],
+    "events": [],
+    "notes": [
+      "Huts open late June to mid-September; the high cols hold snow into mid-July.",
+      "Fewer walkers than the TMB; still book cabanes by March.",
+      "Swiss prices: budget 15–20% above the French and Italian routes."
+    ]
+  },
+  "climate": {
+    "representative": "Cabanes at 2,400–2,900 m",
+    "dayHighC": [
+      -4,
+      -4,
+      -1,
+      3,
+      8,
+      12,
+      15,
+      15,
+      11,
+      6,
+      0,
+      -3
+    ],
+    "nightLowC": [
+      -12,
+      -12,
+      -9,
+      -5,
+      -1,
+      3,
+      6,
+      6,
+      3,
+      -1,
+      -6,
+      -10
+    ],
+    "rainDays": [
+      7,
+      7,
+      8,
+      9,
+      12,
+      12,
+      11,
+      11,
+      9,
+      9,
+      8,
+      8
+    ],
+    "snowMonths": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      10,
+      11,
+      12
+    ]
+  },
+  "bulletins": [
+    {
+      "name": "MeteoSwiss",
+      "url": "https://www.meteoswiss.admin.ch/",
+      "type": "weather"
+    },
+    {
+      "name": "SAC hut portal",
+      "url": "https://www.sac-cas.ch/en/huts-and-tours/",
+      "type": "huts"
+    },
+    {
+      "name": "hut-reservation.org (SAC, DAV, ÖAV, CAI huts)",
+      "url": "https://www.hut-reservation.org/"
+    }
+  ],
+  "guides": [
+    {
+      "name": "Cicerone: Chamonix to Zermatt",
+      "url": "https://www.cicerone.co.uk/"
+    }
+  ],
+  "lastReviewed": "2026-11-08",
+  "sources": []
+}

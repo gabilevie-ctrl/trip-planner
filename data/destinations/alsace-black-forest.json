@@ -1,0 +1,240 @@
+{
+  "id": "alsace-black-forest",
+  "kind": "explore",
+  "zone": "europe",
+  "name": "Alsace + the Black Forest by train",
+  "region": "Strasbourg, Colmar, Freiburg, Vosges",
+  "noFlights": true,
+  "tagline": "Two wine regions either side of the Rhine, half-timbered towns, winter walking in the Vosges and the Schwarzwald, four hours from London.",
+  "tags": [
+    "cities",
+    "food",
+    "wine",
+    "forest",
+    "winter-ok",
+    "short"
+  ],
+  "access": [
+    {
+      "originRegion": "uk",
+      "originCity": "London",
+      "mode": "train",
+      "costPerPerson": 150,
+      "route": "Eurostar→Paris, TGV→Strasbourg (1 h 45); total 5 h"
+    },
+    {
+      "originRegion": "europe-west",
+      "originCity": "Brussels",
+      "mode": "train",
+      "costPerPerson": 110,
+      "route": "Brussels→Strasbourg direct TGV (3 h 30)"
+    }
+  ],
+  "rates": {
+    "city": 120,
+    "hike": 100,
+    "transit": 100
+  },
+  "lodgingAssumption": "Small hotels and winstubs; a Black Forest guesthouse",
+  "presets": [
+    {
+      "name": "Strasbourg, Colmar, Freiburg",
+      "picks": {
+        "strasbourg": 2,
+        "colmar": 2,
+        "vosges": 1,
+        "freiburg": 2,
+        "schwarzwald": 1
+      }
+    }
+  ],
+  "blocks": [
+    {
+      "id": "strasbourg",
+      "type": "city",
+      "name": "Strasbourg",
+      "place": "Cathedral, Petite France, Musée Alsacien, European quarter",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 3,
+      "crowd": "med",
+      "transitHours": 5,
+      "maxAltitudeM": 500,
+      "dayHighC": 5,
+      "see": [],
+      "history": "Imperial free city, Franco-German border",
+      "guidebookPick": false
+    },
+    {
+      "id": "colmar",
+      "type": "city",
+      "name": "Colmar + the wine route",
+      "place": "Unterlinden (Isenheim altarpiece), Riquewihr, Kaysersberg",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 3,
+      "crowd": "med",
+      "transitHours": 0.5,
+      "maxAltitudeM": 500,
+      "dayHighC": 5,
+      "see": [],
+      "history": "Grünewald's Isenheim altarpiece",
+      "guidebookPick": false
+    },
+    {
+      "id": "freiburg",
+      "type": "city",
+      "name": "Freiburg im Breisgau",
+      "place": "Minster, Bächle, the market, the Schauinsland cable car",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 3,
+      "crowd": "med",
+      "transitHours": 1.5,
+      "maxAltitudeM": 500,
+      "dayHighC": 6,
+      "see": [],
+      "history": "Habsburg university town",
+      "guidebookPick": false
+    },
+    {
+      "id": "vosges",
+      "type": "hike",
+      "name": "Vosges crests: Hohneck and the Grand Ballon",
+      "place": "Snowshoe or walk on the Route des Crêtes, 1,360–1,424 m",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 1424,
+      "dayHighC": -1,
+      "crowd": "low",
+      "transitHours": 1,
+      "history": "1914–18 front at the Hartmannswillerkopf",
+      "guidebookPick": true,
+      "see": [
+        "Hohneck from the Col de la Schlucht",
+        "Hartmannswillerkopf memorial",
+        "Ferme-auberge lunch"
+      ]
+    },
+    {
+      "id": "schwarzwald",
+      "type": "hike",
+      "name": "Black Forest: Feldberg and the Höllental",
+      "place": "Feldberg 1,493 m, Titisee, Ravenna gorge",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 1493,
+      "dayHighC": -1,
+      "crowd": "med",
+      "transitHours": 1,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Feldberg summit loop (snowshoes in January)",
+        "Ravenna gorge and its viaduct",
+        "Titisee and Schluchsee by train"
+      ]
+    }
+  ],
+  "season": {
+    "fitByMonth": [
+      70,
+      65,
+      70,
+      80,
+      85,
+      85,
+      80,
+      80,
+      90,
+      90,
+      70,
+      80
+    ],
+    "events": [
+      {
+        "name": "Christmas markets",
+        "from": "11-25",
+        "to": "12-24",
+        "effect": "crowds",
+        "note": "Strasbourg and Colmar at their busiest and prettiest"
+      }
+    ],
+    "notes": [
+      "January: cold, often grey in the plain, snow on the Vosges and Feldberg; museums and winstubs for the rest.",
+      "Trains every hour between all four stops; no car needed.",
+      "Grey days are common in the Rhine plain in winter; the hills are often above the cloud."
+    ]
+  },
+  "climate": {
+    "representative": "Strasbourg (140 m); Vosges crest 1,300 m about 8°C colder",
+    "dayHighC": [
+      5,
+      7,
+      12,
+      16,
+      20,
+      24,
+      26,
+      26,
+      21,
+      15,
+      9,
+      5
+    ],
+    "nightLowC": [
+      -1,
+      0,
+      3,
+      6,
+      10,
+      13,
+      15,
+      15,
+      11,
+      7,
+      3,
+      0
+    ],
+    "rainDays": [
+      10,
+      9,
+      10,
+      10,
+      12,
+      11,
+      11,
+      10,
+      9,
+      10,
+      11,
+      11
+    ],
+    "snowMonths": [
+      1,
+      2,
+      12
+    ]
+  },
+  "bulletins": [
+    {
+      "name": "Météo-France Vosges",
+      "url": "https://meteofrance.com/meteo-montagne",
+      "type": "weather"
+    }
+  ],
+  "guides": [
+    {
+      "name": "Routard Alsace",
+      "url": "https://www.routard.com/guide/code_dest/alsace.htm"
+    },
+    {
+      "name": "Lonely Planet Alsace",
+      "url": "https://www.lonelyplanet.com/france/alsace"
+    }
+  ],
+  "lastReviewed": "2026-11-08",
+  "sources": []
+}

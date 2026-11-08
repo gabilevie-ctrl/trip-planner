@@ -1,0 +1,619 @@
+{
+  "id": "gr20",
+  "kind": "hike",
+  "zone": "europe",
+  "name": "GR20 (Corsica)",
+  "region": "Calenzana to Conca, France",
+  "noFlights": true,
+  "tagline": "Sixteen rough stages down the spine of Corsica; granite, scrambling, basic refuges and the sea at both ends.",
+  "tags": [
+    "mountains",
+    "scrambling",
+    "camping",
+    "island"
+  ],
+  "access": [
+    {
+      "originRegion": "europe-west",
+      "originCity": "Brussels",
+      "mode": "ferry",
+      "costPerPerson": 280,
+      "route": "Train Brussels→Paris→Marseille or Nice, ferry to Calvi or Bastia (6–12 h)"
+    },
+    {
+      "originRegion": "uk",
+      "originCity": "London",
+      "mode": "ferry",
+      "costPerPerson": 300,
+      "route": "Eurostar→Paris→Nice, ferry to Calvi"
+    }
+  ],
+  "rates": {
+    "stage": 60,
+    "city": 110,
+    "transit": 90,
+    "guide": 60
+  },
+  "lodgingAssumption": "Refuge dormitory or rented tent, refuge meals; hotel nights at Vizzavona and the ends",
+  "presets": [
+    {
+      "name": "Northern half (9 stages, Calenzana→Vizzavona)",
+      "picks": {
+        "s1": 1,
+        "s2": 1,
+        "s3": 1,
+        "s4": 1,
+        "s5": 1,
+        "s6": 1,
+        "s7": 1,
+        "s8": 1,
+        "s9": 1,
+        "calvi": 1
+      }
+    },
+    {
+      "name": "Southern half (7 stages, Vizzavona→Conca)",
+      "picks": {
+        "s10": 1,
+        "s11": 1,
+        "s12": 1,
+        "s13": 1,
+        "s14": 1,
+        "s15": 1,
+        "s16": 1,
+        "portovecchio": 1
+      }
+    },
+    {
+      "name": "Full GR20 (16 stages)",
+      "picks": {
+        "calvi": 1,
+        "s1": 1,
+        "s2": 1,
+        "s3": 1,
+        "s4": 1,
+        "s5": 1,
+        "s6": 1,
+        "s7": 1,
+        "s8": 1,
+        "s9": 1,
+        "s10": 1,
+        "s11": 1,
+        "s12": 1,
+        "s13": 1,
+        "s14": 1,
+        "s15": 1,
+        "s16": 1
+      }
+    }
+  ],
+  "blocks": [
+    {
+      "id": "calvi",
+      "type": "city",
+      "name": "Calvi",
+      "place": "Citadel town, ferry port, start",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 3,
+      "crowd": "high",
+      "transitHours": 14,
+      "maxAltitudeM": 500,
+      "dayHighC": 30,
+      "see": [],
+      "history": "Genoese citadel",
+      "guidebookPick": false
+    },
+    {
+      "id": "s1",
+      "type": "stage",
+      "name": "Stage 1: Calenzana to Ortu di u Piobbu",
+      "place": "",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "high",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "distanceKm": 12,
+      "ascentM": 1350,
+      "descentM": 250,
+      "hours": 6,
+      "maxAltitudeM": 1570,
+      "difficulty": "T3",
+      "hut": {
+        "name": "Refuge d'Ortu di u Piobbu",
+        "bookAheadMonths": 3
+      },
+      "dayHighC": 24
+    },
+    {
+      "id": "s2",
+      "type": "stage",
+      "name": "Stage 2: to Carrozzu",
+      "place": "Bocca Piccaia, scrambling begins",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "med",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "distanceKm": 8,
+      "ascentM": 750,
+      "descentM": 1050,
+      "hours": 6,
+      "maxAltitudeM": 2020,
+      "difficulty": "T4",
+      "hut": {
+        "name": "Refuge de Carrozzu",
+        "bookAheadMonths": 3
+      },
+      "dayHighC": 22
+    },
+    {
+      "id": "s3",
+      "type": "stage",
+      "name": "Stage 3: to Asco Stagnu",
+      "place": "Spasimata slabs and the suspension bridge, Bocca a i Stagni",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "med",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "distanceKm": 6,
+      "ascentM": 850,
+      "descentM": 700,
+      "hours": 6,
+      "maxAltitudeM": 2010,
+      "difficulty": "T4",
+      "hut": {
+        "name": "Refuge d'Asco Stagnu / hotel",
+        "bookAheadMonths": 3
+      },
+      "dayHighC": 21
+    },
+    {
+      "id": "s4",
+      "type": "stage",
+      "name": "Stage 4: to Tighjettu",
+      "place": "Bocca Tumasginesca, the Cirque de la Solitude bypass over Pointe des Éboulis",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "med",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "distanceKm": 8,
+      "ascentM": 1200,
+      "descentM": 1000,
+      "hours": 7,
+      "maxAltitudeM": 2607,
+      "difficulty": "T4",
+      "hut": {
+        "name": "Refuge de Tighjettu",
+        "bookAheadMonths": 3
+      },
+      "dayHighC": 18,
+      "note": "Highest and hardest day of the north. Monte Cinto (2,706 m) is an optional detour."
+    },
+    {
+      "id": "s5",
+      "type": "stage",
+      "name": "Stage 5: to Ciottulu di i Mori",
+      "place": "Bocca di Foggiale under Paglia Orba",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "med",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "distanceKm": 9,
+      "ascentM": 700,
+      "descentM": 400,
+      "hours": 5,
+      "maxAltitudeM": 1991,
+      "difficulty": "T3",
+      "hut": {
+        "name": "Refuge de Ciottulu di i Mori",
+        "bookAheadMonths": 3
+      },
+      "dayHighC": 21
+    },
+    {
+      "id": "s6",
+      "type": "stage",
+      "name": "Stage 6: to Manganu",
+      "place": "The Golo valley, Lac de Nino, Castel di Vergio",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "low",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "distanceKm": 22,
+      "ascentM": 650,
+      "descentM": 1000,
+      "hours": 7,
+      "maxAltitudeM": 1760,
+      "difficulty": "T2",
+      "hut": {
+        "name": "Refuge de Manganu",
+        "bookAheadMonths": 3
+      },
+      "dayHighC": 23
+    },
+    {
+      "id": "s7",
+      "type": "stage",
+      "name": "Stage 7: to Petra Piana",
+      "place": "Brèche de Capitello, Lac de Capitello and Melo",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "med",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "distanceKm": 10,
+      "ascentM": 850,
+      "descentM": 600,
+      "hours": 6,
+      "maxAltitudeM": 2225,
+      "difficulty": "T4",
+      "hut": {
+        "name": "Refuge de Petra Piana",
+        "bookAheadMonths": 3
+      },
+      "dayHighC": 19
+    },
+    {
+      "id": "s8",
+      "type": "stage",
+      "name": "Stage 8: to L'Onda",
+      "place": "Ridge or valley variant",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "med",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "distanceKm": 10,
+      "ascentM": 400,
+      "descentM": 800,
+      "hours": 5,
+      "maxAltitudeM": 2100,
+      "difficulty": "T3",
+      "hut": {
+        "name": "Refuge de l'Onda",
+        "bookAheadMonths": 3
+      },
+      "dayHighC": 22
+    },
+    {
+      "id": "s9",
+      "type": "stage",
+      "name": "Stage 9: to Vizzavona",
+      "place": "Monte d'Oro flank, Cascade des Anglais",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "med",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "distanceKm": 11,
+      "ascentM": 700,
+      "descentM": 1200,
+      "hours": 6,
+      "maxAltitudeM": 2150,
+      "difficulty": "T3",
+      "hut": {
+        "name": "Hotel or gîte in Vizzavona",
+        "bookAheadMonths": 2
+      },
+      "dayHighC": 24
+    },
+    {
+      "id": "s10",
+      "type": "stage",
+      "name": "Stage 10: Vizzavona to Capannelle",
+      "place": "Easy forest day",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "low",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "distanceKm": 14,
+      "ascentM": 900,
+      "descentM": 250,
+      "hours": 5,
+      "maxAltitudeM": 1650,
+      "difficulty": "T2",
+      "hut": {
+        "name": "Gîte de Capannelle",
+        "bookAheadMonths": 2
+      },
+      "dayHighC": 24
+    },
+    {
+      "id": "s11",
+      "type": "stage",
+      "name": "Stage 11: to Prati",
+      "place": "Bocca di Verdi, the Punta Capannella",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "med",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "distanceKm": 16,
+      "ascentM": 900,
+      "descentM": 700,
+      "hours": 6,
+      "maxAltitudeM": 1840,
+      "difficulty": "T2",
+      "hut": {
+        "name": "Refuge de Prati",
+        "bookAheadMonths": 2
+      },
+      "dayHighC": 22
+    },
+    {
+      "id": "s12",
+      "type": "stage",
+      "name": "Stage 12: to Usciolu",
+      "place": "Airy ridge walking",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "med",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "distanceKm": 11,
+      "ascentM": 700,
+      "descentM": 800,
+      "hours": 6,
+      "maxAltitudeM": 2050,
+      "difficulty": "T3",
+      "hut": {
+        "name": "Refuge d'Usciolu",
+        "bookAheadMonths": 2
+      },
+      "dayHighC": 22
+    },
+    {
+      "id": "s13",
+      "type": "stage",
+      "name": "Stage 13: to Asinau",
+      "place": "Plateau du Coscione, Monte Incudine 2,134 m",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "med",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "distanceKm": 17,
+      "ascentM": 900,
+      "descentM": 1100,
+      "hours": 7,
+      "maxAltitudeM": 2134,
+      "difficulty": "T3",
+      "hut": {
+        "name": "Refuge d'Asinau",
+        "bookAheadMonths": 2
+      },
+      "dayHighC": 21
+    },
+    {
+      "id": "s14",
+      "type": "stage",
+      "name": "Stage 14: to Paliri",
+      "place": "Bavella needles, alpine variant",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "high",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "distanceKm": 13,
+      "ascentM": 650,
+      "descentM": 1100,
+      "hours": 6,
+      "maxAltitudeM": 1700,
+      "difficulty": "T3",
+      "hut": {
+        "name": "Refuge de Paliri",
+        "bookAheadMonths": 2
+      },
+      "dayHighC": 25
+    },
+    {
+      "id": "s15",
+      "type": "stage",
+      "name": "Stage 15: to Conca",
+      "place": "Down to the maquis and the sea",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "med",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "distanceKm": 12,
+      "ascentM": 300,
+      "descentM": 1100,
+      "hours": 5,
+      "maxAltitudeM": 1300,
+      "difficulty": "T2",
+      "hut": {
+        "name": "Gîte in Conca",
+        "bookAheadMonths": 1
+      },
+      "dayHighC": 29
+    },
+    {
+      "id": "s16",
+      "type": "stage",
+      "name": "Rest and sea day at Conca / Porto-Vecchio",
+      "place": "",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "high",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "distanceKm": 0,
+      "ascentM": 0,
+      "descentM": 0,
+      "hours": 0,
+      "maxAltitudeM": 100,
+      "difficulty": "T1",
+      "hut": {
+        "name": "Hotel in Porto-Vecchio",
+        "bookAheadMonths": 2
+      },
+      "dayHighC": 30
+    },
+    {
+      "id": "portovecchio",
+      "type": "city",
+      "name": "Porto-Vecchio",
+      "place": "Beach town, ferry or bus out",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 3,
+      "crowd": "high",
+      "transitHours": 1,
+      "maxAltitudeM": 500,
+      "dayHighC": 30,
+      "see": [],
+      "history": null,
+      "guidebookPick": false
+    }
+  ],
+  "season": {
+    "fitByMonth": [
+      0,
+      0,
+      0,
+      10,
+      50,
+      85,
+      70,
+      70,
+      90,
+      50,
+      0,
+      0
+    ],
+    "events": [],
+    "notes": [
+      "June and September are the months: July and August are hot below 1,500 m and the refuges are full.",
+      "Refuges are basic; bring a sleeping bag liner and expect to queue for the stove.",
+      "Water is scarce on the southern stages in late summer."
+    ]
+  },
+  "climate": {
+    "representative": "Refuges at 1,500–2,000 m",
+    "dayHighC": [
+      5,
+      5,
+      8,
+      11,
+      16,
+      21,
+      25,
+      25,
+      21,
+      15,
+      10,
+      6
+    ],
+    "nightLowC": [
+      -3,
+      -3,
+      -1,
+      2,
+      6,
+      10,
+      14,
+      14,
+      11,
+      7,
+      2,
+      -1
+    ],
+    "rainDays": [
+      8,
+      7,
+      7,
+      8,
+      6,
+      4,
+      2,
+      2,
+      5,
+      9,
+      9,
+      9
+    ],
+    "snowMonths": [
+      1,
+      2,
+      3,
+      4,
+      12
+    ]
+  },
+  "bulletins": [
+    {
+      "name": "Météo-France Corse",
+      "url": "https://meteofrance.com/meteo-montagne",
+      "type": "weather"
+    },
+    {
+      "name": "PNR Corse refuge booking",
+      "url": "https://www.pnr.corsica/",
+      "type": "huts"
+    }
+  ],
+  "guides": [
+    {
+      "name": "Cicerone: The GR20 Corsica",
+      "url": "https://www.cicerone.co.uk/"
+    }
+  ],
+  "lastReviewed": "2026-11-08",
+  "sources": []
+}

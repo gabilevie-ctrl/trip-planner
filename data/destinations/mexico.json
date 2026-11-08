@@ -1,0 +1,461 @@
+{
+  "id": "mexico",
+  "name": "Mexico: highlands and the south",
+  "region": "Central Mexico, Oaxaca, Chiapas",
+  "zone": "americas",
+  "tagline": "Pre-Hispanic cities, baroque towns, markets, and cool cloud-forest hiking in community-run villages.",
+  "noFlights": false,
+  "palette": [
+    "#e0a96d",
+    "#b4683a",
+    "#6b4a3a",
+    "#3a2b2b",
+    "#f6e3c5"
+  ],
+  "access": [
+    {
+      "originRegion": "europe-west",
+      "originCity": "Brussels",
+      "mode": "flight",
+      "costPerPerson": 950,
+      "route": "Brussels→Mexico City via Paris, Amsterdam or Madrid (Aeroméxico, KLM, Air France), 11–12 h"
+    },
+    {
+      "originRegion": "uk",
+      "originCity": "London",
+      "mode": "flight",
+      "costPerPerson": 800,
+      "route": "London→Mexico City direct (BA, Aeroméxico), 11.5 h"
+    }
+  ],
+  "rates": {
+    "city": 75,
+    "hike": 85,
+    "transit": 90
+  },
+  "nightsNote": "8–12°C in the Sierra Norte cabins, 12–15°C in Mexico City and San Cristóbal, 20°C in Oaxaca",
+  "whyNotes": "The richest history of the seven and a Latin America trip Mom will recognise and love. Rainy season means clear mornings, a storm at 4 pm, and green mountains; it also keeps most tourists away from the highlands.",
+  "fitNotes": "Altitude stays under 3,300 m (Mexico City is 2,240 m, Oaxaca 1,550 m). Heat only appears if you go down to Palenque. The Guelaguetza in Oaxaca (19 and 26 July 2027) is a festival to build around, but it fills the town: book early or avoid those two weekends.",
+  "guides": [
+    {
+      "name": "Lonely Planet Mexico",
+      "url": "https://www.lonelyplanet.com/mexico"
+    },
+    {
+      "name": "Routard Mexique",
+      "url": "https://www.routard.com/guide/code_dest/mexique.htm"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Oaxaca + Chiapas",
+      "picks": {
+        "cdmx": 3,
+        "oaxaca": 3,
+        "sierranorte": 3,
+        "sancristobal": 2,
+        "montebello": 1,
+        "palenque": 1
+      }
+    },
+    {
+      "name": "Highlands + history",
+      "picks": {
+        "cdmx": 3,
+        "puebla": 1,
+        "oaxaca": 3,
+        "sierranorte": 3,
+        "guanajuato": 2
+      }
+    },
+    {
+      "name": "Copper Canyon",
+      "picks": {
+        "cdmx": 2,
+        "copper": 4,
+        "oaxaca": 3,
+        "sierranorte": 3
+      }
+    },
+    {
+      "name": "Fewest hours in the car",
+      "picks": {
+        "cdmx": 3,
+        "puebla": 1,
+        "oaxaca": 4,
+        "sierranorte": 3,
+        "hierve": 1
+      }
+    }
+  ],
+  "blocks": [
+    {
+      "id": "cdmx",
+      "type": "city",
+      "name": "Mexico City",
+      "place": "Anthropology museum, Templo Mayor, Coyoacán, Teotihuacán",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 2240,
+      "dayHighC": 24,
+      "crowd": "med",
+      "transitHours": 0.5,
+      "history": "Aztec capital under a colonial one",
+      "guidebookPick": true,
+      "see": [
+        "Museo Nacional de Antropología (half a day minimum)",
+        "Templo Mayor and the cathedral on the Zócalo",
+        "Coyoacán: Frida Kahlo house (book), Trotsky house",
+        "Teotihuacán at opening time (8 am) to beat the heat and the buses",
+        "Chapultepec castle, Palacio de Bellas Artes murals"
+      ],
+      "note": "Altitude 2,240 m: take the first day slowly. Afternoon storms, so museums after 3 pm.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "puebla",
+      "type": "city",
+      "name": "Puebla + Cholula",
+      "place": "Talavera baroque city, the largest pyramid by volume",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 2200,
+      "dayHighC": 25,
+      "crowd": "low",
+      "transitHours": 2,
+      "history": "Colonial baroque, Cholula pyramid",
+      "guidebookPick": true,
+      "see": [
+        "Capilla del Rosario",
+        "Amparo museum",
+        "Cholula pyramid tunnels and the church on top",
+        "Mole poblano where it was invented"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "oaxaca",
+      "type": "city",
+      "name": "Oaxaca",
+      "place": "Monte Albán, Mitla, markets, mezcal, Guelaguetza",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 5,
+      "maxAltitudeM": 1950,
+      "dayHighC": 28,
+      "crowd": "med",
+      "transitHours": 6,
+      "history": "Zapotec and Mixtec capitals",
+      "guidebookPick": true,
+      "see": [
+        "Monte Albán early morning",
+        "Santo Domingo church and the cultural museum (Tomb 7 treasure)",
+        "Mitla mosaics and a Teotitlán weaving workshop",
+        "Mercado 20 de Noviembre, Benito Juárez market",
+        "Mezcal palenques in Santiago Matatlán"
+      ],
+      "note": "Guelaguetza Mondays 19 and 26 July 2027: superb, and the town is full for both weekends. Bus from Mexico City 6 h or a 1 h flight.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "hierve",
+      "type": "city",
+      "name": "Hierve el Agua + Tule",
+      "place": "Petrified waterfalls, 2,000-year-old tree",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 1,
+      "maxAltitudeM": 1800,
+      "dayHighC": 27,
+      "crowd": "med",
+      "transitHours": 1.5,
+      "history": null,
+      "guidebookPick": false,
+      "see": [
+        "Hierve el Agua mineral pools (go at opening)",
+        "El Tule cypress",
+        "Teotitlán del Valle rugs"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "guanajuato",
+      "type": "city",
+      "name": "Guanajuato",
+      "place": "Silver-mining city of tunnels and alleys",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 2050,
+      "dayHighC": 25,
+      "crowd": "med",
+      "transitHours": 4,
+      "history": "Silver boom, independence war",
+      "guidebookPick": true,
+      "see": [
+        "Alhóndiga museum (1810 uprising)",
+        "Callejoneadas at night",
+        "Valenciana mine and church",
+        "Diego Rivera's birthplace museum"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "sancristobal",
+      "type": "city",
+      "name": "San Cristóbal de las Casas",
+      "place": "Highland colonial town, Tzotzil villages",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 2200,
+      "dayHighC": 21,
+      "crowd": "med",
+      "transitHours": 3,
+      "history": "Maya highlands, Zapatista history",
+      "guidebookPick": true,
+      "see": [
+        "San Juan Chamula church and Zinacantán weavers (with a local guide)",
+        "Na Bolom museum",
+        "Sumidero canyon boat (half day)",
+        "Amber museum, textile centre"
+      ],
+      "note": "Fly Mexico City or Oaxaca to Tuxtla (1.5 h), then 1 h up the hill.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "palenque",
+      "type": "city",
+      "name": "Palenque + Agua Azul",
+      "place": "Maya city in rainforest, turquoise cascades",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 150,
+      "dayHighC": 33,
+      "crowd": "med",
+      "transitHours": 5,
+      "history": "Classic Maya (Pakal's tomb)",
+      "guidebookPick": true,
+      "see": [
+        "Palenque ruins at 8 am, Temple of the Inscriptions",
+        "Agua Azul and Misol-Ha on the way"
+      ],
+      "note": "Hot and humid; the one stop over Mom's heat line. Five hours of mountain road from San Cristóbal.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "sierranorte",
+      "type": "hike",
+      "name": "Sierra Norte: Pueblos Mancomunados",
+      "place": "Community-run village-to-village hiking, 2,000–3,200 m",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 3200,
+      "dayHighC": 20,
+      "crowd": "low",
+      "transitHours": 1.5,
+      "history": "Zapotec communal land system",
+      "guidebookPick": true,
+      "see": [
+        "Cuajimoloyas to Latuvi or Benito Juárez on footpaths between villages",
+        "Cloud forest, agave fields, miradores over the valley",
+        "Cabins and meals run by the comunidad; local guide mandatory and excellent",
+        "Horse or bike options for the easier days"
+      ],
+      "note": "Cool, green, no crowds, 1.5 h from Oaxaca. One of the best things in southern Mexico and almost nobody does it.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "montebello",
+      "type": "hike",
+      "name": "Lagunas de Montebello + El Chiflón",
+      "place": "Pine-forest lakes near the Guatemalan border, waterfall trail",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 1500,
+      "dayHighC": 24,
+      "crowd": "low",
+      "transitHours": 2.5,
+      "history": null,
+      "guidebookPick": false,
+      "see": [
+        "El Chiflón waterfall staircase walk",
+        "Lagunas de Montebello colour lakes by raft",
+        "Chinkultic ruins above the lakes"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "valle",
+      "type": "hike",
+      "name": "Valle de Bravo",
+      "place": "Lake town and pine forests west of Mexico City",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 2500,
+      "dayHighC": 23,
+      "crowd": "med",
+      "transitHours": 2.5,
+      "history": null,
+      "guidebookPick": false,
+      "see": [
+        "Monte Alto forest walks",
+        "Velo de Novia waterfall",
+        "Lakeside evening"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "copper",
+      "type": "hike",
+      "name": "Copper Canyon by the Chepe train",
+      "place": "Chihuahua to Los Mochis; canyons four times the size of the Grand Canyon",
+      "defaultDays": 4,
+      "minDays": 3,
+      "maxDays": 5,
+      "maxAltitudeM": 2400,
+      "dayHighC": 28,
+      "crowd": "low",
+      "transitHours": 11,
+      "history": "Rarámuri communities",
+      "guidebookPick": true,
+      "see": [
+        "Chepe Express between Creel and El Fuerte",
+        "Divisadero rim walks and the cable car",
+        "Day walks with Rarámuri guides near Creel",
+        "Urique or Batopilas at the canyon bottom (hot, optional)"
+      ],
+      "note": "Spectacular, but far: flight to Chihuahua, 9 h of train. Rainy season is the greenest time. Adds about €280 in flights.",
+      "ratePerDay": null,
+      "extraTransportCost": 280
+    },
+    {
+      "id": "huasteca",
+      "type": "hike",
+      "name": "Huasteca Potosina",
+      "place": "Turquoise rivers and waterfalls, Edward James's surrealist garden",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 600,
+      "dayHighC": 32,
+      "crowd": "med",
+      "transitHours": 5,
+      "history": null,
+      "guidebookPick": false,
+      "see": [
+        "Tamul waterfall by canoe",
+        "Las Pozas garden at Xilitla",
+        "Puente de Dios"
+      ],
+      "note": "Hot and humid; here for completeness, not for Mom.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    }
+  ],
+  "season": {
+    "fitByMonth": [
+      85,
+      85,
+      85,
+      80,
+      70,
+      65,
+      62,
+      62,
+      65,
+      80,
+      90,
+      88
+    ],
+    "events": [
+      {
+        "name": "Guelaguetza, Oaxaca",
+        "from": "07-19",
+        "to": "07-27",
+        "effect": "festival",
+        "note": "Two Mondays; hotels full"
+      }
+    ],
+    "notes": [
+      "Rainy season in the highlands: clear mornings, a storm around 4 pm, 20–28°C days. Plan outdoor hours before lunch.",
+      "Hurricane season on both coasts; this routing stays inland on purpose.",
+      "Mexico City and Oaxaca museums are busiest at weekends; weekdays are calm."
+    ]
+  },
+  "kind": "explore",
+  "tags": [
+    "history",
+    "cities",
+    "mountains",
+    "food"
+  ],
+  "lodgingAssumption": "Local B&B or Airbnb, two rooms for five, one meal out a day; shared van or hire car",
+  "climate": {
+    "representative": "Oaxaca (1,550 m)",
+    "dayHighC": [
+      26,
+      28,
+      30,
+      31,
+      31,
+      29,
+      27,
+      27,
+      27,
+      27,
+      27,
+      26
+    ],
+    "nightLowC": [
+      8,
+      9,
+      11,
+      14,
+      15,
+      15,
+      14,
+      14,
+      14,
+      12,
+      10,
+      8
+    ],
+    "rainDays": [
+      1,
+      1,
+      2,
+      3,
+      8,
+      14,
+      13,
+      13,
+      13,
+      6,
+      2,
+      1
+    ],
+    "snowMonths": []
+  }
+}

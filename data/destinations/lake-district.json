@@ -1,0 +1,279 @@
+{
+  "id": "lake-district",
+  "kind": "explore",
+  "zone": "europe",
+  "name": "Lake District + Settle–Carlisle",
+  "region": "Cumbria and the Yorkshire Dales, England",
+  "noFlights": true,
+  "tagline": "A winter week of fells, lakes and pubs by train: Windermere, Keswick, the Settle–Carlisle line, Hadrian's Wall if you like.",
+  "tags": [
+    "mountains",
+    "walking",
+    "villages",
+    "winter-ok",
+    "short"
+  ],
+  "access": [
+    {
+      "originRegion": "uk",
+      "originCity": "London",
+      "mode": "train",
+      "costPerPerson": 90,
+      "route": "Euston→Oxenholme→Windermere (3 h) or Penrith for Keswick"
+    },
+    {
+      "originRegion": "europe-west",
+      "originCity": "Brussels",
+      "mode": "train",
+      "costPerPerson": 220,
+      "route": "Eurostar→London, then Euston→Oxenholme"
+    }
+  ],
+  "rates": {
+    "city": 110,
+    "hike": 95,
+    "transit": 100
+  },
+  "lodgingAssumption": "B&B or a cottage for the week; pub food",
+  "presets": [
+    {
+      "name": "Keswick week",
+      "picks": {
+        "keswick": 3,
+        "catbells": 1,
+        "borrowdale": 2,
+        "ullswater": 1
+      }
+    },
+    {
+      "name": "Dales and Lakes by rail",
+      "picks": {
+        "settle": 1,
+        "dales": 2,
+        "keswick": 2,
+        "catbells": 1,
+        "ullswater": 1
+      }
+    }
+  ],
+  "blocks": [
+    {
+      "id": "keswick",
+      "type": "city",
+      "name": "Keswick",
+      "place": "Market town on Derwentwater; Theatre by the Lake, Pencil Museum, Castlerigg stone circle",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 3,
+      "crowd": "med",
+      "transitHours": 4,
+      "maxAltitudeM": 500,
+      "dayHighC": 7,
+      "see": [],
+      "history": "Castlerigg, Lakeland mining",
+      "guidebookPick": false
+    },
+    {
+      "id": "settle",
+      "type": "city",
+      "name": "Settle and the Settle–Carlisle line",
+      "place": "England's finest railway, Ribblehead viaduct",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 3,
+      "crowd": "low",
+      "transitHours": 3,
+      "maxAltitudeM": 500,
+      "dayHighC": 6,
+      "see": [],
+      "history": "Victorian railway engineering",
+      "guidebookPick": false
+    },
+    {
+      "id": "catbells",
+      "type": "hike",
+      "name": "Catbells and the Derwentwater shore",
+      "place": "Short fell, 451 m, launch back across the lake",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 1,
+      "maxAltitudeM": 451,
+      "dayHighC": 5,
+      "crowd": "med",
+      "transitHours": 0.5,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Catbells ridge from Hawse End",
+        "Launch from Hawse End back to Keswick",
+        "Lingholm for tea"
+      ]
+    },
+    {
+      "id": "borrowdale",
+      "type": "hike",
+      "name": "Borrowdale and the higher fells",
+      "place": "Castle Crag, or Scafell Pike / Great Gable in good weather with winter kit",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 978,
+      "dayHighC": 3,
+      "crowd": "med",
+      "transitHours": 0.5,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Castle Crag and the Bowder Stone (short)",
+        "Great Gable from Seathwaite (long, winter kit)",
+        "Honister slate mine"
+      ],
+      "note": "Winter: check the Lake District fell-top conditions report; ice axe and crampons for the tops."
+    },
+    {
+      "id": "ullswater",
+      "type": "hike",
+      "name": "Ullswater Way and the steamer",
+      "place": "Howtown to Glenridding, 11 km, boat one way",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 400,
+      "dayHighC": 6,
+      "crowd": "low",
+      "transitHours": 1,
+      "history": "Wordsworth's daffodils",
+      "guidebookPick": true,
+      "see": [
+        "Steamer from Glenridding to Howtown",
+        "Walk back along the lakeshore",
+        "Aira Force waterfall"
+      ]
+    },
+    {
+      "id": "dales",
+      "type": "hike",
+      "name": "Yorkshire Dales from the railway",
+      "place": "Ribblehead, Dent, Ingleborough",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 724,
+      "dayHighC": 5,
+      "crowd": "low",
+      "transitHours": 0.5,
+      "history": "Dry-stone walls and lead mining",
+      "guidebookPick": true,
+      "see": [
+        "Ribblehead viaduct walk",
+        "Ingleborough from Clapham (caves on the way)",
+        "Dent village and its pubs"
+      ]
+    }
+  ],
+  "season": {
+    "fitByMonth": [
+      60,
+      60,
+      70,
+      80,
+      85,
+      80,
+      70,
+      70,
+      85,
+      80,
+      65,
+      60
+    ],
+    "events": [
+      {
+        "name": "Christmas and New Year",
+        "from": "12-20",
+        "to": "01-03",
+        "effect": "crowds",
+        "note": "Cottages booked out"
+      }
+    ],
+    "notes": [
+      "Rain is the constant; January brings short days (sunset 16:30), empty paths and snow on the tops.",
+      "Winter fell walking needs an ice axe and crampons above 600 m some weeks; the Fell Top Assessors post daily reports.",
+      "Trains: book Advance tickets 8–12 weeks out for the cheap fares."
+    ]
+  },
+  "climate": {
+    "representative": "Keswick (90 m); tops 600–900 m colder and windier",
+    "dayHighC": [
+      7,
+      7,
+      9,
+      12,
+      15,
+      18,
+      19,
+      19,
+      16,
+      13,
+      9,
+      7
+    ],
+    "nightLowC": [
+      1,
+      1,
+      2,
+      3,
+      6,
+      9,
+      11,
+      11,
+      9,
+      6,
+      3,
+      1
+    ],
+    "rainDays": [
+      19,
+      15,
+      17,
+      14,
+      13,
+      14,
+      15,
+      16,
+      16,
+      19,
+      19,
+      20
+    ],
+    "snowMonths": [
+      1,
+      2,
+      3,
+      12
+    ]
+  },
+  "bulletins": [
+    {
+      "name": "Lake District Weatherline (fell top conditions)",
+      "url": "https://www.lakedistrictweatherline.co.uk/",
+      "type": "conditions"
+    },
+    {
+      "name": "Met Office mountain forecast",
+      "url": "https://www.metoffice.gov.uk/weather/specialist-forecasts/mountain",
+      "type": "weather"
+    }
+  ],
+  "guides": [
+    {
+      "name": "Lonely Planet Lake District",
+      "url": "https://www.lonelyplanet.com/england/the-lake-district"
+    },
+    {
+      "name": "Routard Angleterre",
+      "url": "https://www.routard.com/guide/code_dest/angleterre.htm"
+    }
+  ],
+  "lastReviewed": "2026-11-08",
+  "sources": []
+}

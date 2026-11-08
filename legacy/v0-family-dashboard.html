@@ -1,0 +1,1616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>30th Anniversary Trip Planner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Layout: sticky controls on top, a ranked summary strip that doubles as navigation, then one card per trip: summary hero always open, the day-by-day builder behind a toggle. */
+  --bg:#f3f5f1; --surface:#ffffff; --surface-2:#e9ede6; --ink:#19231e; --ink-2:#55625b; --line:#d5dbd3;
+  --accent:#1f6b4f; --accent-ink:#ffffff;
+  --city:#3a6ea5; --hike:#c0762b; --free:#9aa39c;
+  --good:#2f8f5b; --warn:#d1932a; --crit:#c9473b; --good-bg:#e3f2e9; --warn-bg:#fbefd8; --crit-bg:#f9e1de;
+  --display:"Sora",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --radius:10px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#131917; --surface:#1b2320; --surface-2:#242e2a; --ink:#eef2ee; --ink-2:#a9b4ad; --line:#33403a;
+    --accent:#5cc497; --accent-ink:#0e1a14; --city:#7fb0e6; --hike:#e6a05c; --free:#6f7a73;
+    --good:#5cc497; --warn:#e6b45c; --crit:#ee7b6f; --good-bg:#1d3a2d; --warn-bg:#40331a; --crit-bg:#45231f;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#131917; --surface:#1b2320; --surface-2:#242e2a; --ink:#eef2ee; --ink-2:#a9b4ad; --line:#33403a;
+  --accent:#5cc497; --accent-ink:#0e1a14; --city:#7fb0e6; --hike:#e6a05c; --free:#6f7a73;
+  --good:#5cc497; --warn:#e6b45c; --crit:#ee7b6f; --good-bg:#1d3a2d; --warn-bg:#40331a; --crit-bg:#45231f;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--display);margin:0;text-wrap:balance;line-height:1.2}
+h1{font-size:22px;font-weight:700}
+h2{font-size:19px;font-weight:600}
+h3{font-size:15px;font-weight:600}
+p{margin:0}
+a{color:var(--accent)}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+.sub{color:var(--ink-2);font-size:14px}
+
+header{padding:18px 0 10px}
+header .wrap{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:flex-end;justify-content:space-between}
+header .sub{max-width:66ch}
+.kicker{font-size:12px;color:var(--ink-2);font-weight:500;letter-spacing:.02em;text-transform:uppercase}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 13px;font-size:13px}
+.btn[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+/* Controls */
+.controls{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:10px 0}
+.controls .wrap{display:grid;grid-template-columns:1.6fr auto auto auto;gap:10px 18px;align-items:end}
+@media (max-width:900px){.controls .wrap{grid-template-columns:1fr 1fr 1fr}}
+@media (max-width:560px){.controls .wrap{grid-template-columns:1fr 1fr}.controls .dates{grid-column:1 / -1}}
+.daterow{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.daterow input[type=date]{font:inherit;font-size:13px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:5px 10px;height:32px}
+.daterow .arrow{color:var(--ink-2)}
+.balhint{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-2)}
+.filters{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding:10px 12px;background:var(--surface);border:1px solid var(--line);border-radius:12px;margin:10px 0 0}
+.filters .grp{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.filters .grp .lbl{font-size:12px;color:var(--ink-2);margin-right:2px}
+.filters .seg button{padding:5px 10px;font-size:12px}
+.filters .toggle{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 11px;font-size:12px}
+.filters .toggle[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.filters .count{margin-left:auto;font-size:12px;color:var(--ink-2)}
+.filters .reset{border:0;background:transparent;font-size:12px;color:var(--accent);text-decoration:underline;padding:0}
+.search{display:flex;align-items:center;border:1px solid var(--line);border-radius:999px;background:var(--bg);padding:0 10px;height:32px;min-width:220px;flex:1 1 220px}
+.search input{border:0;background:transparent;font:inherit;font-size:13px;color:inherit;width:100%}
+.search input::placeholder{color:var(--ink-2)}
+.ideas{background:var(--surface);border:1px dashed var(--line);border-radius:14px;padding:14px 16px;margin:0 0 22px}
+.ideas h2{font-size:16px}
+.ideaform{display:grid;grid-template-columns:1.4fr 1fr auto 1fr auto;gap:8px;margin-top:10px;align-items:end}
+@media (max-width:760px){.ideaform{grid-template-columns:1fr 1fr}}
+.ideaform label{font-size:11px;color:var(--ink-2);display:block;margin-bottom:3px}
+.ideaform input,.ideaform select{width:100%;font:inherit;font-size:13px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 9px;height:34px}
+.ideaform .btn.primary{height:34px}
+.idealist{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin-top:12px}
+.idea{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);position:relative}
+.idea .name{font-weight:600}
+.idea .meta{font-size:12px;color:var(--ink-2);margin-top:2px}
+.idea .note{font-size:13px;margin-top:6px}
+.idea .del{position:absolute;top:6px;right:8px;border:0;background:transparent;color:var(--ink-2);font-size:14px}
+.rank{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px 16px;background:var(--bg);border-radius:10px;padding:10px 12px;margin:10px 0 14px}
+.rank label{font-size:12px;color:var(--ink-2);display:flex;justify-content:space-between}
+.rank input[type=range]{margin-top:2px}
+.rank .hd{grid-column:1 / -1;display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px}
+.rank .hd h3{font-size:14px}
+.rank .hd .sub{font-size:12px}
+.datepresets{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.datepresets button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:3px 9px;font-size:11px}
+.datepresets button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.family{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:10px 0 0;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.family .lbl{font-size:12px;color:var(--ink-2)}
+.family input{font:inherit;font-size:13px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:4px 10px;width:96px;height:30px}
+.family .legend{font-size:12px;color:var(--ink-2);margin-left:auto}
+.votes{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.votes .lbl{font-size:12px;color:var(--ink-2);margin-right:2px}
+.vote{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:999px;padding:3px 9px;font-size:12px;background:var(--surface)}
+.vote[data-v="love"]{background:var(--good-bg);border-color:transparent}
+.vote[data-v="no"]{background:var(--crit-bg);border-color:transparent}
+.vote[data-v="ok"]{background:var(--surface-2);border-color:transparent}
+.vote b{font-weight:600}
+.star{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 10px;font-size:12px}
+.star[aria-pressed="true"]{background:var(--warn-bg);border-color:transparent}
+.bar .re,.split-bar .re,.mini .re{background:var(--accent);opacity:.55}
+.score{display:inline-block;min-width:38px;text-align:center;font-weight:700;border-radius:6px;padding:2px 6px;background:var(--good-bg)}
+.score.mid{background:var(--warn-bg)} .score.low{background:var(--crit-bg)}
+.splitctl{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;background:var(--bg);border-radius:8px;padding:8px 10px}
+.splitctl .lbl{font-size:12px;color:var(--ink-2)}
+.splitctl .step .n{min-width:52px}
+.splitctl i{width:10px;height:10px;border-radius:3px;display:inline-block;margin-right:5px;vertical-align:-1px}
+.ctl label,.ctl .lbl{display:block;font-size:12px;color:var(--ink-2);margin-bottom:4px;font-weight:500}
+.ctl .val{font-family:var(--display);font-weight:600;font-size:14px;color:var(--ink)}
+input[type=range]{width:100%;accent-color:var(--accent);margin:6px 0 0}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:transparent;padding:7px 12px;font-size:13px;color:var(--ink-2)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.step{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--surface)}
+.step button{border:0;background:transparent;width:30px;height:30px;font-size:16px;line-height:1}
+.step button:disabled{opacity:.35;cursor:default}
+.step .n{min-width:44px;text-align:center;font-size:13px;font-weight:600}
+.money{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;background:var(--surface);padding:0 10px;height:32px}
+.money input{border:0;background:transparent;width:70px;font:inherit;font-weight:600;color:inherit;text-align:right}
+.money span{font-size:13px;color:var(--ink-2)}
+
+.tabs{display:flex;gap:6px;margin:14px 0 4px;flex-wrap:wrap;align-items:center}
+.tabs a{text-decoration:none;color:var(--ink-2);padding:8px 14px;border-radius:999px;border:1px solid var(--line);font-size:14px;background:var(--surface)}
+.tabs a[aria-current="page"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tabs .spacer{flex:1}
+.tabs label{font-size:13px;color:var(--ink-2);display:inline-flex;align-items:center;gap:6px}
+
+/* Summary strip */
+.strip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:12px 0 18px}
+@media (max-width:900px){.strip{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:440px){.strip{grid-template-columns:1fr}}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:10px 12px;text-decoration:none;color:inherit;display:block;position:relative}
+.tile:hover{border-color:var(--ink-2)}
+.tile .rank{position:absolute;top:8px;right:10px;font-size:11px;color:var(--ink-2)}
+.tile .t{font-size:13px;font-weight:600;padding-right:24px}
+.tile .c{font-family:var(--display);font-size:20px;font-weight:700;margin-top:2px}
+.tile .d{font-size:12px;color:var(--ink-2);margin-top:2px}
+.tile .bar{height:6px;border-radius:3px;overflow:hidden;display:flex;margin-top:8px;background:var(--surface-2)}
+.bar i{display:block;height:100%}
+.bar .ci{background:var(--city)} .bar .hi{background:var(--hike)} .bar .fr{background:var(--free)}
+.pill{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;margin-top:8px}
+.pill.good{background:var(--good-bg);color:var(--ink)} .pill.crit{background:var(--crit-bg)} .pill.warn{background:var(--warn-bg)}
+
+/* Card */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;margin:0 0 20px;overflow:hidden;scroll-margin-top:140px}
+.card.dim{opacity:.55}
+.hero{display:grid;grid-template-columns:280px 1fr}
+@media (max-width:760px){.hero{grid-template-columns:1fr}}
+.scene{position:relative;min-height:200px;background:var(--surface-2)}
+.scene canvas,.scene img{width:100%;height:100%;display:block;object-fit:cover;position:absolute;inset:0}
+.scene .photo-btn{position:absolute;right:8px;bottom:8px;font-size:11px;padding:5px 9px;border-radius:999px;border:1px solid rgba(255,255,255,.6);background:rgba(0,0,0,.45);color:#fff;cursor:pointer}
+.scene input[type=file]{display:none}
+.hero-body{padding:16px 18px 14px;display:flex;flex-direction:column;gap:10px}
+.hero-top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-start}
+.cost-big{text-align:right;min-width:150px}
+.cost-big .pp{font-family:var(--display);font-size:26px;font-weight:700;line-height:1}
+.cost-big .tot{font-size:12px;color:var(--ink-2);margin-top:4px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:12px;padding:3px 9px;border-radius:999px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);white-space:nowrap}
+.chip.good{background:var(--good-bg);border-color:transparent}
+.chip.warn{background:var(--warn-bg);border-color:transparent}
+.chip.crit{background:var(--crit-bg);border-color:transparent}
+.chip.gb{background:transparent;border-style:dashed}
+.chip b{font-weight:600}
+.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+@media (max-width:760px){.facts{grid-template-columns:repeat(2,1fr)}}
+.fact{background:var(--bg);border-radius:8px;padding:7px 10px}
+.fact .k{font-size:11px;color:var(--ink-2);text-transform:uppercase;letter-spacing:.03em}
+.fact .v{font-weight:600;font-size:14px;margin-top:1px}
+.fact .v.good{color:var(--good)} .fact .v.warn{color:var(--warn)} .fact .v.crit{color:var(--crit)}
+.why{font-size:14px;color:var(--ink-2)}
+.why strong{color:var(--ink);font-weight:600}
+.row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.row .lbl{font-size:12px;color:var(--ink-2);margin-right:2px}
+.presets button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 11px;font-size:13px}
+.presets button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.links a{font-size:12px}
+.build-toggle{border-top:1px solid var(--line);width:100%;text-align:left;background:var(--bg);border-left:0;border-right:0;border-bottom:0;padding:10px 18px;font-weight:600;font-size:14px;display:flex;justify-content:space-between;align-items:center}
+.build-toggle:hover{background:var(--surface-2)}
+.build-toggle .hint{font-weight:400;color:var(--ink-2);font-size:13px}
+.builder{display:none}
+.card.open .builder{display:block}
+
+.cols{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--line)}
+@media (max-width:760px){.cols{grid-template-columns:1fr}}
+.col{padding:12px 14px 14px}
+.col+.col{border-left:1px solid var(--line)}
+@media (max-width:760px){.col+.col{border-left:0;border-top:1px solid var(--line)}}
+.col-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.col-h h3{display:flex;align-items:center;gap:8px}
+.col-h h3 i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.col-h .num{font-size:13px;color:var(--ink-2)}
+.mod{border:1px solid var(--line);border-radius:var(--radius);padding:9px 10px;margin-bottom:8px;background:var(--bg)}
+.mod.on{background:var(--surface);border-color:var(--ink-2)}
+.mod-row{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}
+.mod input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent);margin:0}
+.mod label{cursor:pointer}
+.mod .name{font-weight:600;font-size:14px}
+.mod .place{font-size:12px;color:var(--ink-2)}
+.mod .meta{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.mod .meta .chip{font-size:11px;padding:2px 7px}
+.mod details{margin-top:6px}
+.mod summary{font-size:12px;color:var(--accent);cursor:pointer;list-style:none}
+.mod summary::-webkit-details-marker{display:none}
+.mod details ul{margin:5px 0 0;padding-left:18px;font-size:13px;color:var(--ink-2)}
+.mod details li{margin:2px 0}
+.mod .note{font-size:12px;color:var(--ink-2);margin-top:6px}
+
+.foot{border-top:1px solid var(--line);padding:12px 16px 16px;display:grid;grid-template-columns:1.1fr 1fr;gap:16px}
+@media (max-width:760px){.foot{grid-template-columns:1fr}}
+.split-bar{height:14px;border-radius:7px;overflow:hidden;display:flex;background:var(--surface-2);margin:8px 0 6px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:13px;color:var(--ink-2)}
+.legend i{width:10px;height:10px;border-radius:3px;display:inline-block;margin-right:5px;vertical-align:-1px}
+.alert{margin-top:8px;font-size:13px;padding:7px 10px;border-radius:8px;border-left:3px solid var(--warn);background:var(--warn-bg)}
+.alert.crit{border-left-color:var(--crit);background:var(--crit-bg)}
+.alert.ok{border-left-color:var(--good);background:var(--good-bg)}
+table.budget{width:100%;border-collapse:collapse;font-size:13px}
+table.budget td{padding:4px 0;border-bottom:1px dashed var(--line)}
+table.budget td:last-child{text-align:right;font-weight:500;white-space:nowrap;padding-left:10px}
+table.budget tr.total td{border-bottom:0;font-family:var(--display);font-weight:700;font-size:15px;padding-top:7px}
+.season{margin-top:10px;font-size:13px;color:var(--ink-2)}
+.season ul{margin:4px 0 0;padding-left:18px}
+.season li{margin:3px 0}
+
+/* Compare */
+.compare{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:22px}
+.scroller{overflow-x:auto}
+table.cmp{border-collapse:collapse;width:100%;min-width:860px;font-size:14px}
+table.cmp th,table.cmp td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+table.cmp th{font-size:12px;color:var(--ink-2);font-weight:500;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap}
+table.cmp th button{border:0;background:transparent;padding:0;font:inherit;color:inherit;text-transform:inherit;letter-spacing:inherit;cursor:pointer}
+table.cmp th button[aria-pressed="true"]{color:var(--ink);font-weight:700}
+table.cmp td:first-child{font-weight:600}
+table.cmp .mini{height:8px;border-radius:4px;overflow:hidden;display:flex;background:var(--surface-2);min-width:110px;margin-top:4px}
+table.cmp tr.over td{color:var(--ink-2)}
+.costchart{display:grid;gap:8px;margin-top:12px}
+.costrow{display:grid;grid-template-columns:220px 1fr 90px;gap:10px;align-items:center;font-size:14px}
+@media (max-width:600px){.costrow{grid-template-columns:120px 1fr 80px}}
+.costrow .track{height:18px;background:var(--surface-2);border-radius:4px;overflow:hidden;position:relative}
+.costrow .fill{height:100%;background:var(--accent);border-radius:4px}
+.costrow .fill.over{background:var(--crit)}
+.costrow .cap{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink)}
+.hidden{display:none !important}
+body.present .ctl-only,body.present .presets,body.present .step,body.present .mod input[type=checkbox],body.present .photo-btn,body.present .build-toggle .hint{display:none !important}
+body.present .mod-row{grid-template-columns:1fr auto}
+body.present .mod:not(.on){display:none}
+.foot-note{color:var(--ink-2);font-size:12px;padding:10px 0 40px;max-width:84ch}
+.sr{position:absolute;left:-9999px}
+@media (prefers-reduced-motion: reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div>
+      <div class="kicker">Parents' 30th anniversary · summer 2027 · 5 travellers · €15,000 budget</div>
+      <h1 id="h1">Eleven trips, one choice</h1>
+      <p class="sub" id="h1sub">Pick an itinerary for each trip, open the builder to move days between cities and mountains, and watch cost, transport hours and Mom's three limits (altitude, heat, crowds) update.</p>
+    </div>
+    <div class="toolbar">
+      <button class="btn" id="presentBtn" aria-pressed="false">Presentation mode</button>
+      <button class="btn" id="copyBtn">Copy summary</button>
+    </div>
+  </div>
+</header>
+
+<div class="controls">
+  <div class="wrap">
+    <div class="ctl dates">
+      <span class="lbl">Dates · <span class="val" id="lenVal"></span></span>
+      <div class="daterow">
+        <label class="sr" for="startDate">Start date</label><input type="date" id="startDate" min="2027-06-15" max="2027-09-15">
+        <span class="arrow">→</span>
+        <label class="sr" for="endDate">End date</label><input type="date" id="endDate" min="2027-06-15" max="2027-09-15">
+      </div>
+
+    </div>
+
+    <div class="ctl">
+      <span class="lbl">Lodging</span>
+      <div class="seg" role="group" aria-label="Comfort level">
+        <button id="cmfMid" aria-pressed="true">B&amp;B / Airbnb</button>
+        <button id="cmfHigh" aria-pressed="false">Hotels</button>
+      </div>
+    </div>
+    <div class="ctl">
+      <span class="lbl" id="travLbl">Travellers</span>
+      <div class="step" role="group" aria-labelledby="travLbl"><button id="travMinus" aria-label="Fewer travellers">−</button><span class="n num" id="trav">5</span><button id="travPlus" aria-label="More travellers">+</button></div>
+    </div>
+    <div class="ctl">
+      <label for="capInput">Group budget</label>
+      <div class="money"><span>€</span><input id="capInput" type="number" min="1000" step="500" value="15000" class="num"></div>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+  <nav class="tabs" aria-label="Views">
+    <a href="#plan" id="tabPlan" aria-current="page">Build</a>
+    <a href="#compare" id="tabCompare">Compare</a>
+  </nav>
+  <div class="filters" id="filters" role="group" aria-label="Filter trips">
+    <div class="search"><label class="sr" for="q">Search trips, countries, places</label><input id="q" type="search" placeholder="Search: a country, a region, a place (e.g. Kuélap, fjord, Andes)…" autocomplete="off"></div>
+    <button class="toggle" data-f="fit" aria-pressed="false">Within budget</button>
+    <button class="toggle" data-f="train" aria-pressed="false">No flights</button>
+    <button class="toggle" data-f="showVisited" aria-pressed="false">Include places some of us have visited</button>
+    <div class="grp"><span class="lbl">Region</span><div class="seg" data-fs="zone"><button data-v="all" aria-pressed="true">All</button><button data-v="europe">Europe</button><button data-v="asia">Caucasus &amp; Asia</button><button data-v="americas">Americas</button></div></div>
+    <div class="grp"><span class="lbl">Highest point</span><div class="seg" data-fs="maxAlt"><button data-v="99999" aria-pressed="true">Any</button><button data-v="2500">≤ 2,500 m</button><button data-v="3000">≤ 3,000 m</button><button data-v="3500">≤ 3,500 m</button><button data-v="4250">≤ 4,250 m</button></div></div>
+    <div class="grp"><span class="lbl">Hottest stop</span><div class="seg" data-fs="maxTemp"><button data-v="99" aria-pressed="true">Any</button><button data-v="26">≤ 26°C</button><button data-v="30">≤ 30°C</button><button data-v="34">≤ 34°C</button></div></div>
+    <div class="grp"><span class="lbl">Hours in transit</span><div class="seg" data-fs="maxHrs"><button data-v="999" aria-pressed="true">Any</button><button data-v="16">≤ 16 h</button><button data-v="20">≤ 20 h</button><button data-v="25">≤ 25 h</button></div></div>
+    <button class="toggle" data-f="notfullhike" aria-pressed="false">Not a full-hike trip</button>
+    <span class="count" id="filterCount"></span>
+    <button class="reset" id="filterReset">Reset filters</button>
+  </div>
+
+
+  <section id="viewPlan">
+    <div class="strip" id="strip"></div>
+    <div id="cards"></div>
+    <div class="ideas" id="ideas">
+      <h2>Ideas to explore</h2>
+      <p class="sub">Add a destination the family wants looked at. It appears in the comparison as a "to explore" row with whatever rough cost you give it, until it is built out properly.</p>
+      <form class="ideaform" id="ideaForm">
+        <div><label for="ideaName">Destination</label><input id="ideaName" required placeholder="e.g. Madeira + Azores"></div>
+        <div><label for="ideaRegion">Country / region</label><input id="ideaRegion" placeholder="e.g. Portugal"></div>
+        <div><label for="ideaZone">Continent</label><select id="ideaZone"><option value="europe">Europe</option><option value="asia">Caucasus &amp; Asia</option><option value="americas">Americas</option><option value="africa">Africa</option><option value="oceania">Oceania</option></select></div>
+        <div><label for="ideaPP">Rough cost pp (€, optional)</label><input id="ideaPP" type="number" min="0" step="100" placeholder="e.g. 2500"></div>
+        <button class="btn primary" type="submit">Add idea</button>
+        <div style="grid-column:1 / -1"><label for="ideaNote">Why / what to check</label><input id="ideaNote" placeholder="e.g. levada walks, no altitude, July 24°C; check crowds in Funchal"></div>
+      </form>
+      <div class="idealist" id="ideaList"></div>
+    </div>
+  </section>
+
+  <section id="viewCompare" class="hidden">
+    <div class="compare" id="compare"></div>
+  </section>
+
+  <p class="foot-note">Budgets are per person in euros, flights or trains from Brussels, built from typical 2026 prices and the way you travel: a local B&amp;B or an Airbnb for the five of you in two rooms (so lodging is €25–60 per person per night depending on the country), eating out once a day and self-catering the rest, a shared hire car or a van with driver where that is the sensible way to move five people, huts, yurts, cabins or guesthouses on the trail, a local guide only for the multi-day hikes that need one, museums and local transport, plus 8% contingency. "Hotels" in the top bar switches to a three-star hotel room per couple and restaurants every meal, about 40% more. Treat them as ±25% planning figures, not quotes. Days not assigned to a block count as travel and rest days. Temperatures are typical afternoon highs for the dates; "nights" is the coldest you will sleep. Altitude is the highest point reached in a block. Transport hours are the typical time to reach a block from the previous hub, by car, train, boat or plane including airport time. "Guidebook pick" marks places that both Lonely Planet and the Routard treat as the destination's highlights; the links go to their country pages for the detail.</p>
+</main>
+
+<script>
+(function(){
+"use strict";
+
+const Y = 2027;
+const WINDOW_START = new Date(Date.UTC(Y,6,15));
+const WINDOW_END = new Date(Date.UTC(Y,7,15));
+const D = (m,d)=>new Date(Date.UTC(Y,m-1,d));
+
+/* ---------- Data ---------- */
+/* module fields: id,type(city|hike),name,place,days,min,max,alt(m highest point),temp(°C day high),crowd(low|med|high),hrs(transport to reach),hist(history tag),gb(guidebook pick),see[],note,rate,extraFlight */
+const OPTIONS = [
+{
+  id:"caucasus", zone:"asia", name:"Georgia + Armenia", region:"The Caucasus",
+  tagline:"Monasteries, wine and medieval tower villages between 2,000 and 3,000 m.",
+  palette:["#7fb89a","#4f8a68","#2f5d47","#1d3a2d","#e9d9a6"],
+  flight:{base:550, route:"Charleroi→Kutaisi (Wizz) or Brussels→Tbilisi via Istanbul; home from Yerevan via Vienna or Warsaw"},
+  rates:{city:80, hike:90, transit:80}, nights:"8–12°C in Svaneti and Tusheti guesthouses, 20°C in the cities",
+  why:"Closest to the <strong>Colombia</strong> pattern: a road trip through old towns with one serious multi-day trek in the middle. Svaneti and Tusheti feel like the Alps did before anyone built a lift.",
+  fit:"Best overall fit for Mom: nothing above 3,000 m, almost no crowds outside two villages. The one thing to manage is city heat.",
+  guides:[["Lonely Planet Georgia","https://www.lonelyplanet.com/georgia"],["Routard Géorgie","https://www.routard.com/guide/code_dest/georgie.htm"],["Routard Arménie","https://www.routard.com/guide/code_dest/armenie.htm"]],
+  presets:[
+    {name:"Balanced", picks:{tbilisi:2,kakheti:1,svaneti:4,kazbegi:1,yerevan:2,dilijan:2}},
+    {name:"Mountain-heavy", picks:{tbilisi:1,tusheti:4,svaneti:4,yerevan:2,dilijan:2}},
+    {name:"Culture-heavy", picks:{tbilisi:3,kakheti:2,kutaisi:1,svaneti:3,yerevan:3,dilijan:2}},
+    {name:"Fewest hours in the car", picks:{tbilisi:3,kakheti:2,kazbegi:2,dilijan:3,dilijanhike:2,yerevan:2}}
+  ],
+  modules:[
+    {id:"tbilisi",type:"city",name:"Tbilisi",place:"Old Town, sulphur baths, Georgian National Museum",days:2,min:1,max:4,alt:500,temp:34,crowd:"med",hrs:0.5,hist:"Persian, Russian and Soviet layers",gb:true,
+      see:["Narikala fortress and the Abanotubani bath district","Georgian National Museum: Colchian gold, Soviet occupation hall","Fabrika and the Vera district in the evening","Mtskheta day trip: Jvari and Svetitskhoveli (UNESCO)"],
+      note:"Hot in the afternoon; museums 2–5 pm, old town after 6."},
+    {id:"kakheti",type:"city",name:"Kakheti wine country",place:"Sighnaghi, Telavi, qvevri cellars",days:1,min:1,max:3,alt:800,temp:33,crowd:"low",hrs:2,hist:"8,000 years of winemaking (UNESCO)",gb:true,
+      see:["Sighnaghi hilltop town and Bodbe monastery","Alaverdi cathedral","Family qvevri wineries","Tsinandali estate"]},
+    {id:"kutaisi",type:"city",name:"Kutaisi",place:"Gelati monastery, Prometheus cave",days:1,min:1,max:2,alt:150,temp:33,crowd:"low",hrs:3.5,hist:"Medieval Georgian kingdom",
+      see:["Gelati monastery (UNESCO) and Bagrati cathedral","Okatse canyon walkway","Martvili canyon by boat"]},
+    {id:"yerevan",type:"city",name:"Yerevan",place:"Cascade, Matenadaran, Garni + Geghard",days:2,min:1,max:4,alt:1000,temp:36,crowd:"med",hrs:5,hist:"Urartu to the Armenian genocide",gb:true,
+      see:["Matenadaran manuscript library","Cafesjian Center at the Cascade","Genocide memorial and museum","Garni temple and Geghard rock monastery (half day)","Vernissage market"],
+      note:"Hottest stop of the trip. Two nights is enough; sleep in Dilijan for the rest."},
+    {id:"dilijan",type:"city",name:"Dilijan + Lake Sevan",place:"Forested spa town at 1,250 m, cooler base",days:2,min:1,max:3,alt:1900,temp:27,crowd:"low",hrs:1.5,hist:"Medieval monasteries, cross-stones",gb:true,
+      see:["Haghartsin and Goshavank monasteries","Sevanavank on the lake peninsula","Noratus khachkar field","Dilijan old street crafts"]},
+    {id:"svaneti",type:"hike",name:"Svaneti: Mestia to Ushguli",place:"4-day village-to-village trek, guesthouses",days:4,min:2,max:5,alt:2700,temp:22,crowd:"med",hrs:5,hist:"Medieval defensive towers (UNESCO)",gb:true,
+      see:["Day stages of 5–7 h between tower villages","Ushguli, Europe's highest permanently inhabited village (2,100 m)","Koruldi lakes viewpoint from Mestia","Svaneti museum: gold icons"],
+      note:"Mestia itself gets busy in July; the trail does not. Luggage goes by car between villages."},
+    {id:"tusheti",type:"hike",name:"Tusheti",place:"Omalo, Dartlo, Shenako; 4x4 access only",days:4,min:3,max:5,alt:2900,temp:21,crowd:"low",hrs:6,hist:"Pagan-Christian highland culture",gb:true,
+      see:["Abano pass road (one of the great mountain drives)","Dartlo stone towers and Diklo","Day walks on the Transcaucasian Trail","Guesthouse life: khinkali, Tushetian cheese"],
+      note:"Road open roughly June to September. Almost no other visitors. Pairs with Kakheti below it."},
+    {id:"kazbegi",type:"hike",name:"Kazbegi + Juta valley",place:"Gergeti Trinity church, Chaukhi massif",days:1,min:1,max:3,alt:3300,temp:20,crowd:"high",hrs:3,hist:"Georgian Military Highway",gb:true,
+      see:["Gergeti Trinity (walk up, 2 h)","Juta to the Chaukhi pass base (day hike, 3,000 m)","Truso valley travertines"],
+      note:"Stepantsminda is the most crowded place in Georgia in July. One night maximum, or skip."},
+    {id:"dilijanhike",type:"hike",name:"Dilijan National Park trails",place:"Transcaucasian Trail day walks",days:2,min:1,max:3,alt:2000,temp:25,crowd:"low",hrs:0,hist:"",
+      see:["Parz lake to Gosh lake","Dilijan to Haghartsin through beech forest","Apakeqar ridge"]},
+    {id:"lagodekhi",type:"hike",name:"Lagodekhi reserve",place:"Waterfalls and the Black Rock lake trail",days:1,min:1,max:3,alt:2800,temp:24,crowd:"low",hrs:2.5,hist:"",
+      see:["Ninoskhevi waterfall day walk","3-day Black Rock lake trek (ranger hut)"]}
+  ],
+  season:(s,e)=>["Tbilisi and Yerevan sit at 33–37°C for the whole window; August is not cooler.","Tusheti and Svaneti roads and trails are fully open across the window.","Mid-August: Mariamoba (15 Aug) sends Georgian families to the mountains for a few days."]
+},
+{
+  id:"kyrgyz", zone:"asia", name:"Kyrgyzstan", region:"Central Asia, Tien Shan",
+  tagline:"Yurts, horses and alpine valleys with nobody in them. Altitude needs choosing carefully.",
+  palette:["#d9c27a","#a98a4c","#5f7a8f","#2e4a5e","#f1ead2"],
+  flight:{base:800, route:"Brussels→Bishkek via Istanbul (Turkish or Pegasus), 8–9 h total"},
+  rates:{city:70, hike:100, transit:90}, nights:"0–5°C at Song-Kul, 8–12°C in the valleys, 20°C in Bishkek",
+  why:"The most adventurous of the seven and the furthest from anything you have done. Same rhythm as the <strong>Ciudad Perdida</strong> days: guide, horses carrying the bags, a camp at the end.",
+  fit:"Watch the altitudes. Jyrgalan, Chon-Kemin and Sary-Chelek stay under 3,000 m; Song-Kul and Tash Rabat sit at 3,000–3,300 m, fine after a couple of easier days first. Roads are long and rough.",
+  guides:[["Lonely Planet Kyrgyzstan","https://www.lonelyplanet.com/kyrgyzstan"],["Routard Kirghizistan","https://www.routard.com/guide/code_dest/kirghizistan.htm"]],
+  presets:[
+    {name:"Lowest altitude", picks:{bishkek:1,karakol:2,jyrgalan:3,chonkemin:2,sarychelek:2,arashan:2}},
+    {name:"Balanced", picks:{bishkek:1,karakol:2,jyrgalan:3,songkul:2,chonkemin:2,arashan:3}},
+    {name:"Silk Road add-on", picks:{bishkek:1,karakol:2,jyrgalan:3,songkul:2,tashrabat:1,osh:1,uzbek:4}},
+    {name:"Fewest hours in the car", picks:{bishkek:1,chonkemin:2,karakol:2,jyrgalan:3,arashan:3}}
+  ],
+  modules:[
+    {id:"bishkek",type:"city",name:"Bishkek",place:"Osh bazaar, State History Museum, Ala-Archa gorge",days:1,min:1,max:2,alt:800,temp:33,crowd:"low",hrs:0.5,hist:"Soviet Central Asia",
+      see:["State History Museum (Soviet-era murals)","Osh bazaar","Ala-Archa gorge day walk (2,100 m), 40 min from town"]},
+    {id:"karakol",type:"city",name:"Karakol",place:"Dungan mosque, wooden Orthodox church, Sunday animal market",days:2,min:1,max:3,alt:1700,temp:27,crowd:"low",hrs:6,hist:"Russian frontier town, Dungan refugees",gb:true,
+      see:["Dungan mosque built without nails","Holy Trinity wooden cathedral","Przhevalsky museum","Sunday livestock market (7 am)","Dungan family dinner (ashlan-fu)"]},
+    {id:"osh",type:"city",name:"Osh",place:"Sulaiman-Too sacred mountain, 2,000-year-old bazaar",days:1,min:1,max:2,alt:1000,temp:36,crowd:"low",hrs:1.5,hist:"Silk Road, 3,000 years",gb:true,
+      see:["Sulaiman-Too (UNESCO) and its cave museum","Jayma bazaar along the river"],note:"Hot. Only worth it on the Silk Road routing."},
+    {id:"uzbek",type:"city",name:"Uzbekistan add-on: Samarkand + Bukhara",place:"Registan, Shah-i-Zinda, Bukhara old town",days:4,min:3,max:5,alt:700,temp:39,crowd:"med",hrs:4,hist:"Timurid Silk Road capitals",gb:true,
+      see:["Registan square at dusk","Shah-i-Zinda necropolis","Bukhara: Poi Kalyan, Lyabi-Hauz, trading domes","Afrosiyob train between them"],
+      note:"Extraordinary, but 38–40°C in late July. Against Mom's heat limit; here so you can see the cost."},
+    {id:"jyrgalan",type:"hike",name:"Jyrgalan valley",place:"Village-based hiking and horse trekking, 2,500–3,000 m",days:3,min:2,max:4,alt:3000,temp:21,crowd:"low",hrs:1.5,hist:"",gb:true,
+      see:["Eki-Chat and Tulpar-Tash day hikes","Overnight at a yurt camp by horse","Former coal village turned community-tourism base"],
+      note:"The best low-altitude trekking base in the country."},
+    {id:"chonkemin",type:"hike",name:"Chon-Kemin valley",place:"Spruce forests and river valley, 2,000–2,600 m",days:2,min:1,max:3,alt:2600,temp:23,crowd:"low",hrs:2.5,hist:"",
+      see:["Horse ride to Kol-Tor lake","Guesthouse village stays","Easy acclimatisation near Bishkek"]},
+    {id:"songkul",type:"hike",name:"Song-Kul lake yurt camp",place:"High summer pasture at 3,016 m, horses, shepherd families",days:2,min:1,max:3,alt:3100,temp:17,crowd:"low",hrs:5,hist:"Nomadic jailoo life",gb:true,
+      see:["Horse trek along the shore","Kyrgyz horse games at the camps","Night sky with no light for 100 km"],
+      note:"Cold nights (0–5°C). Two nights at 3,000 m is fine for most people after a few days lower down."},
+    {id:"arashan",type:"hike",name:"Karakol valley + Altyn Arashan",place:"Hot springs valley, 2,600–3,000 m; Ala-Kul pass avoidable",days:3,min:2,max:4,alt:3000,temp:20,crowd:"med",hrs:1,hist:"",gb:true,
+      see:["Altyn Arashan hot springs (walk in, 4 h)","Karakol valley gorge","Ala-Kul lake (3,560 m) as an optional day for the siblings; the pass is 3,860 m"],
+      note:"The Ala-Kul crossing is the busiest trail in Kyrgyzstan. Skip the pass and it is quiet."},
+    {id:"sarychelek",type:"hike",name:"Sary-Chelek lake",place:"Walnut forests and a turquoise lake at 1,900 m",days:2,min:2,max:3,alt:2200,temp:26,crowd:"low",hrs:8,hist:"",
+      see:["Lake walk and boat","Arslanbob walnut forest (the world's largest) nearby"],note:"Long drive (8 h from Bishkek); fits a southern routing."},
+    {id:"tashrabat",type:"hike",name:"Tash Rabat caravanserai",place:"15th-century stone caravanserai at 3,200 m",days:1,min:1,max:2,alt:3300,temp:16,crowd:"low",hrs:6,hist:"Silk Road caravanserai",gb:true,
+      see:["The caravanserai itself","Horse ride to the Chatyr-Kul pass viewpoint"],note:"At 3,200 m, sleep one night only."}
+  ],
+  season:(s,e)=>["Peak trekking season across the whole window; passes and jailoo pastures open.","Issyk-Kul north shore (Cholpon-Ata) is a crowded beach resort in July and August: route around it.","After 5 August, Song-Kul nights drop toward freezing; yurt camps supply blankets.","Bishkek 33°C, Osh 36°C; mountain valleys 17–25°C."]
+},
+{
+  id:"mexico", zone:"americas", name:"Mexico: highlands and the south", region:"Central Mexico, Oaxaca, Chiapas",
+  tagline:"Pre-Hispanic cities, baroque towns, markets, and cool cloud-forest hiking in community-run villages.",
+  palette:["#e0a96d","#b4683a","#6b4a3a","#3a2b2b","#f6e3c5"],
+  flight:{base:950, route:"Brussels→Mexico City via Paris, Amsterdam or Madrid (Aeroméxico, KLM, Air France), 11–12 h"},
+  rates:{city:75, hike:85, transit:90}, nights:"8–12°C in the Sierra Norte cabins, 12–15°C in Mexico City and San Cristóbal, 20°C in Oaxaca",
+  why:"The richest history of the seven and a <strong>Latin America</strong> trip Mom will recognise and love. Rainy season means clear mornings, a storm at 4 pm, and green mountains; it also keeps most tourists away from the highlands.",
+  fit:"Altitude stays under 3,300 m (Mexico City is 2,240 m, Oaxaca 1,550 m). Heat only appears if you go down to Palenque. The Guelaguetza in Oaxaca (19 and 26 July 2027) is a festival to build around, but it fills the town: book early or avoid those two weekends.",
+  guides:[["Lonely Planet Mexico","https://www.lonelyplanet.com/mexico"],["Routard Mexique","https://www.routard.com/guide/code_dest/mexique.htm"]],
+  presets:[
+    {name:"Oaxaca + Chiapas", picks:{cdmx:3,oaxaca:3,sierranorte:3,sancristobal:2,montebello:1,palenque:1}},
+    {name:"Highlands + history", picks:{cdmx:3,puebla:1,oaxaca:3,sierranorte:3,guanajuato:2}},
+    {name:"Copper Canyon", picks:{cdmx:2,copper:4,oaxaca:3,sierranorte:3}},
+    {name:"Fewest hours in the car", picks:{cdmx:3,puebla:1,oaxaca:4,sierranorte:3,hierve:1}}
+  ],
+  modules:[
+    {id:"cdmx",type:"city",name:"Mexico City",place:"Anthropology museum, Templo Mayor, Coyoacán, Teotihuacán",days:3,min:2,max:4,alt:2240,temp:24,crowd:"med",hrs:0.5,hist:"Aztec capital under a colonial one",gb:true,
+      see:["Museo Nacional de Antropología (half a day minimum)","Templo Mayor and the cathedral on the Zócalo","Coyoacán: Frida Kahlo house (book), Trotsky house","Teotihuacán at opening time (8 am) to beat the heat and the buses","Chapultepec castle, Palacio de Bellas Artes murals"],
+      note:"Altitude 2,240 m: take the first day slowly. Afternoon storms, so museums after 3 pm."},
+    {id:"puebla",type:"city",name:"Puebla + Cholula",place:"Talavera baroque city, the largest pyramid by volume",days:1,min:1,max:2,alt:2200,temp:25,crowd:"low",hrs:2,hist:"Colonial baroque, Cholula pyramid",gb:true,
+      see:["Capilla del Rosario","Amparo museum","Cholula pyramid tunnels and the church on top","Mole poblano where it was invented"]},
+    {id:"oaxaca",type:"city",name:"Oaxaca",place:"Monte Albán, Mitla, markets, mezcal, Guelaguetza",days:3,min:2,max:5,alt:1950,temp:28,crowd:"med",hrs:6,hist:"Zapotec and Mixtec capitals",gb:true,
+      see:["Monte Albán early morning","Santo Domingo church and the cultural museum (Tomb 7 treasure)","Mitla mosaics and a Teotitlán weaving workshop","Mercado 20 de Noviembre, Benito Juárez market","Mezcal palenques in Santiago Matatlán"],
+      note:"Guelaguetza Mondays 19 and 26 July 2027: superb, and the town is full for both weekends. Bus from Mexico City 6 h or a 1 h flight."},
+    {id:"hierve",type:"city",name:"Hierve el Agua + Tule",place:"Petrified waterfalls, 2,000-year-old tree",days:1,min:1,max:1,alt:1800,temp:27,crowd:"med",hrs:1.5,hist:"",
+      see:["Hierve el Agua mineral pools (go at opening)","El Tule cypress","Teotitlán del Valle rugs"]},
+    {id:"guanajuato",type:"city",name:"Guanajuato",place:"Silver-mining city of tunnels and alleys",days:2,min:1,max:3,alt:2050,temp:25,crowd:"med",hrs:4,hist:"Silver boom, independence war",gb:true,
+      see:["Alhóndiga museum (1810 uprising)","Callejoneadas at night","Valenciana mine and church","Diego Rivera's birthplace museum"]},
+    {id:"sancristobal",type:"city",name:"San Cristóbal de las Casas",place:"Highland colonial town, Tzotzil villages",days:2,min:1,max:3,alt:2200,temp:21,crowd:"med",hrs:3,hist:"Maya highlands, Zapatista history",gb:true,
+      see:["San Juan Chamula church and Zinacantán weavers (with a local guide)","Na Bolom museum","Sumidero canyon boat (half day)","Amber museum, textile centre"],
+      note:"Fly Mexico City or Oaxaca to Tuxtla (1.5 h), then 1 h up the hill."},
+    {id:"palenque",type:"city",name:"Palenque + Agua Azul",place:"Maya city in rainforest, turquoise cascades",days:1,min:1,max:2,alt:150,temp:33,crowd:"med",hrs:5,hist:"Classic Maya (Pakal's tomb)",gb:true,
+      see:["Palenque ruins at 8 am, Temple of the Inscriptions","Agua Azul and Misol-Ha on the way"],
+      note:"Hot and humid; the one stop over Mom's heat line. Five hours of mountain road from San Cristóbal."},
+    {id:"sierranorte",type:"hike",name:"Sierra Norte: Pueblos Mancomunados",place:"Community-run village-to-village hiking, 2,000–3,200 m",days:3,min:2,max:4,alt:3200,temp:20,crowd:"low",hrs:1.5,hist:"Zapotec communal land system",gb:true,
+      see:["Cuajimoloyas to Latuvi or Benito Juárez on footpaths between villages","Cloud forest, agave fields, miradores over the valley","Cabins and meals run by the comunidad; local guide mandatory and excellent","Horse or bike options for the easier days"],
+      note:"Cool, green, no crowds, 1.5 h from Oaxaca. One of the best things in southern Mexico and almost nobody does it."},
+    {id:"montebello",type:"hike",name:"Lagunas de Montebello + El Chiflón",place:"Pine-forest lakes near the Guatemalan border, waterfall trail",days:1,min:1,max:2,alt:1500,temp:24,crowd:"low",hrs:2.5,hist:"",
+      see:["El Chiflón waterfall staircase walk","Lagunas de Montebello colour lakes by raft","Chinkultic ruins above the lakes"]},
+    {id:"valle",type:"hike",name:"Valle de Bravo",place:"Lake town and pine forests west of Mexico City",days:1,min:1,max:2,alt:2500,temp:23,crowd:"med",hrs:2.5,hist:"",
+      see:["Monte Alto forest walks","Velo de Novia waterfall","Lakeside evening"]},
+    {id:"copper",type:"hike",name:"Copper Canyon by the Chepe train",place:"Chihuahua to Los Mochis; canyons four times the size of the Grand Canyon",days:4,min:3,max:5,alt:2400,temp:28,crowd:"low",hrs:11,hist:"Rarámuri communities",gb:true,extraFlight:280,
+      see:["Chepe Express between Creel and El Fuerte","Divisadero rim walks and the cable car","Day walks with Rarámuri guides near Creel","Urique or Batopilas at the canyon bottom (hot, optional)"],
+      note:"Spectacular, but far: flight to Chihuahua, 9 h of train. Rainy season is the greenest time. Adds about €280 in flights."},
+    {id:"huasteca",type:"hike",name:"Huasteca Potosina",place:"Turquoise rivers and waterfalls, Edward James's surrealist garden",days:3,min:2,max:4,alt:600,temp:32,crowd:"med",hrs:5,hist:"",
+      see:["Tamul waterfall by canoe","Las Pozas garden at Xilitla","Puente de Dios"],note:"Hot and humid; here for completeness, not for Mom."}
+  ],
+  season:(s,e)=>{
+    const out=["Rainy season in the highlands: clear mornings, a storm around 4 pm, 20–28°C days. Plan outdoor hours before lunch.","Hurricane season on both coasts; this routing stays inland on purpose.","Mexico City and Oaxaca museums are busiest at weekends; weekdays are calm."];
+    const g1=D(7,19), g2=D(7,26);
+    if((s<=g1&&e>=g1)||(s<=g2&&e>=g2)) out.push("A Guelaguetza Monday (19 or 26 July) falls inside these dates: a festival worth seeing, and Oaxaca hotels fill months ahead.");
+    else out.push("These dates miss the Guelaguetza Mondays (19 and 26 July): Oaxaca will be quieter and cheaper.");
+    return out;
+  }
+},
+{
+  id:"peru", zone:"americas", name:"Peru, acclimatised", region:"Lima, Arequipa, Sacred Valley, Cusco, Titicaca",
+  tagline:"Inca and pre-Inca Peru built as a slow climb: coast, 2,300 m, 2,900 m, then Cusco, the Inca Trail or Choquequirao, and Titicaca last.",
+  palette:["#d7b47a","#a87b45","#6b5236","#3a2f26","#f3e7cf"],
+  flight:{base:1100, route:"Brussels→Lima via Madrid, Paris or Amsterdam (Iberia, Air France, KLM), 13–14 h; internal flights on top"},
+  rates:{city:75, hike:100, transit:90}, nights:"0–5°C in the Sacred Valley and on the trek, 14°C in Lima",
+  why:"The other great <strong>Latin America</strong> option and the strongest history on the page after Mexico. July is the dry season: blue skies, cold nights, the best walking weather of the year.",
+  fit:"Works if the order is respected: Lima (sea level), Arequipa (2,335 m), Sacred Valley (2,900 m) for three nights, then Cusco (3,400 m), and only after a week the Inca Trail's one pass at 4,215 m or Titicaca at 3,810 m. Still out: Lares, Salkantay and Ausangate (4,400–5,000 m) and the Colca road (4,910 m). Choquequirao is the low-altitude alternative to the Inca Trail. Crowds at Machu Picchu and in Cusco; nowhere else.",
+  guides:[["Lonely Planet Peru","https://www.lonelyplanet.com/peru"],["Routard Pérou","https://www.routard.com/guide/code_dest/perou.htm"]],
+  presets:[
+    {name:"Slow climb to the Inca Trail", picks:{lima:2,arequipa:2,sacredvalley:3,cuscostay:2,incatrail:4,machupicchu:1}},
+    {name:"Slow climb + Titicaca (19+ days)", picks:{lima:2,arequipa:2,sacredvalley:3,cuscostay:2,incatrail:4,machupicchu:1,titicaca:2}},
+    {name:"Sacred Valley + Choquequirao", picks:{lima:2,sacredvalley:3,choquequirao:5,machupicchu:2,arequipa:2}},
+    {name:"Lowest altitude: north + coast", picks:{lima:2,chachapoyas:3,gocta:2,trujillo:1,sacredvalley:2,shortinca:1,machupicchu:2}},
+    {name:"Fewest hours in transit", picks:{lima:1,sacredvalley:3,valleyhikes:2,shortinca:1,machupicchu:2,cusco:1}}
+  ],
+  modules:[
+    {id:"lima",type:"city",name:"Lima",place:"Larco museum, MALI, Barranco, Huaca Pucllana",days:2,min:1,max:3,alt:100,temp:19,crowd:"med",hrs:0.5,hist:"Pre-Inca cultures, viceregal capital",gb:true,
+      see:["Museo Larco (pre-Columbian collection, the best introduction to the trip)","MALI and the historic centre: San Francisco catacombs, Plaza Mayor","Barranco at dusk, Huaca Pucllana pyramid in Miraflores","Cevichería lunch, never dinner"],
+      note:"Winter garúa: grey, 16–19°C, no rain. Sea level: the easy start."},
+    {id:"arequipa",type:"city",name:"Arequipa",place:"White sillar city at 2,335 m, Santa Catalina monastery",days:2,min:1,max:3,alt:2400,temp:21,crowd:"med",hrs:2,hist:"Colonial baroque, Juanita the ice maiden",gb:true,extraFlight:110,
+      see:["Santa Catalina monastery (a walled town inside the city)","Museo Santuarios Andinos: Juanita","Yanahuara viewpoint and the three volcanoes","Picanterías for rocoto relleno"],
+      note:"A good first altitude step at 2,335 m. The Colca canyon road crosses 4,910 m, so Colca is left out."},
+    {id:"sacredvalley",type:"city",name:"Sacred Valley base (Urubamba, Ollantaytambo)",place:"Sleep at 2,900 m; Pisac, Ollantaytambo, Moray, Maras by day",days:3,min:2,max:4,alt:3500,temp:20,crowd:"med",hrs:2.5,hist:"Inca heartland",gb:true,extraFlight:120,
+      see:["Ollantaytambo fortress and living Inca town","Pisac ruins (3,300 m) and Sunday market","Moray terraces (3,500 m) and the Maras salt pans","Chinchero weavers","Go slowly: this is where the body adapts"],
+      note:"Fly Lima→Cusco (1.5 h) and drive straight down to the valley, 1.5 h. Day trips touch 3,500 m; nights stay at 2,900 m."},
+    {id:"machupicchu",type:"city",name:"Machu Picchu + Aguas Calientes",place:"The citadel at 2,430 m; train in, overnight, early entry",days:2,min:1,max:2,alt:2700,temp:22,crowd:"high",hrs:2,hist:"15th-century Inca estate",gb:true,
+      see:["First-entry slot (6 am) on circuit 2 for the classic view","Huayna Picchu or Machu Picchu mountain for the siblings (separate ticket)","Inca bridge walk","Machu Picchu site museum below the ruins"],
+      note:"Timed tickets sell out 2–3 months ahead in July; the train is the other thing to book early."},
+    {id:"cuscostay",type:"city",name:"Cusco, two nights",place:"Qorikancha, cathedral, San Blas, Sacsayhuamán; sleep at 3,400 m after the valley",days:2,min:1,max:3,alt:3700,temp:19,crowd:"high",hrs:1.5,hist:"Inca capital under a Spanish one",gb:true,
+      see:["Qorikancha sun temple and the Santo Domingo convent built on it","Cathedral, Plaza de Armas, San Blas workshops","Sacsayhuamán, Q'enqo, Tambomachay (3,700 m, short)","Museo Inka, San Pedro market, Pre-Columbian Art museum"],
+      note:"Only after three nights in the valley. This is the acclimatisation step that makes the Inca Trail possible."},
+    {id:"titicaca",type:"city",name:"Lake Titicaca",place:"Puno at 3,810 m, Uros reed islands, Taquile, Amantaní homestay",days:2,min:1,max:3,alt:3950,temp:16,crowd:"med",hrs:7,hist:"Tiwanaku and Inca origin myth, Sillustani tombs",gb:true,
+      see:["Boat to Taquile (textile UNESCO) and a night with a family on Amantaní","Uros floating islands early, before the day boats","Sillustani chullpa towers on the way in"],
+      note:"Highest sleeping altitude of the trip (3,810–3,950 m). Last stop, never first. Scenic train or 7 h bus from Cusco, 1 h flight back to Lima from Juliaca."},
+    {id:"cusco",type:"city",name:"Cusco (day visit)",place:"Qorikancha, cathedral, San Blas, Sacsayhuamán",days:1,min:1,max:2,alt:3700,temp:19,crowd:"high",hrs:1.5,hist:"Inca capital under a Spanish one",gb:true,
+      see:["Qorikancha sun temple","Cathedral and Plaza de Armas","Sacsayhuamán (3,700 m, stay short)","San Pedro market"],
+      note:"3,400 m, and 3,700 m at Sacsayhuamán. A day trip from the valley rather than an overnight is kinder to Mom. One night at most."},
+    {id:"chachapoyas",type:"city",name:"Chachapoyas + Kuélap",place:"Cloud-forest highlands at 2,300 m, the walled city of Kuélap, Leymebamba mummies",days:3,min:2,max:4,alt:3000,temp:22,crowd:"low",hrs:5,hist:"Chachapoya culture, pre-Inca",gb:true,extraFlight:180,
+      see:["Kuélap fortress by cable car (3,000 m)","Karajía cliff sarcophagi","Leymebamba museum (200 mummies) and the Revash tombs","Chachapoyas town, nothing touristic about it"],
+      note:"Fly Lima→Jaén (1.5 h), then 4 h by road. Few visitors, lower altitude, real distance."},
+    {id:"trujillo",type:"city",name:"Trujillo: Chan Chan + Huaca de la Luna",place:"Largest adobe city in the world, Moche temples, Huanchaco reed boats",days:1,min:1,max:2,alt:50,temp:20,crowd:"low",hrs:1.5,hist:"Moche and Chimú kingdoms",gb:true,extraFlight:100,
+      see:["Chan Chan Tschudi complex","Huaca de la Luna murals and museum","Huanchaco caballitos de totora"]},
+    {id:"incatrail",type:"hike",name:"Classic Inca Trail",place:"4 days, 43 km, Dead Woman's Pass 4,215 m on day 2, into Machu Picchu by the Sun Gate",days:4,min:4,max:4,alt:4215,temp:18,crowd:"high",hrs:1.5,hist:"The Inca road itself: Runkurakay, Sayacmarca, Phuyupatamarca, Wiñay Wayna",gb:true,
+      see:["Day 2: the pass at 4,215 m, up slowly from a 3,000 m camp, down to 3,600 m to sleep","Days 3–4: cloud-forest ruins, the Sun Gate at dawn","Porters carry everything; a 5-day version adds a rest day for Mom","Permits: 500 a day including staff, sold out for July by February"],
+      note:"Only pass over 4,000 m on this page that is inside the ceiling. Do it after a week at altitude, choose the 5-day option, and keep the Short Inca Trail as the fallback."},
+    {id:"choquequirao",type:"hike",name:"Choquequirao trek",place:"4–5 days from Cachora: down to the Apurímac (1,500 m), up to the ruins (3,050 m), back",days:5,min:4,max:5,alt:3050,temp:24,crowd:"low",hrs:4,hist:"Inca city still being excavated",gb:true,
+      see:["Day 1 down 1,500 m to the river camp, day 2 up to Marampata","A full day in the ruins: the llama terraces, almost no one else","Mules carry everything; a cook and guide come with the group","Return the same way, or 3 extra days through to Machu Picchu"],
+      note:"Low altitude but hard legs: 1,500 m of descent then ascent each way, hot in the canyon. The siblings' kind of trek; Mom can stop at Marampata and still see the ruins."},
+    {id:"valleyhikes",type:"hike",name:"Sacred Valley day walks",place:"Pumamarca, the Inca quarry trail, Huchuy Qosqo from Lamay",days:2,min:1,max:3,alt:3500,temp:20,crowd:"low",hrs:0.5,hist:"Inca roads and terraces",
+      see:["Ollantaytambo to Pumamarca ruins (3 h, 3,400 m)","Inca quarry trail across the river","Huchuy Qosqo (3,650 m) with a horse option back"]},
+    {id:"shortinca",type:"hike",name:"Short Inca Trail (KM 104)",place:"One day, Wiñay Wayna, entry through the Sun Gate at 2,700 m",days:1,min:1,max:1,alt:2750,temp:22,crowd:"med",hrs:1,hist:"Inca road",gb:true,
+      see:["Chachabamba to Wiñay Wayna terraces","Intipunku (Sun Gate) arrival into Machu Picchu in the afternoon"],
+      note:"The Inca Trail without the 4,215 m pass. Permits are limited; book with the Machu Picchu tickets."},
+    {id:"gocta",type:"hike",name:"Gocta waterfall + Kuélap valleys",place:"771 m cataract, cloud forest, 2,000–2,900 m",days:2,min:1,max:3,alt:2900,temp:22,crowd:"low",hrs:0.5,hist:"",gb:true,
+      see:["Cocachimba to the base of Gocta (5 h round trip)","Yumbilla falls, taller and emptier","Huancas canyon viewpoint"]},
+    {id:"colca",type:"hike",name:"Colca canyon",place:"Condors at Cruz del Cóndor, terraces, canyon-floor walk",days:2,min:1,max:3,alt:4910,temp:20,crowd:"med",hrs:4,hist:"Collagua terraces",gb:true,
+      see:["Cruz del Cóndor at 8 am","Canyon-floor walk to Sangalle","Chivay hot springs"],
+      note:"Beautiful, and the road from Arequipa crosses the Patapampa pass at 4,910 m. Over Mom's limit; here so the choice is explicit."}
+  ],
+  season:(s,e)=>{
+    const out=["Dry season across the Andes: sun by day, 0–5°C nights in the valley and on the trek.","Lima is grey and 16–19°C all winter; no rain.","Machu Picchu entry tickets and the Choquequirao mules need booking 2–3 months ahead for July."];
+    if(s<=D(7,29)&&e>=D(7,28)) out.push("Fiestas Patrias (28–29 July) fall inside these dates: Peruvians travel, Cusco and the valley fill, prices rise for that week.");
+    return out;
+  }
+},
+{
+  id:"brazil", zone:"americas", name:"Brazil: Minas, Bahia and the Chapada", region:"South-east and north-east Brazil",
+  tagline:"Baroque gold towns, Afro-Brazilian Salvador, and dry-season trekking in the Chapada Diamantina.",
+  palette:["#8fc48f","#4e9a5a","#2d6b4a","#1e3f33","#f1e7b5"],
+  flight:{base:1000, route:"Brussels→Rio or São Paulo via Lisbon, Paris or Amsterdam (TAP, Air France, KLM), 12–13 h; internal flights on top"},
+  rates:{city:75, hike:95, transit:100}, nights:"10–14°C in the Chapada and Minas towns, 18°C in Rio and Salvador",
+  why:"The other <strong>Latin America</strong> option, and the one with the right season: July and August are the dry southern winter, 22–27°C, no altitude anywhere, and the Chapada Diamantina trek is as good as Ciudad Perdida with cabins instead of hammocks.",
+  fit:"Easy on Mom's three limits except Rio, which is crowded; keep it to two days. The cost is distance: you fly between regions, which adds about €270 of internal flights and some airport days.",
+  guides:[["Lonely Planet Brazil","https://www.lonelyplanet.com/brazil"],["Routard Brésil","https://www.routard.com/guide/code_dest/bresil.htm"]],
+  presets:[
+    {name:"Minas + Chapada", picks:{rio:2,ouropreto:2,tiradentes:2,cipo:2,salvador:2,chapada:4}},
+    {name:"Coast + history", picks:{rio:3,paraty:2,ilhagrande:2,ouropreto:2,tiradentes:2,inhotim:1}},
+    {name:"Chapada-heavy", picks:{salvador:2,chapada:5,rio:2,ouropreto:2,cipo:2}},
+    {name:"Fewest hours in transit", picks:{rio:3,ouropreto:3,tiradentes:2,cipo:2,inhotim:1,itatiaia:2}}
+  ],
+  modules:[
+    {id:"rio",type:"city",name:"Rio de Janeiro",place:"MAR, Museu do Amanhã, Santa Teresa, Tijuca forest",days:2,min:1,max:4,alt:0,temp:26,crowd:"high",hrs:0.5,hist:"Imperial capital, port of the slave trade",gb:true,
+      see:["Museu de Arte do Rio and Museu do Amanhã on the renewed port","Valongo wharf (UNESCO) and Little Africa walking tour","Santa Teresa and the Selarón steps early","Pedra Bonita or Dois Irmãos walk instead of the Christ queue","Sugarloaf at sunset"],
+      note:"Crowded and expensive by Brazilian standards. Two days, and arrive here or leave from here."},
+    {id:"ouropreto",type:"city",name:"Ouro Preto + Mariana",place:"Baroque gold-rush capital, Aleijadinho's churches",days:2,min:1,max:3,alt:1150,temp:23,crowd:"med",hrs:2,hist:"18th-century gold cycle, Inconfidência",gb:true,
+      see:["São Francisco de Assis and Pilar churches","Museu da Inconfidência","Mina da Passagem gold mine","Steam train to Mariana"],
+      note:"Hilly cobbles everywhere; good shoes. Fly Rio–Belo Horizonte 1 h, then 2 h."},
+    {id:"tiradentes",type:"city",name:"Tiradentes + São João del-Rei",place:"Quietest of the colonial towns, Maria Fumaça steam train",days:2,min:1,max:3,alt:900,temp:22,crowd:"low",hrs:3,hist:"Colonial Minas, Portuguese baroque",gb:true,
+      see:["Matriz de Santo Antônio (gold interior)","Maria Fumaça steam train to São João del-Rei","Serra de São José trail above the town","Mineiro cooking classes"]},
+    {id:"inhotim",type:"city",name:"Belo Horizonte + Inhotim",place:"The largest open-air contemporary art park in the world",days:1,min:1,max:2,alt:850,temp:25,crowd:"med",hrs:1.5,hist:"",gb:true,
+      see:["Inhotim pavilions in a botanical garden (full day)","Pampulha church by Niemeyer (UNESCO)","Mercado Central"]},
+    {id:"salvador",type:"city",name:"Salvador da Bahia",place:"Pelourinho, Afro-Brazilian museum, capoeira, Bonfim",days:2,min:1,max:3,alt:0,temp:27,crowd:"med",hrs:2.5,hist:"First Brazilian capital, Afro-Brazilian heritage",gb:true,extraFlight:120,
+      see:["Pelourinho and São Francisco church (gold interior)","Museu Afro-Brasileiro","Capoeira and a candomblé evening with a local host","Mercado Modelo and the Lacerda elevator","Bonfim church ribbons"]},
+    {id:"paraty",type:"city",name:"Paraty",place:"Colonial port of the gold road, schooner bay",days:2,min:1,max:3,alt:0,temp:24,crowd:"med",hrs:4,hist:"Caminho do Ouro port",gb:true,
+      see:["Car-free historic centre","Caminho do Ouro stone road walk","Schooner day in the bay","Cachaça distilleries"]},
+    {id:"chapada",type:"hike",name:"Chapada Diamantina",place:"Vale do Pati trek, Fumaça waterfall, Pai Inácio",days:4,min:3,max:6,alt:1700,temp:25,crowd:"low",hrs:6,hist:"Diamond-rush ghost towns",gb:true,extraFlight:150,
+      see:["Vale do Pati 3-day trek sleeping in farmhouses (guide mandatory)","Cachoeira da Fumaça from the top","Morro do Pai Inácio at sunset","Lençóis town, Poço Azul blue cave"],
+      note:"Dry season, 25°C days, cold nights. Reach Lençóis by 1 h flight from Salvador or 6 h bus."},
+    {id:"cipo",type:"hike",name:"Serra do Cipó",place:"Highland savanna, waterfalls, 1,300 m, near Belo Horizonte",days:2,min:1,max:3,alt:1400,temp:24,crowd:"low",hrs:2,hist:"",
+      see:["Cânion das Bandeirinhas","Cachoeira Grande","Travessia Lapinha–Tabuleiro (a day of it)"]},
+    {id:"itatiaia",type:"hike",name:"Itatiaia National Park",place:"Brazil's oldest park, Atlantic forest to 2,700 m plateau",days:2,min:1,max:3,alt:2700,temp:20,crowd:"low",hrs:3,hist:"",
+      see:["Lower park waterfalls and forest trails","Upper plateau: Prateleiras rock walk","Penedo village, Finnish colony"]},
+    {id:"ilhagrande",type:"hike",name:"Ilha Grande",place:"Car-free island, forest trails to empty beaches",days:2,min:1,max:3,alt:300,temp:25,crowd:"med",hrs:3,hist:"",
+      see:["Lopes Mendes trail","Abraão to Dois Rios old prison walk","Boat to the lagoons"]},
+    {id:"canastra",type:"hike",name:"Serra da Canastra",place:"Source of the São Francisco, Casca d'Anta falls, cheese country",days:2,min:1,max:3,alt:1500,temp:24,crowd:"low",hrs:5,hist:"",
+      see:["Casca d'Anta waterfall from above and below","São Roque de Minas cheese farms","Open plateau with maned wolves"]}
+  ],
+  season:(s,e)=>{
+    const out=["Dry winter season in Minas, Bahia and the Chapada: 22–27°C, cold clear nights.","Rio can get a cold front: 18°C and rain for two days. Keep Rio flexible.","Brazilian school holidays run to late July; the Chapada and Paraty are busier before 1 August."];
+    if(s>=D(8,1)) out.push("Departure in August: after the Brazilian school holidays, the Chapada and the colonial towns are at their quietest.");
+    return out;
+  }
+},
+{
+  id:"cantabria", zone:"europe", name:"Basque Country, Asturias + Picos de Europa", region:"Northern Spain, by train", train:true,
+  tagline:"Guggenheim and pintxos, pre-Romanesque Oviedo, Altamira, and limestone peaks an hour from a cool Atlantic coast.",
+  palette:["#9bc3a3","#5f9a73","#3b6b56","#223f36","#e7efdf"],
+  flight:{base:300, route:"Train: Brussels→Paris (1.5 h), TGV Paris→Hendaye/San Sebastián (5 h), then bus or train along the coast"},
+  rates:{city:100, hike:85, transit:100}, nights:"10–13°C at the Picos huts, 16°C on the coast",
+  why:"Spain again after <strong>Seville and Córdoba</strong>, but the opposite Spain: green, cool, Atlantic, and 23°C in late July. No flights at all, and the mountains are serious without ever going high.",
+  fit:"Excellent on all three of Mom's limits: highest point 2,400 m, coast at 23–26°C, and the crowds are confined to San Sebastián in August and the Cares gorge at midday. Short hops between stops.",
+  guides:[["Lonely Planet Spain","https://www.lonelyplanet.com/spain"],["Routard Pays basque, Béarn","https://www.routard.com/guide/code_dest/pays_basque_bearn.htm"],["Routard Asturies, Cantabrie","https://www.routard.com/guide/code_dest/asturies_cantabrie.htm"]],
+  presets:[
+    {name:"Picos + Basque cities", picks:{sansebastian:2,bilbao:2,cares:2,picoshut:3,liebana:2,santillana:1}},
+    {name:"Quiet Asturias", picks:{bilbao:1,oviedo:2,somiedo:2,picoshut:3,cares:1,santillana:1,flysch:1}},
+    {name:"Fewest hours in transit", picks:{sansebastian:2,bilbao:2,flysch:1,cares:2,liebana:3}}
+  ],
+  modules:[
+    {id:"sansebastian",type:"city",name:"San Sebastián",place:"La Concha, San Telmo museum, pintxos in the Parte Vieja",days:2,min:1,max:3,alt:0,temp:24,crowd:"high",hrs:7,hist:"Belle Époque resort, Basque culture",gb:true,
+      see:["San Telmo museum (Basque history in a convent)","Monte Urgull and Monte Igueldo walks","Pintxos crawl in the Parte Vieja","Chillida Leku sculpture park (20 min out)"],
+      note:"Arrival point from the train. Busy in August; two nights midweek is right."},
+    {id:"bilbao",type:"city",name:"Bilbao",place:"Guggenheim, Fine Arts museum, Casco Viejo",days:2,min:1,max:3,alt:0,temp:25,crowd:"med",hrs:1.5,hist:"Industrial port reinvented",gb:true,
+      see:["Guggenheim (book a morning slot)","Museo de Bellas Artes","Casco Viejo and the Ribera market","Vizcaya hanging bridge (UNESCO)","Gaztelugatxe at opening time"]},
+    {id:"santillana",type:"city",name:"Santillana del Mar + Altamira",place:"Medieval village, the Altamira cave museum, Comillas",days:1,min:1,max:2,alt:100,temp:23,crowd:"med",hrs:1.5,hist:"Palaeolithic cave art, 36,000 years",gb:true,
+      see:["Altamira museum and the neocave","Santillana's single stone street before 10 am","Gaudí's El Capricho in Comillas"]},
+    {id:"oviedo",type:"city",name:"Oviedo + Gijón",place:"Pre-Romanesque churches, cider houses",days:1,min:1,max:2,alt:230,temp:23,crowd:"low",hrs:3,hist:"9th-century Asturian kingdom (UNESCO)",gb:true,
+      see:["Santa María del Naranco and San Miguel de Lillo","Oviedo cathedral Cámara Santa","Gascona street cider houses","Gijón's Roman baths and Cimadevilla"]},
+    {id:"cares",type:"hike",name:"Ruta del Cares + Bulnes",place:"The gorge path, 12 km each way, and the funicular village",days:2,min:1,max:3,alt:1000,temp:24,crowd:"high",hrs:2,hist:"",gb:true,
+      see:["Cares gorge from Poncebos, as far as Caín and back","Bulnes by the old path up (2 h) and the funicular down","Covadonga lakes early morning (shuttle in summer)"],
+      note:"The Cares path is the busiest walk in the Picos: start at 8 am."},
+    {id:"picoshut",type:"hike",name:"Picos hut-to-hut",place:"Vega de Urriellu, Collado Jermoso, Vegarredonda; 2,000–2,400 m",days:3,min:2,max:4,alt:2400,temp:18,crowd:"low",hrs:1,hist:"",gb:true,
+      see:["Naranjo de Bulnes seen from the Urriellu hut","Collado Jermoso, the finest hut terrace in Spain","Vegarredonda and the Mirador de Ordiales","Guided or self-guided with a luggage transfer at each end"],
+      note:"Cool at altitude, 18°C days, cloud can roll in from the sea. Huts book out by spring."},
+    {id:"liebana",type:"hike",name:"Fuente Dé + Liébana valley",place:"Cable car to 1,850 m, day walks, Potes and Santo Toribio",days:2,min:1,max:3,alt:1900,temp:22,crowd:"med",hrs:1.5,hist:"Santo Toribio monastery, 8th-century Beatus",gb:true,
+      see:["Fuente Dé cable car and the Horcados Rojos walk","Potes old town","Santo Toribio de Liébana","Mogrovejo village"]},
+    {id:"somiedo",type:"hike",name:"Somiedo natural park",place:"Brañas, thatched teito huts, brown bears, 1,800 m",days:2,min:1,max:3,alt:1800,temp:21,crowd:"low",hrs:2.5,hist:"Transhumance culture",
+      see:["Lagos de Saliencia walk","Braña de la Pornacal teitos","Bear-watching evening with a local guide (June–September)"]},
+    {id:"flysch",type:"hike",name:"Basque coast: Zumaia to Deba flysch",place:"Geological coast walk on the Camino, 60 million years in the cliffs",days:1,min:1,max:2,alt:200,temp:23,crowd:"med",hrs:1,hist:"",gb:true,
+      see:["Zumaia to Deba along the cliffs (3–4 h)","Getaria and its anchovy and txakoli","Boat along the flysch at low tide"]},
+    {id:"quebrada",type:"hike",name:"Costa Quebrada + Liencres dunes",place:"Cantabrian coast walks west of Santander",days:1,min:1,max:2,alt:50,temp:23,crowd:"low",hrs:1,hist:"",
+      see:["Liencres dunes and pine forest","Costa Quebrada cliffs and arches","Santander's Centro Botín"]}
+  ],
+  season:(s,e)=>{
+    const out=["The coast is 23–26°C, the Picos 18–22°C; Atlantic cloud some mornings, rarely all day.","Picos huts and the Fuente Dé cable car at full service; Covadonga lakes road closed to cars (shuttle)."];
+    if(e>=D(8,1)) out.push("August: San Sebastián and the Cantabrian beaches fill with Spanish holidaymakers; the mountains do not.");
+    if(s<=D(7,25)) out.push("Second half of July is the quieter half of the summer on this coast.");
+    return out;
+  }
+},
+{
+  id:"slovenia", zone:"europe", visited:true, name:"Slovenia: Ljubljana, the Julian Alps and the Adriatic", region:"Slovenia and Trieste, by train", train:true,
+  tagline:"A night train to a small country with Alps, karst caves, a Venetian coast and a First World War front line.",
+  palette:["#9fd0b7","#55a07a","#2f6e58","#1b4238","#e5f0e8"],
+  flight:{base:280, route:"Train: Nightjet Brussels→Vienna (14 h, couchette) then Vienna→Ljubljana (6 h); or via Munich by day"},
+  rates:{city:85, hike:80, transit:85}, nights:"7–10°C at the Triglav huts, 17°C in Ljubljana",
+  why:"The <strong>Alps hiking</strong> you love in a range you have not walked: the Julian Alps are limestone, lower, wilder and far cheaper than the western Alps. Ljubljana and Piran give the city days a Habsburg-and-Venetian flavour.",
+  fit:"Highest point 2,400 m on the Seven Lakes route, mountains at 20–24°C. Ljubljana reaches 30°C and Bled is crowded; both are kept short. Short distances everywhere: nothing is more than 2 h from anything.",
+  guides:[["Lonely Planet Slovenia","https://www.lonelyplanet.com/slovenia"],["Routard Slovénie","https://www.routard.com/guide/code_dest/slovenie.htm"]],
+  presets:[
+    {name:"Julian Alps + Ljubljana", picks:{ljubljana:2,bohinj:3,triglav:3,soca:2,piran:2}},
+    {name:"History-heavy", picks:{ljubljana:2,idrija:1,soca:2,trieste:1,piran:2,bohinj:2,logar:2}},
+    {name:"Fewest hours in transit", picks:{ljubljana:2,bohinj:3,triglav:3,velika:1,bled:1}}
+  ],
+  modules:[
+    {id:"ljubljana",type:"city",name:"Ljubljana",place:"Plečnik's city, castle, National Gallery, riverside market",days:2,min:1,max:3,alt:300,temp:30,crowd:"med",hrs:14,hist:"Habsburg town, Plečnik, Yugoslav era",gb:true,
+      see:["Plečnik house and the Triple Bridge","National Gallery (Slovenian impressionists)","Castle by funicular, Metelkova at night","Saturday central market, Open Kitchen on Fridays"],
+      note:"Arrival by night train. Warm; the river and the castle hill are shaded."},
+    {id:"piran",type:"city",name:"Piran + Škocjan caves",place:"Venetian port, salt pans, UNESCO karst canyon underground",days:2,min:1,max:3,alt:50,temp:29,crowd:"med",hrs:1.5,hist:"Venetian Istria, Roman salt pans",gb:true,
+      see:["Piran's Tartini square and walls at dusk","Škocjan caves (the underground canyon, UNESCO)","Sečovlje salt pans","Swim at Fiesa"]},
+    {id:"trieste",type:"city",name:"Trieste",place:"Habsburg port, literary cafés, Miramare castle",days:1,min:1,max:2,alt:0,temp:29,crowd:"med",hrs:1.5,hist:"Austro-Hungarian port, Joyce and Svevo",gb:true,
+      see:["Piazza Unità and the Canal Grande","Miramare castle and park","Risiera di San Sabba memorial","Caffè San Marco"]},
+    {id:"idrija",type:"city",name:"Idrija",place:"Second-largest mercury mine in the world, lace, žlikrofi",days:1,min:1,max:2,alt:330,temp:27,crowd:"low",hrs:1,hist:"500 years of mercury mining (UNESCO)",gb:true,
+      see:["Anthony's Shaft mine tour","Gewerkenegg castle museum","Lace school and a žlikrofi lunch","Wild Lake walk"]},
+    {id:"bled",type:"city",name:"Lake Bled",place:"The island church and the castle",days:1,min:1,max:2,alt:500,temp:26,crowd:"high",hrs:0.5,hist:"",gb:true,
+      see:["Pletna boat to the island","Bled castle museum","Vintgar gorge at 8 am"],note:"Very crowded in July and August. One night, or a lunch stop on the way to Bohinj."},
+    {id:"bohinj",type:"hike",name:"Lake Bohinj",place:"The quiet lake inside Triglav National Park, 1,500–2,000 m day walks",days:3,min:2,max:4,alt:2000,temp:23,crowd:"med",hrs:1.5,hist:"Alpine dairying, Stara Fužina",gb:true,
+      see:["Vogel cable car and the ridge walk","Mostnica gorge and the Voje valley","Savica waterfall and the Black Lake climb","Swim in the lake at 22°C"]},
+    {id:"triglav",type:"hike",name:"Triglav Seven Lakes hut-to-hut",place:"Dolina Triglavskih jezer, Koča pri Triglavskih jezerih, Komna; 1,700–2,400 m",days:3,min:2,max:4,alt:2400,temp:19,crowd:"med",hrs:0.5,hist:"",gb:true,
+      see:["Up from Savica to the Seven Lakes valley","Hut nights at Triglav Lakes and Komna","Kanjavec or the Hribarice plateau viewpoint for the siblings","Down into the Soča side at Trenta if continuing west"],
+      note:"Classic and busy on summer weekends; weekdays are fine. Triglav summit itself (2,864 m, via ferrata) is for the siblings only."},
+    {id:"soca",type:"hike",name:"Soča valley + Kobarid",place:"Emerald river, Isonzo front museum, Krn lakes",days:2,min:1,max:3,alt:1500,temp:25,crowd:"med",hrs:1.5,hist:"First World War Isonzo front",gb:true,
+      see:["Kobarid museum (the Caporetto breakthrough, 1917)","Kobarid historical trail: Italian ossuary, trenches, Kozjak falls","Soča gorge and the Great Soča trough","Krn lake walk from Lepena (1,400 m)"]},
+    {id:"logar",type:"hike",name:"Logar valley + Kamnik-Savinja Alps",place:"Glacial valley, Rinka falls, high farms",days:2,min:1,max:3,alt:2000,temp:23,crowd:"low",hrs:1.5,hist:"",
+      see:["Logar valley floor to Rinka waterfall","Klemenča jama hut walk","Solčava panoramic road and the hill farms"]},
+    {id:"velika",type:"hike",name:"Velika Planina",place:"Herders' plateau of wooden huts at 1,600 m",days:1,min:1,max:2,alt:1700,temp:22,crowd:"med",hrs:1,hist:"Living pastoral settlement",gb:true,
+      see:["Cable car then chairlift, walk the plateau","Sour milk and žganci at a herder's hut","Night in a converted hut"]}
+  ],
+  season:(s,e)=>["Mountain huts fully open; weekends busy with Slovenians, weekdays quiet.","Ljubljana and the coast at 29–31°C; the Alps at 19–24°C.","Afternoon thunderstorms are common in the Julian Alps in July: start walks early."]
+},
+{
+  id:"scotland", zone:"europe", visited:true, name:"Scotland: Highlands and Orkney by sleeper", region:"Scotland, by train and ferry", train:true,
+  tagline:"The Caledonian Sleeper north, Neolithic Orkney, and empty mountains in Torridon and Assynt.",
+  palette:["#a3b7a0","#6b8577","#45584f","#2a3630","#e4e9df"],
+  flight:{base:420, route:"Train: Eurostar Brussels→London (2 h), then LNER to Edinburgh (4.5 h) or the Caledonian Sleeper to Inverness or Fort William"},
+  rates:{city:110, hike:95, transit:110}, nights:"8–11°C",
+  why:"The funkiest no-fly option: an overnight train, a ferry to islands with 5,000-year-old villages, and hills that feel bigger than their height. Cool at 15–19°C.",
+  fit:"No altitude, no heat. Crowds: Edinburgh during the August festivals and Skye are the two to avoid; Orkney, Torridon, Assynt and Knoydart are as empty as anywhere on this page. Midges on still evenings in the west.",
+  guides:[["Lonely Planet Scotland","https://www.lonelyplanet.com/scotland"],["Routard Écosse","https://www.routard.com/guide/code_dest/ecosse.htm"]],
+  presets:[
+    {name:"Orkney + the north-west", picks:{edinburgh:2,orkney:3,assynt:2,torridon:3,inverness:1,glasgow:1}},
+    {name:"Highlands classic", picks:{edinburgh:2,cairngorms:3,skye:2,torridon:3,glasgow:1}},
+    {name:"Fewest hours in transit", picks:{edinburgh:2,cairngorms:3,inverness:1,orkney:3}}
+  ],
+  modules:[
+    {id:"edinburgh",type:"city",name:"Edinburgh",place:"Old Town, National Museum, Arthur's Seat",days:2,min:1,max:3,alt:250,temp:19,crowd:"high",hrs:7,hist:"Scottish Enlightenment, Reformation",gb:true,
+      see:["National Museum of Scotland","Old Town closes and the castle early","Arthur's Seat at 7 am","Scottish National Gallery","Leith for dinner"],
+      note:"The festivals run most of August and triple the crowds. Before 5 August it is a normal busy city."},
+    {id:"glasgow",type:"city",name:"Glasgow",place:"Kelvingrove, the Burrell, Mackintosh",days:1,min:1,max:2,alt:20,temp:18,crowd:"med",hrs:1,hist:"Victorian industrial city, Mackintosh",gb:true,
+      see:["Kelvingrove art gallery","Burrell Collection","Mackintosh at the Willow and the Hunterian"]},
+    {id:"inverness",type:"city",name:"Inverness + Culloden",place:"Highland capital, the 1746 battlefield",days:1,min:1,max:2,alt:20,temp:17,crowd:"med",hrs:3.5,hist:"Jacobite rising, Clava cairns",
+      see:["Culloden visitor centre and moor","Clava cairns (4,000 years old)","Ness islands walk"]},
+    {id:"orkney",type:"city",name:"Orkney",place:"Skara Brae, Ring of Brodgar, Maeshowe, St Magnus cathedral",days:3,min:2,max:4,alt:0,temp:15,crowd:"low",hrs:4,hist:"Neolithic heart of Orkney (UNESCO), Vikings, Scapa Flow",gb:true,
+      see:["Skara Brae, the 5,000-year-old village","Ring of Brodgar and the Ness of Brodgar dig (open July–August)","Maeshowe chambered tomb (book)","St Magnus cathedral in Kirkwall","Italian chapel and Scapa Flow museum","Yesnaby cliff walk, Hoy's Old Man if the ferry fits"],
+      note:"Ferry from Scrabster or Gills Bay, 1–1.5 h. Windy, cool, no crowds, extraordinary history."},
+    {id:"torridon",type:"hike",name:"Torridon + Applecross",place:"Beinn Alligin, Beinn Eighe, the Bealach na Bà road",days:3,min:2,max:4,alt:1000,temp:16,crowd:"low",hrs:2.5,hist:"",gb:true,
+      see:["Beinn Eighe mountain trail (the easy option, 550 m)","Beinn Alligin horns for the siblings","Coire Mhic Fhearchair walk","Applecross inn via the Bealach na Bà"]},
+    {id:"assynt",type:"hike",name:"Assynt + Suilven",place:"Lochinver, Suilven, Achmelvich, Clachtoll",days:2,min:1,max:3,alt:730,temp:16,crowd:"low",hrs:2,hist:"Highland Clearances landscape",gb:true,
+      see:["Suilven (long but not technical)","Bone caves of Inchnadamph","Achmelvich and Clachtoll beaches","Knockan Crag geology trail"]},
+    {id:"cairngorms",type:"hike",name:"Cairngorms",place:"Rothiemurchus forest, Loch an Eilein, Lairig Ghru, 1,300 m plateau",days:3,min:2,max:4,alt:1300,temp:17,crowd:"med",hrs:2,hist:"",gb:true,
+      see:["Loch an Eilein and the Caledonian pine forest","Lairig Ghru as far as the Pools of Dee","Meall a' Bhuachaille from Glenmore","Highland Folk Museum at Newtonmore"]},
+    {id:"skye",type:"hike",name:"Skye",place:"Quiraing, Old Man of Storr, Fairy Pools",days:2,min:1,max:3,alt:700,temp:16,crowd:"high",hrs:2.5,hist:"Clan MacLeod, Dunvegan",gb:true,
+      see:["Quiraing loop early","Old Man of Storr before 8 am","Dunvegan castle","Elgol boat to Loch Coruisk"],note:"The most crowded place in the Highlands in summer. Two nights, or swap for Torridon and Assynt."},
+    {id:"knoydart",type:"hike",name:"Knoydart",place:"Mainland peninsula reached only by boat from Mallaig; Inverie, Ladhar Bheinn",days:3,min:2,max:4,alt:1020,temp:16,crowd:"low",hrs:3,hist:"Clearances, 1948 land raid",
+      see:["Boat from Mallaig to Inverie","Ladhar Bheinn for the siblings, Loch an Dubh-Lochain walk for everyone","Britain's remotest pub, The Old Forge"]},
+    {id:"glencoe",type:"hike",name:"Glencoe + Fort William section of the West Highland Way",place:"Devil's Staircase, Kinlochleven, Ben Nevis base",days:2,min:1,max:3,alt:850,temp:17,crowd:"med",hrs:1,hist:"1692 massacre",gb:true,
+      see:["Glencoe Lochan and the Lost Valley","Devil's Staircase to Kinlochleven (a WHW day)","Steall falls in Glen Nevis"]}
+  ],
+  season:(s,e)=>{
+    const out=["Long days (sunset after 10 pm in July), 15–19°C, rain somewhere most days; pack for it and the walking is excellent.","Midges in the west on still evenings, July and August both."];
+    if(e>=D(8,6)) out.push("Edinburgh's festivals start in the first week of August: hotels triple, streets fill. Put Edinburgh at the start or keep it to one night.");
+    else out.push("These dates miss the Edinburgh festivals: the city is busy but normal.");
+    return out;
+  }
+},
+{
+  id:"tatras", zone:"europe", visited:true, name:"Kraków + the Slovak Tatras", region:"Poland and Slovakia, by train", train:true,
+  tagline:"A great medieval city, then the smallest high mountains in Europe, with wooden churches and Spiš castles between.",
+  palette:["#b8c9a0","#7a9a6a","#4d6b4e","#2d4236","#edf0e2"],
+  flight:{base:220, route:"Train: European Sleeper Brussels→Berlin or Prague, then Berlin→Kraków (7 h) or Prague→Kraków (7 h)"},
+  rates:{city:60, hike:70, transit:70}, nights:"6–9°C at the Tatra huts, 15°C in Kraków",
+  why:"The cheapest trip on this page and the Eastern Europe you have not seen. Kraków carries the history; the High Tatras give a compact hut-to-hut at 2,000–2,300 m, the Slovak side with a quarter of the Polish crowds.",
+  fit:"Highest point 2,300 m, 20–25°C in the mountains, Kraków 27°C. Crowds concentrate in Kraków's Old Town and Zakopane; both are optional or short. This is the option to test Mom's feeling about the region before anything else.",
+  guides:[["Lonely Planet Poland","https://www.lonelyplanet.com/poland"],["Routard Pologne","https://www.routard.com/guide/code_dest/pologne.htm"],["Routard Slovaquie","https://www.routard.com/guide/code_dest/slovaquie.htm"]],
+  presets:[
+    {name:"Kraków + Slovak Tatras", picks:{krakow:3,hightatras:3,belianske:2,levoca:1,raj:2}},
+    {name:"Quiet Slovakia", picks:{krakow:2,rohace:2,lowtatras:2,stiavnica:1,levoca:1,bardejov:1,raj:2}},
+    {name:"Fewest hours in transit", picks:{krakow:3,zakopane:2,hightatras:3,belianske:2}}
+  ],
+  modules:[
+    {id:"krakow",type:"city",name:"Kraków",place:"Wawel, Kazimierz, Schindler's factory, Wieliczka salt mine",days:3,min:2,max:4,alt:220,temp:27,crowd:"high",hrs:16,hist:"Royal capital, Jewish Kazimierz, Auschwitz",gb:true,
+      see:["Wawel castle and cathedral","Kazimierz: synagogues, Galicia Jewish museum","Schindler's factory museum (book)","Wieliczka salt mine (half day)","Auschwitz-Birkenau (a full, heavy day; decide as a family)","Czartoryski museum: Leonardo's Lady with an Ermine"],
+      note:"Old Town is packed at midday; mornings and Kazimierz evenings are calm. Arrival by overnight train."},
+    {id:"levoca",type:"city",name:"Levoča + Spiš castle",place:"Walled Renaissance town, Master Paul's altar, the largest castle ruin in Central Europe",days:1,min:1,max:2,alt:600,temp:25,crowd:"low",hrs:2,hist:"Medieval Spiš (UNESCO)",gb:true,
+      see:["St James church and the 18 m Gothic altar","Spiš castle and Spišská Kapitula","Žehra wall paintings"]},
+    {id:"bardejov",type:"city",name:"Bardejov + wooden churches",place:"Gothic-Renaissance square, Carpathian wooden churches",days:1,min:1,max:2,alt:280,temp:25,crowd:"low",hrs:2,hist:"Medieval trading town, Ruthenian churches (UNESCO)",gb:true,
+      see:["Bardejov square and the Šariš museum icons","Hervartov and Ladomirová wooden churches","Bardejovské Kúpele spa and open-air museum"]},
+    {id:"stiavnica",type:"city",name:"Banská Štiavnica",place:"Silver-mining town in a volcanic caldera",days:1,min:1,max:2,alt:620,temp:26,crowd:"low",hrs:3,hist:"Mining town and first mining academy (UNESCO)",gb:true,
+      see:["Open-air mining museum tunnel","Calvary hill","Tajch lakes swim"]},
+    {id:"hightatras",type:"hike",name:"High Tatras hut-to-hut (Slovak side)",place:"Téryho, Zbojnícka, Zamkovského chaty; 1,500–2,300 m",days:3,min:2,max:4,alt:2300,temp:18,crowd:"med",hrs:2.5,hist:"",gb:true,
+      see:["Tatranská Lomnica up the Malá Studená valley to Téryho chata","Over Priečne sedlo (chains; siblings) or back round to Zbojnícka","Skalnaté pleso and the Lomnický štít cable car for the view","Štrbské pleso lakeside"],
+      note:"Compact and well kept; Slovak huts are simple and cheap. Rysy (2,499 m) is the highest walkable point if anyone wants it."},
+    {id:"belianske",type:"hike",name:"Ždiar, Belianske Tatras + Pieniny rafting",place:"Goral village, limestone ridge, Dunajec gorge on a wooden raft",days:2,min:1,max:3,alt:1500,temp:21,crowd:"low",hrs:1,hist:"Goral highland culture",gb:true,
+      see:["Monkova dolina walk from Ždiar","Belianska cave","Dunajec gorge raft at Červený Kláštor","Red Monastery"]},
+    {id:"zakopane",type:"hike",name:"Zakopane + Morskie Oko (Polish side)",place:"Wooden-architecture resort, the famous lake",days:2,min:1,max:3,alt:1400,temp:21,crowd:"high",hrs:2,hist:"Zakopane-style architecture, Witkiewicz",gb:true,
+      see:["Morskie Oko before 7 am","Dolina Kościeliska","Zakopane style museum and the Jaszczurówka chapel"],note:"Poland's busiest mountain resort. Here for completeness; the Slovak side is calmer."},
+    {id:"raj",type:"hike",name:"Slovenský raj",place:"Gorges with ladders and walkways, 1,000 m",days:2,min:1,max:3,alt:1000,temp:23,crowd:"med",hrs:1.5,hist:"",gb:true,
+      see:["Suchá Belá gorge ladders","Prielom Hornádu river walkways","Kláštorisko ruined monastery hut"],note:"Ladders are easy but one-way; check Mom is happy with them."},
+    {id:"lowtatras",type:"hike",name:"Low Tatras ridge",place:"Chopok to Ďumbier, Demänovská caves",days:2,min:1,max:3,alt:2000,temp:19,crowd:"low",hrs:2,hist:"",
+      see:["Cable car to Chopok, ridge walk to Ďumbier (2,043 m)","Demänovská ice cave","Vrbické pleso"]},
+    {id:"rohace",type:"hike",name:"Western Tatras: Roháče",place:"Quiet valleys and lakes below 2,100 m, Orava folk villages",days:2,min:1,max:3,alt:2100,temp:19,crowd:"low",hrs:1.5,hist:"Orava wooden villages, Zuberec museum",
+      see:["Roháčske plesá lakes loop","Zuberec open-air village museum","Orava castle"]}
+  ],
+  season:(s,e)=>["Full hut season; Slovak huts need booking a few weeks ahead, Polish ones months.","Afternoon storms are the Tatra rule in July and August: on the ridge by 8, down by 2.","Kraków 27°C and busy with weekend visitors; Spiš and Šariš towns are quiet all summer."]
+},
+{
+  id:"sweden", zone:"europe", name:"Sweden: Stockholm, Gotland and the Kungsleden", region:"Sweden and Swedish Lapland, by train", train:true,
+  tagline:"Day train to Stockholm, night train to the Arctic, hut-to-hut above the treeline, and a medieval walled town on an island.",
+  palette:["#a9c6d6","#5f8fa8","#3a5f73","#1f3542","#edf2f4"],
+  flight:{base:300, route:"Train: Brussels→Hamburg→Copenhagen→Stockholm (about 13 h, or overnight from Hamburg); Norrland night train Stockholm→Abisko (17 h, couchettes)"},
+  rates:{city:130, hike:110, transit:130}, nights:"4–8°C at the Kungsleden huts, 12°C in Stockholm",
+  why:"The furthest north you can get without a plane, and closest to the <strong>Alta Via</strong> rhythm: five days hut to hut with light packs, STF huts with saunas, then a city with world-class museums. Gotland adds the history.",
+  fit:"Highest point 1,150 m, 15–22°C, long light. Crowds: Visby during Medieval Week (early August) and the Abisko trailhead on July weekends; the trail itself empties after day one. Mosquitoes in Lapland in July are real; August is better.",
+  guides:[["Lonely Planet Sweden","https://www.lonelyplanet.com/sweden"],["Routard Suède","https://www.routard.com/guide/code_dest/suede.htm"]],
+  presets:[
+    {name:"Kungsleden + Stockholm", picks:{stockholm:3,uppsala:1,kungsleden:5,abisko:1,gotland:2}},
+    {name:"High Coast + Gotland", picks:{stockholm:3,hogakusten:3,gotland:3,uppsala:1,archipelago:2}},
+    {name:"Fewest hours in transit", picks:{stockholm:3,uppsala:1,archipelago:2,hogakusten:3}}
+  ],
+  modules:[
+    {id:"stockholm",type:"city",name:"Stockholm",place:"Vasa, Skansen, Nordic Museum, Fotografiska, Gamla Stan",days:3,min:2,max:4,alt:0,temp:23,crowd:"med",hrs:13,hist:"Swedish empire, the Vasa of 1628",gb:true,
+      see:["Vasa museum (the 17th-century warship, intact)","Skansen open-air museum and the Nordic Museum on Djurgården","Gamla Stan early, Royal Palace, Storkyrkan","Fotografiska and Moderna Museet","Archipelago ferry to Vaxholm or Fjäderholmarna for an evening"],
+      note:"Arrival by day train via Copenhagen. Stay on Södermalm or Kungsholmen: cheaper, local, 15 minutes from everything."},
+    {id:"uppsala",type:"city",name:"Uppsala + Sigtuna",place:"Cathedral, Gamla Uppsala royal mounds, Linnaeus garden",days:1,min:1,max:2,alt:30,temp:22,crowd:"low",hrs:1,hist:"Viking-age royal mounds, Linnaeus",gb:true,
+      see:["Gamla Uppsala mounds and museum","Uppsala cathedral and Gustavianum","Linnaeus garden","Sigtuna, Sweden's oldest town, on the way back"]},
+    {id:"gotland",type:"city",name:"Visby, Gotland",place:"Hanseatic walled town (UNESCO), rauk sea stacks, 90 medieval churches",days:2,min:2,max:4,alt:50,temp:22,crowd:"med",hrs:4,hist:"Hanseatic League, 13th-century walls",gb:true,
+      see:["The 3.5 km town wall and the church ruins","Gotland museum (picture stones, the Spillings hoard)","Fårö rauks and Bergman's island","Cycle the country churches; Lummelunda cave"],
+      note:"Ferry from Nynäshamn (3 h). Medieval Week, usually the second week of August, fills the island; otherwise July is busy with Swedes, August quiet."},
+    {id:"gothenburg",type:"city",name:"Gothenburg",place:"West-coast port, Konstmuseum, the southern archipelago",days:1,min:1,max:2,alt:0,temp:21,crowd:"low",hrs:3,hist:"Dutch-built trading port",
+      see:["Göteborgs Konstmuseum (Nordic painting)","Haga and the fish church","Car-free southern archipelago by ferry"]},
+    {id:"kungsleden",type:"hike",name:"Kungsleden: Abisko to Nikkaluokta",place:"5 days, STF huts with saunas, Tjäktja pass 1,150 m, Kebnekaise base",days:5,min:4,max:6,alt:1150,temp:16,crowd:"med",hrs:17,hist:"Sámi reindeer land",gb:true,
+      see:["Abisko to Abiskojaure, Alesjaure, Tjäktja, Sälka, Singi, Kebnekaise fjällstation","Boat shortcuts on two lakes if legs are tired","Kebnekaise summit (2,097 m) from the fjällstation for the siblings","Sauna and lake swim at every hut"],
+      note:"Night train Stockholm→Abisko counts as a night's lodging. Huts take no booking for sleeping (nobody is turned away) but have simple dorms; Kebnekaise fjällstation has rooms."},
+    {id:"abisko",type:"hike",name:"Abisko day walks",place:"Abisko canyon, Kårsavagge, Njulla by chairlift",days:1,min:1,max:3,alt:1170,temp:15,crowd:"med",hrs:0.5,hist:"",gb:true,
+      see:["Aurora Sky Station chairlift to Njulla (view of Lapporten)","Abisko canyon and the Kårsavagge valley","Lake Torneträsk shore"]},
+    {id:"hogakusten",type:"hike",name:"Höga Kusten (High Coast)",place:"UNESCO uplift coast: Skuleskogen, Slåttdalsskrevan, the High Coast trail",days:3,min:2,max:4,alt:300,temp:21,crowd:"low",hrs:5,hist:"Post-glacial uplift (UNESCO)",gb:true,
+      see:["Skuleskogen national park and the Slåttdalsskrevan crevice","Two or three day-stages of the Höga Kusten trail with a cabin or B&B each night","Ulvön island and the fermented-herring museum","Skuleberget via ferrata for the siblings"],
+      note:"Quiet, cheap, 5 h by train north of Stockholm. The best under-visited hiking in southern Sweden."},
+    {id:"archipelago",type:"hike",name:"Stockholm archipelago: Utö, Grinda, Finnhamn",place:"Island hopping on the Waxholm boats, forest and rock walks, kayaks",days:2,min:1,max:3,alt:30,temp:22,crowd:"med",hrs:2,hist:"",gb:true,
+      see:["Utö mines trail and cycling","Finnhamn nature reserve walk","Kayak from Grinda","Hostel or cabin nights on the islands"]},
+    {id:"fulufjallet",type:"hike",name:"Dalarna: Fulufjället",place:"Njupeskär falls, Old Tjikko (9,500-year-old spruce), fjäll plateau",days:2,min:1,max:3,alt:1040,temp:19,crowd:"low",hrs:5,hist:"",
+      see:["Njupeskär, Sweden's highest waterfall","Old Tjikko guided walk","Plateau loop to the Rösjöstugorna cabins"]},
+    {id:"kvikkjokk",type:"hike",name:"Kvikkjokk and the edge of Sarek",place:"Delta, Kungsleden southern section, Pårte",days:3,min:2,max:4,alt:1100,temp:16,crowd:"low",hrs:4,hist:"Sámi Laponia (UNESCO)",
+      see:["Kvikkjokk delta boat","Kungsleden south to Pårte hut and back","Guided day into Sarek's edge with a Sámi guide"],note:"Wilder and emptier than Abisko; needs a guide for anything beyond the marked trail."}
+  ],
+  season:(s,e)=>{
+    const out=["Kungsleden huts open until mid-September; midnight sun at Abisko until about 17 July, light nights all window.","Mosquitoes in Lapland peak in July and fade in August; carry a head net either way.","Swedish industrial holidays run to early August: Gotland and the archipelago are busiest before then."];
+    if(e>=D(8,7)&&s<=D(8,15)) out.push("Medieval Week in Visby (around 8–15 August) falls inside these dates: fun, but Visby lodging doubles; stay out of town or shift Gotland.");
+    return out;
+  }
+},
+{
+  id:"mongolia", zone:"asia", name:"Mongolia", region:"Ulaanbaatar, Orkhon valley, Khövsgöl",
+  tagline:"Gers, horses and a steppe with no fences. July and August are the only months it works, and Naadam opens the window.",
+  palette:["#c9d3a3","#8ea86a","#5a7a4e","#2f4a3a","#eef1dd"],
+  flight:{base:1200, route:"Brussels→Ulaanbaatar via Istanbul (Turkish, 1 stop, 13 h) or via Frankfurt (MIAT)"},
+  rates:{city:80, hike:110, transit:100}, nights:"3–8°C in the gers, 12°C in Ulaanbaatar",
+  why:"The emptiest country on the page. Not Central Asia in the Silk Road sense: no bazaars, no Soviet-era towns, just the steppe, Buddhist monasteries and families who still move with the herds. Horses do the hiking's work when Mom wants a day off her feet.",
+  fit:"Altitude 1,350–2,300 m on the main routes (Altai is higher and left out of the presets). 20–26°C days, cold nights. Crowds only at Terelj and at Naadam in the capital. The cost is the car: 4–6 h on dirt roads between stops, so transit hours are high.",
+  guides:[["Lonely Planet Mongolia","https://www.lonelyplanet.com/mongolia"],["Routard Mongolie","https://www.routard.com/guide/code_dest/mongolie.htm"]],
+  presets:[
+    {name:"Heartland", picks:{ub:2,karakorum:1,orkhon:3,khustai:1,terelj:2}},
+    {name:"Lake + steppe", picks:{ub:2,khovsgol:3,orkhon:3,karakorum:1}},
+    {name:"Fewest hours in the car", picks:{ub:2,terelj:2,khustai:1,orkhon:3}}
+  ],
+  modules:[
+    {id:"ub",type:"city",name:"Ulaanbaatar",place:"Gandan monastery, National Museum, Chinggis Khaan museum, Zaisan",days:2,min:1,max:3,alt:1350,temp:24,crowd:"med",hrs:1,hist:"Mongol empire, Buddhist purges, Soviet satellite",gb:true,
+      see:["Gandan monastery morning chanting","National Museum of Mongolia and the new Chinggis Khaan museum","Choijin Lama temple museum","Zaisan hill and the Bogd Khan winter palace","Naadam stadium (11–13 July) if the dates fit"]},
+    {id:"naadam",type:"city",name:"Naadam in Ulaanbaatar",place:"Opening ceremony, wrestling, archery, horse races at Khui Doloon Khudag",days:2,min:2,max:3,alt:1350,temp:24,crowd:"high",hrs:0,hist:"The three manly games since the 13th century",gb:true,
+      see:["Opening ceremony 11 July (tickets through a local agency, months ahead)","Wrestling rounds in the stadium","Horse races on the steppe outside town, children riding","Countryside naadams later in July are smaller and better"],
+      note:"Only if the trip starts by 10 July. Hotels triple; the smaller district naadams in late July are quieter and more fun."},
+    {id:"karakorum",type:"city",name:"Karakorum + Erdene Zuu",place:"Site of the 13th-century capital, 16th-century monastery, museum",days:1,min:1,max:2,alt:1500,temp:24,crowd:"low",hrs:6,hist:"Capital of the Mongol empire, 1235",gb:true,
+      see:["Erdene Zuu monastery inside its 108 stupas","Karakorum museum (the city reconstructed)","Turtle rocks and the phallic rock","Orkhon valley UNESCO landscape begins here"]},
+    {id:"orkhon",type:"hike",name:"Orkhon valley",place:"Waterfall, Tövkhön monastery hike, ger family stays, horses",days:3,min:2,max:4,alt:2300,temp:23,crowd:"low",hrs:3,hist:"Orkhon valley cultural landscape (UNESCO)",gb:true,
+      see:["Orkhon waterfall and the lava gorge","Tövkhön monastery walk (2,300 m, 2 h up through larch forest)","Two nights with a herder family: milking, airag, horse rides","Eight lakes (Naiman Nuur) for a longer horse trek"]},
+    {id:"khovsgol",type:"hike",name:"Khövsgöl lake",place:"Siberian-blue lake at 1,650 m, taiga, Tsaatan reindeer herders",days:3,min:2,max:4,alt:2000,temp:20,crowd:"low",hrs:5,hist:"Tsaatan reindeer culture",gb:true,extraFlight:220,
+      see:["Lakeshore walks and horse rides from Khatgal","Boat on the lake, 2% of the world's fresh water","Tsaatan camp visit (long ride, optional)","Ger camp nights, cold and clear"],
+      note:"Fly Ulaanbaatar→Mörön (1.5 h), then 3 h. Mosquitoes in July, gone by mid-August."},
+    {id:"terelj",type:"hike",name:"Gorkhi-Terelj",place:"Granite valleys 2 h from the capital, Aryabal meditation temple",days:2,min:1,max:3,alt:1800,temp:23,crowd:"med",hrs:2,hist:"",gb:true,
+      see:["Aryabal temple walk","Turtle rock and the valley trails","Khagiin Khar lake overnight on horseback for the siblings"],note:"The busiest park in Mongolia, which still means almost nobody."},
+    {id:"khustai",type:"hike",name:"Khustai national park",place:"Takhi wild horses at dusk, steppe walks",days:1,min:1,max:2,alt:1700,temp:24,crowd:"low",hrs:2,hist:"Turkic grave stones",
+      see:["Evening drive and walk to see takhi (Przewalski's horses)","Ungut Turkic memorial stones","Ger camp night"]},
+    {id:"gobi",type:"hike",name:"Gobi: Yolyn Am, Khongor dunes, Flaming Cliffs",place:"Ice gorge, 300 m dunes, dinosaur cliffs",days:4,min:3,max:5,alt:2200,temp:32,crowd:"med",hrs:10,hist:"Dinosaur egg discoveries, 1920s",gb:true,extraFlight:200,
+      see:["Yolyn Am gorge walk (ice until July)","Khongoryn Els dune climb at sunset, camels","Bayanzag flaming cliffs","Long drives between each"],note:"Hot (32°C) and far: over Mom's heat line and heavy on the car."},
+    {id:"altai",type:"hike",name:"Altai Tavan Bogd",place:"Kazakh eagle hunters, glaciers, base camp at 3,100 m",days:5,min:4,max:6,alt:3100,temp:16,crowd:"low",hrs:7,hist:"Kazakh eagle-hunting culture, petroglyphs (UNESCO)",gb:true,extraFlight:300,
+      see:["Fly to Ölgii, 6 h drive to the park","Walk or ride to the Potanin glacier viewpoint","Eagle hunter family stay","Tsagaan Salaa petroglyphs"],note:"The far west; a trip in itself. Altitude fine at 3,100 m, logistics heavy."}
+  ],
+  season:(s,e)=>{
+    const out=["July is the wettest month, which means afternoon showers on green steppe, not monsoon. August is drier and clearer.","Nights 3–8°C in the gers; camps supply stoves and blankets.","Mosquitoes around Khövsgöl and the northern lakes in July; none on the central steppe."];
+    if(s<=D(7,11)&&e>=D(7,11)) out.push("Naadam (11–13 July) falls inside these dates: the capital is full, the countryside is celebrating.");
+    else out.push("These dates miss the national Naadam (11–13 July); look for a district naadam in the Orkhon valley in the second half of July.");
+    return out;
+  }
+},
+{
+  id:"indonesia", zone:"asia", name:"Indonesia: Java highlands + Tana Toraja", region:"Yogyakarta, Dieng, volcanoes, Sulawesi highlands",
+  tagline:"Borobudur at dawn, temples older than Angkor on a 2,100 m plateau, volcanoes, then the highlands of Sulawesi in funeral season.",
+  palette:["#b7d4a0","#6ea35f","#3f7a4c","#24473a","#f0f3dc"],
+  flight:{base:1000, route:"Brussels→Yogyakarta via Doha, Singapore or Kuala Lumpur (16–18 h); Makassar by internal flight"},
+  rates:{city:60, hike:75, transit:80}, nights:"8–12°C at Dieng and Bromo, 18°C in Toraja, 24°C in Yogyakarta",
+  why:"Dry season, cheap on the ground, and a culture none of you has seen: 8th-century Buddhist and Hindu Java, then Toraja, where July and August are the season of the great funeral ceremonies and the village trekking is at 1,300–1,600 m and 24°C.",
+  fit:"Altitude trivial (2,400 m max at the volcano rims). Heat is the limit: Yogyakarta and Makassar are 31°C and humid, so the city days are short and the highland days long. Borobudur and Bromo are crowded at sunrise; Dieng and Toraja are not. Long flights (16+ h) and an internal hop.",
+  guides:[["Lonely Planet Indonesia","https://www.lonelyplanet.com/indonesia"],["Routard Indonésie","https://www.routard.com/guide/code_dest/indonesie.htm"]],
+  presets:[
+    {name:"Temples + Toraja", picks:{yogya:3,dieng:2,makassar:1,toraja:3,torajatrek:3}},
+    {name:"Volcano loop", picks:{yogya:3,dieng:2,bromo:2,ijen:1,malang:1}},
+    {name:"Fewest hours in transit", picks:{yogya:3,solo:1,dieng:2,merapi:1}}
+  ],
+  modules:[
+    {id:"yogya",type:"city",name:"Yogyakarta",place:"Borobudur, Prambanan, the Kraton, batik, Malioboro",days:3,min:2,max:4,alt:100,temp:31,crowd:"high",hrs:2,hist:"8th–9th-century Buddhist and Hindu kingdoms, Javanese sultanate",gb:true,
+      see:["Borobudur at sunrise (limited climbing tickets, book ahead)","Prambanan late afternoon and the Ramayana ballet","Kraton and Taman Sari water castle","Batik workshop in Kota Gede","Ratu Boko at sunset"],
+      note:"Hot and busy; do the sites at opening and the city after 4 pm."},
+    {id:"solo",type:"city",name:"Solo (Surakarta)",place:"Two keratons, gamelan, the quieter Javanese court city",days:1,min:1,max:2,alt:100,temp:31,crowd:"low",hrs:1,hist:"Mataram court culture",
+      see:["Mangkunegaran palace and its gamelan","Pasar Triwindu antiques market","Sangiran early-man museum (UNESCO)"]},
+    {id:"malang",type:"city",name:"Malang + Batu",place:"Dutch colonial hill city at 450–1,000 m, apple orchards, temples",days:1,min:1,max:2,alt:1000,temp:26,crowd:"low",hrs:2,hist:"Singhasari kingdom temples",
+      see:["Jodipan rainbow village and the colonial quarter","Singosari and Jago temples","Coban Rondo waterfall"]},
+    {id:"makassar",type:"city",name:"Makassar",place:"Fort Rotterdam, Bugis schooners at Paotere, seafood",days:1,min:1,max:2,alt:0,temp:31,crowd:"low",hrs:2,hist:"Spice-trade port, Dutch VOC fort",extraFlight:120,
+      see:["Fort Rotterdam and the La Galigo museum","Paotere harbour pinisi schooners","Rammang-Rammang karst by boat (half day)"],note:"Internal flight from Yogyakarta or Surabaya. Hot; one night."},
+    {id:"toraja",type:"city",name:"Tana Toraja: Rantepao",place:"Tongkonan houses, cliff graves at Lemo and Londa, Kete Kesu, funeral ceremonies",days:3,min:2,max:4,alt:900,temp:27,crowd:"low",hrs:8,hist:"Toraja ancestor culture, Aluk To Dolo",gb:true,
+      see:["A funeral ceremony with a local guide (July–August is the season; guests bring a gift)","Londa and Lemo cliff graves, tau-tau effigies","Kete Kesu village and rice barns","Bolu buffalo market (every six days)"],
+      note:"8 h by road from Makassar, or the 1 h flight to Toraja airport when it runs. Cool, green, unhurried."},
+    {id:"torajatrek",type:"hike",name:"Toraja highland trekking",place:"Batutumonga, Lolai, Baruppu: rice terraces and villages at 1,300–1,600 m",days:3,min:2,max:4,alt:1600,temp:24,crowd:"low",hrs:0.5,hist:"Megalith fields, tongkonan villages",gb:true,
+      see:["Batutumonga ridge walk above the valley","Village-to-village day stages with homestays","Lolai 'land above the clouds' at dawn","Bori Parinding megaliths"]},
+    {id:"dieng",type:"hike",name:"Dieng plateau",place:"2,100 m volcanic plateau, Java's oldest temples, Sikunir sunrise, coloured lakes",days:2,min:1,max:3,alt:2300,temp:18,crowd:"low",hrs:3,hist:"7th–8th-century Hindu temples, the oldest on Java",gb:true,
+      see:["Arjuna temple complex in the mist","Sikunir hill sunrise over the volcanoes","Telaga Warna lakes and Sikidang crater","Potato-farm villages, cold nights"],
+      note:"Cool, cheap, almost no foreign visitors. 3 h from Yogyakarta."},
+    {id:"merapi",type:"hike",name:"Merapi slopes + Kaliurang",place:"Lava trails and the 2010 eruption museum",days:1,min:1,max:2,alt:1500,temp:24,crowd:"med",hrs:1,hist:"2010 eruption",
+      see:["Lava jeep tour and the Sisa Hartaku museum","Kaliurang forest walk","Ullen Sentalu Javanese culture museum"]},
+    {id:"bromo",type:"hike",name:"Bromo–Tengger",place:"Sea of sand, crater rim, Penanjakan dawn viewpoint at 2,770 m",days:2,min:1,max:3,alt:2770,temp:15,crowd:"high",hrs:3,hist:"Tengger Hindu enclave",gb:true,
+      see:["Dawn from Penanjakan or the quieter King Kong hill","Walk across the sand sea to the crater stairs","Cemoro Lawang village night"],note:"Iconic and packed at dawn. Dieng gives the same volcanic plateau without the jeep convoy."},
+    {id:"ijen",type:"hike",name:"Kawah Ijen",place:"Night walk to the blue-flame crater, sulphur miners, turquoise lake",days:1,min:1,max:2,alt:2400,temp:16,crowd:"med",hrs:4,hist:"",gb:true,
+      see:["2 am start, 1.5 h up, blue flames before dawn","Crater lake at sunrise","Coffee plantations on the way down"],note:"Hard on the lungs (gas masks provided); optional for Mom."}
+  ],
+  season:(s,e)=>{
+    const out=["Dry season across Java and South Sulawesi: 31°C and humid in the lowlands, 15–26°C in the highlands.","Toraja funeral ceremonies cluster in July and August, after the harvest.","Ramadan and Eid are in the first half of 2027, so no closures in this window."];
+    if(s<=D(7,18)) out.push("Indonesian school holidays run to mid-July: Borobudur, Bromo and Yogyakarta are busiest before 18 July.");
+    return out;
+  }
+},
+{
+  id:"flores", zone:"asia", name:"Flores + Komodo", region:"Eastern Indonesia, the Trans-Flores road",
+  tagline:"Dragons and manta rays by boat, then a highland road through megalith villages, a hidden village of conical houses and three coloured crater lakes.",
+  palette:["#8fd0c6","#4fa39a","#2f6f6a","#1d4547","#e9f4f0"],
+  flight:{base:1050, route:"Brussels→Bali via Doha, Singapore or Kuala Lumpur (17–19 h), then Bali→Labuan Bajo (1.5 h)"},
+  rates:{city:60, hike:80, transit:80}, nights:"14–17°C in the Flores highlands, 25°C on the coast",
+  why:"Dry season, almost no altitude, and a trip that reads like <strong>Colombia</strong> in reverse: a boat journey first, then a slow road east through villages where the culture is lived, not displayed. Few foreigners once you leave Labuan Bajo.",
+  fit:"Highest point 2,200 m if the siblings climb Inerie; otherwise 1,650 m at Kelimutu. 30°C on the coast, 20–23°C in Bajawa and Ruteng, so the highland days carry the trip. Komodo boats are busy in July and August; the road is not. Long legs of 3–4 h between stops.",
+  guides:[["Lonely Planet Indonesia","https://www.lonelyplanet.com/indonesia"],["Routard Indonésie","https://www.routard.com/guide/code_dest/indonesie.htm"]],
+  presets:[
+    {name:"Trans-Flores", picks:{lbj:1,komodo:3,ruteng:1,waerebo:2,bajawa:2,kelimutu:1,moni:1}},
+    {name:"Highlands only", picks:{bajawa:2,inerie:1,waerebo:2,ruteng:1,kelimutu:1,moni:1,riung:1,maumere:1}},
+    {name:"Fewest hours in transit", picks:{lbj:1,komodo:3,ruteng:1,waerebo:2}}
+  ],
+  modules:[
+    {id:"lbj",type:"city",name:"Labuan Bajo",place:"Harbour town, gateway to Komodo",days:1,min:1,max:2,alt:0,temp:31,crowd:"med",hrs:3,hist:"",
+      see:["Sunset from Bukit Amelia","Night fish market","Boat and guide arrangements for Komodo"],note:"Arrival point. Hot; one night either side of the boat."},
+    {id:"ruteng",type:"city",name:"Ruteng",place:"Manggarai hill town at 1,200 m, spider-web rice fields",days:1,min:1,max:2,alt:1300,temp:23,crowd:"low",hrs:4,hist:"Manggarai lingko land system, Homo floresiensis cave",gb:true,
+      see:["Cancar spider-web rice fields","Liang Bua cave (the 'hobbit' site)","Ruteng Pu'u traditional village","Cool evenings, Catholic convent stays"]},
+    {id:"bajawa",type:"city",name:"Bajawa + Ngada villages",place:"Bena, Luba, Tololela: megalith villages below Inerie volcano, 1,100 m",days:2,min:1,max:3,alt:1200,temp:22,crowd:"low",hrs:4,hist:"Ngada megalithic clan villages",gb:true,
+      see:["Bena village (ngadhu and bhaga ancestor shrines)","Luba and Tololela on foot between villages","Malanage hot springs where a hot and a cold river meet","Arabica coffee cooperatives"]},
+    {id:"moni",type:"city",name:"Moni + Ende",place:"Village below Kelimutu, Sukarno's exile house in Ende",days:1,min:1,max:2,alt:700,temp:25,crowd:"low",hrs:3,hist:"Sukarno's exile, 1934–38",
+      see:["Sukarno house museum in Ende","Lio ikat weaving at Wologai","Moni waterfall walk"]},
+    {id:"maumere",type:"city",name:"Maumere + Sikka",place:"16th-century Portuguese church, Ledalero museum, departure airport",days:1,min:1,max:2,alt:0,temp:31,crowd:"low",hrs:3,hist:"Portuguese Flores, 1561",
+      see:["Sikka church and ikat weavers","Bikon Blewut museum at Ledalero seminary","Koka beach"]},
+    {id:"komodo",type:"hike",name:"Komodo by boat",place:"3 days on a liveaboard: dragons on Rinca and Komodo, Padar ridge, manta point, pink beach",days:3,min:2,max:4,alt:300,temp:30,crowd:"high",hrs:1,hist:"",gb:true,rate:150,
+      see:["Padar island ridge walk at dawn (the three bays)","Komodo dragons with a ranger on Komodo or Rinca","Snorkel with mantas at Karang Makassar","Sleep on deck under the stars"],
+      note:"The one crowded block. A private boat for five (~€150 pp per day) avoids the day-trip fleet by moving earlier."},
+    {id:"waerebo",type:"hike",name:"Wae Rebo",place:"Seven conical Mbaru Niang houses at 1,100 m, 3 h walk in through cloud forest",days:2,min:2,max:2,alt:1200,temp:20,crowd:"low",hrs:3,hist:"Manggarai ancestral village, UNESCO Asia-Pacific heritage award",gb:true,
+      see:["Walk in from Denge (3 h, 600 m up)","Welcome ceremony and a night in the communal house","Coffee drying on the terraces at dawn","Walk out and drive on to Ruteng"]},
+    {id:"kelimutu",type:"hike",name:"Kelimutu",place:"Three crater lakes that change colour, 1,640 m, dawn",days:1,min:1,max:1,alt:1650,temp:18,crowd:"med",hrs:1,hist:"Lio ancestor-soul lakes",gb:true,
+      see:["Sunrise at the summit viewpoint","Walk back down to Moni through the villages (3 h, instead of the car)"]},
+    {id:"inerie",type:"hike",name:"Inerie volcano + Bajawa walks",place:"Perfect cone to 2,245 m for the siblings; village paths for everyone",days:1,min:1,max:2,alt:2245,temp:20,crowd:"low",hrs:0.5,hist:"",
+      see:["Inerie summit at dawn (4 h up, steep scree)","Wawomudha crater lake walk","Village-to-village paths around Bena"]},
+    {id:"riung",type:"hike",name:"Riung 17 Islands",place:"Marine park on the north coast, snorkel and flying foxes",days:1,min:1,max:2,alt:0,temp:31,crowd:"low",hrs:3,hist:"",
+      see:["Boat to three or four islands","Flying-fox mangrove at dusk","Dry savannah hills, unlike the south"]},
+    {id:"munduk",type:"hike",name:"Bali highlands: Munduk",place:"Waterfalls, rice terraces and temples at 800–1,200 m, as a start or end",days:2,min:1,max:3,alt:1500,temp:24,crowd:"med",hrs:2,hist:"Balinese Hindu temples",gb:true,
+      see:["Munduk waterfall loop","Ulun Danu Bratan temple early","Jatiluwih rice terraces (UNESCO)"],note:"Cooler and quieter than the south of Bali; useful to break the flights."}
+  ],
+  season:(s,e)=>{
+    const out=["Dry season: 30°C on the coast, 20–23°C in the highlands, almost no rain.","Komodo waters are calmest and the dragons most active in the dry months.","The Trans-Flores road is paved but slow: budget 4 h for each hop."];
+    if(s<=D(7,31)) out.push("July: Komodo boats are at their busiest with Indonesian and European holidays; book a private boat.");
+    else out.push("August: the Komodo fleet thins after the Indonesian holidays end.");
+    return out;
+  }
+},
+{
+  id:"borneo", zone:"asia", name:"Malaysian Borneo: Sarawak + Sabah", region:"Kuching, Mulu, Kinabalu, the Kinabatangan",
+  tagline:"Rainforest with the big animals still in it, the largest cave chamber on earth, longhouses, and a 4,095 m mountain the siblings can climb.",
+  palette:["#9fd09a","#55a05a","#2f6e46","#1b4332","#eaf4e4"],
+  flight:{base:950, route:"Brussels→Kuching or Kota Kinabalu via Kuala Lumpur (15–16 h); internal flights between the two states"},
+  rates:{city:70, hike:110, transit:90}, nights:"15°C at Kinabalu park, 24°C in the lowlands",
+  why:"The wildlife trip none of you has done: orangutans, proboscis monkeys, pygmy elephants and hornbills seen from boats and canopy walkways rather than from a vehicle. Drier season in July and August, English spoken everywhere, easy logistics.",
+  fit:"Altitude is a choice: the Kinabalu park trails sit at 1,500–1,900 m and the summit (4,095 m, within the ceiling but a fast two-day climb) is a sibling option. Heat is the constraint: 30–32°C and humid in the lowlands. Crowds low everywhere except the Kinabalu summit trail.",
+  guides:[["Lonely Planet Borneo","https://www.lonelyplanet.com/borneo"],["Routard Malaisie","https://www.routard.com/guide/code_dest/malaisie.htm"]],
+  presets:[
+    {name:"Sarawak + Sabah", picks:{kuching:2,bako:1,mulu:3,kk:1,kinabalupark:2,kinabatangan:2,sandakan:1}},
+    {name:"Sabah wildlife", picks:{kk:1,kinabalupark:2,sandakan:1,kinabatangan:2,danum:3}},
+    {name:"Fewest hours in transit", picks:{kuching:2,bako:1,batangai:2,mulu:3}}
+  ],
+  modules:[
+    {id:"kuching",type:"city",name:"Kuching",place:"Borneo Cultures Museum, the waterfront, Semenggoh orangutans",days:2,min:1,max:3,alt:0,temp:32,crowd:"low",hrs:2,hist:"White Rajahs: the Brooke dynasty, 1841–1946",gb:true,
+      see:["Borneo Cultures Museum (the best in Malaysia)","Semenggoh orangutan feeding, 9 am","Sarawak river waterfront and Fort Margherita","Sarawak laksa, kolo mee"]},
+    {id:"kk",type:"city",name:"Kota Kinabalu",place:"Sabah's capital: Sunday market, Mari Mari cultural village, islands",days:1,min:1,max:2,alt:0,temp:32,crowd:"med",hrs:2,hist:"WWII destruction and rebuild",extraFlight:90,
+      see:["Gaya Street Sunday market","Sabah museum","Sunset at Tanjung Aru","Mari Mari cultural village (five ethnic houses)"]},
+    {id:"sandakan",type:"city",name:"Sandakan + Sepilok",place:"Death-march memorial, Agnes Keith house, Sepilok orangutans and sun bears",days:1,min:1,max:2,alt:0,temp:32,crowd:"low",hrs:1,hist:"WWII Sandakan–Ranau death marches",gb:true,
+      see:["Sepilok orangutan rehabilitation centre and the sun bear centre next door","Rainforest Discovery Centre canopy walk at dusk (flying squirrels)","Sandakan memorial park","Agnes Keith house and the English tea house"]},
+    {id:"kinabalupark",type:"hike",name:"Kinabalu park trails",place:"Montane forest walks at 1,500–1,900 m, Poring hot springs, Mesilau",days:2,min:1,max:3,alt:1900,temp:20,crowd:"med",hrs:2,hist:"",gb:true,
+      see:["Silau-Silau and Liwagu river trails","Botanical garden: pitcher plants, orchids","Poring canopy walkway and hot springs","Kundasang war memorial"],
+      note:"Cool at last: 20°C by day, 15°C at night. The village below has guesthouses with a view of the mountain."},
+    {id:"kinabalusummit",type:"hike",name:"Kinabalu summit (for the siblings)",place:"Two days: Timpohon gate 1,866 m to Laban Rata 3,270 m, summit 4,095 m at dawn",days:2,min:2,max:2,alt:4095,temp:8,crowd:"high",hrs:0.5,hist:"",gb:true,rate:180,
+      see:["Day 1: 6 km and 1,400 m up to Laban Rata","Day 2: 2 am start, summit at dawn, down by afternoon","Permits limited to ~150 a day; book in January"],
+      note:"Within the ceiling on paper, but the climb goes from 1,866 m to 4,095 m in 24 hours: not for Mom. She can do two days of park trails meanwhile."},
+    {id:"kinabatangan",type:"hike",name:"Kinabatangan river",place:"Boat safaris: pygmy elephants, proboscis monkeys, hornbills, crocodiles",days:2,min:1,max:3,alt:0,temp:31,crowd:"med",hrs:2.5,hist:"",gb:true,rate:100,
+      see:["Dawn and dusk boat cruises from a riverside lodge","Night walk for frogs and civets","Gomantong caves swiftlets and bats"],note:"Hot and humid; the boats run at the cool ends of the day."},
+    {id:"danum",type:"hike",name:"Danum Valley",place:"Primary rainforest, canopy walkway, wild orangutans, 130 million years old",days:3,min:2,max:4,alt:500,temp:30,crowd:"low",hrs:3,hist:"",gb:true,rate:220,
+      see:["Canopy walkway at dawn","Guided trails: wild orangutans, gibbons, red leaf monkeys","Night drives, Coffin Cliff viewpoint"],
+      note:"The lodge is the expensive line (~€220 pp per day all-in); the field centre is the cheaper, simpler alternative."},
+    {id:"mulu",type:"hike",name:"Gunung Mulu caves",place:"Deer cave bat exodus, Clearwater cave, canopy walk, the Pinnacles for the siblings",days:3,min:2,max:4,alt:1200,temp:32,crowd:"med",hrs:2,hist:"",gb:true,extraFlight:150,
+      see:["Deer cave and the 3-million-bat exodus at dusk","Clearwater and Wind caves by longboat","Mulu canopy skywalk","Pinnacles (3 days, 1,200 m, ladders) for the siblings"],note:"Fly-in park (Mulu airport). Hot and humid at valley level; caves are cool."},
+    {id:"bako",type:"hike",name:"Bako national park",place:"Boat-in park: proboscis monkeys, bearded pigs, coastal trails",days:1,min:1,max:2,alt:200,temp:31,crowd:"med",hrs:1,hist:"",gb:true,
+      see:["Telok Pandan Kecil trail to the sea stack","Proboscis monkeys at the mangroves at dusk","Overnight in the park chalets for the night walk"]},
+    {id:"batangai",type:"hike",name:"Iban longhouse, Batang Ai",place:"Longboat up the river, two nights in a longhouse, forest walks",days:2,min:2,max:3,alt:300,temp:31,crowd:"low",hrs:4,hist:"Iban culture, former headhunters",gb:true,
+      see:["Longboat up the Batang Ai reservoir and rivers","Longhouse evening: tuak, dance, stories","Forest walk to a waterfall with an Iban guide"]},
+    {id:"crocker",type:"hike",name:"Crocker Range + Tambunan",place:"Rafflesia reserve, Kadazandusun villages, 1,500 m",days:1,min:1,max:2,alt:1500,temp:24,crowd:"low",hrs:2,hist:"Mat Salleh rebellion, 1890s",
+      see:["Rafflesia in bloom if lucky (ask the reserve)","Mahua waterfall","Tambunan valley rice terraces"]}
+  ],
+  season:(s,e)=>["Drier season in both states: 30–32°C, humid, a shower most afternoons in the hills.","Wildlife viewing is best at dawn and dusk; the middle of the day is for pools and museums.","Kinabalu summit permits and Danum lodges book out months ahead for July and August."]
+},
+{
+  id:"sumatra", zone:"asia", name:"North Sumatra: Lake Toba and the Batak highlands", region:"Medan, Berastagi, Samosir island, Bukit Lawang",
+  tagline:"The largest volcanic lake on earth, Batak villages of carved houses and stone council chairs, and orangutans in the forest two hours away.",
+  palette:["#b7d7a8","#6aa36b","#3f7352","#234a3b","#edf4e6"],
+  flight:{base:950, route:"Brussels→Medan via Kuala Lumpur or Singapore (15–16 h)"},
+  rates:{city:55, hike:70, transit:75}, nights:"14°C at Berastagi, 18°C on Samosir, 24°C in Medan",
+  why:"The cheapest Asian trip here and the slowest: a week on an island inside a lake at 900 m, 26°C, with Batak villages to walk between and almost no foreigners since the 1990s. The <strong>Salzburg</strong> rhythm without the festival: one base, day walks, long evenings.",
+  fit:"Highest point 2,200 m (Sibayak volcano, optional). Toba is 26°C and dry; only Medan and Bukit Lawang are hot and humid. No crowds anywhere. Short hops of 2–3 h.",
+  guides:[["Lonely Planet Sumatra","https://www.lonelyplanet.com/indonesia/sumatra"],["Routard Indonésie","https://www.routard.com/guide/code_dest/indonesie.htm"]],
+  presets:[
+    {name:"Toba + Batak highlands", picks:{medan:1,berastagi:2,sibayak:1,toba:3,holbung:1,bukitlawang:2}},
+    {name:"Toba slow", picks:{medan:1,toba:4,holbung:1,berastagi:2,sipiso:1}},
+    {name:"Fewest hours in transit", picks:{medan:1,berastagi:2,sibayak:1,toba:3}}
+  ],
+  modules:[
+    {id:"medan",type:"city",name:"Medan",place:"Maimun palace, Tjong A Fie mansion, Great Mosque",days:1,min:1,max:2,alt:30,temp:32,crowd:"low",hrs:2,hist:"Deli sultanate, tobacco-plantation boom",
+      see:["Tjong A Fie mansion (Chinese tycoon's house, 1900)","Maimun palace and the Great Mosque","Kesawan street colonial buildings","Soto Medan for lunch, then leave for the hills"]},
+    {id:"berastagi",type:"city",name:"Berastagi + Karo villages",place:"Hill town at 1,300 m between two volcanoes, Karo Batak houses at Lingga and Dokan",days:2,min:1,max:3,alt:1400,temp:22,crowd:"low",hrs:2,hist:"Karo Batak clans, Dutch hill station",gb:true,
+      see:["Lingga and Dokan traditional Karo houses","Fruit and flower market","Sipiso-piso waterfall and the Tongging viewpoint over Toba","Lau Debuk-Debuk hot springs"]},
+    {id:"toba",type:"city",name:"Samosir island, Lake Toba",place:"Tuk Tuk base at 900 m: Tomok stone chairs, Ambarita, Simanindo museum, swimming",days:3,min:2,max:5,alt:1000,temp:26,crowd:"low",hrs:3,hist:"Toba Batak kingdoms, 17th-century megaliths, Sisingamangaraja",gb:true,
+      see:["Ambarita stone council chairs and the execution block","Tomok king's tombs","Simanindo Batak museum and sigale-gale dance","Swim in the lake, 24°C","Ulos weaving villages by scooter or bicycle"]},
+    {id:"sibayak",type:"hike",name:"Sibayak volcano",place:"Active crater at 2,200 m, 2 h up from Berastagi, hot springs on the way down",days:1,min:1,max:1,alt:2200,temp:18,crowd:"low",hrs:0.5,hist:"",gb:true,
+      see:["Dawn climb through forest to the fumarole crater","Down the other side to the Semangat Gunung hot springs","Sinabung's new cone seen from the rim"]},
+    {id:"holbung",type:"hike",name:"Holbung hill + Samosir interior",place:"Grass ridges over the lake, Pusuk Buhit sacred mountain, highland villages",days:1,min:1,max:3,alt:1500,temp:24,crowd:"low",hrs:0.5,hist:"Pusuk Buhit, Batak origin mountain",
+      see:["Holbung hill ridge walk","Pusuk Buhit (1,900 m) for the siblings","Sidihoni lake inside the island","Hot springs at Pangururan"]},
+    {id:"bukitlawang",type:"hike",name:"Bukit Lawang orangutans",place:"Gunung Leuser national park: 1–2 day jungle walks, river tubing back",days:2,min:1,max:3,alt:600,temp:30,crowd:"med",hrs:3,hist:"",gb:true,rate:90,
+      see:["Guided forest walk: semi-wild orangutans, Thomas leaf monkeys, hornbills","Overnight camp by the river for the longer version","Tube back down the Bohorok river"],note:"Hot and humid; the shortest hikes in the morning are the best."},
+    {id:"sipiso",type:"hike",name:"Sipiso-piso + Tongging walks",place:"120 m waterfall into the lake's northern tip, lakeshore paths",days:1,min:1,max:2,alt:1500,temp:23,crowd:"low",hrs:1.5,hist:"",
+      see:["Steps down to the base of Sipiso-piso","Tongging to Silalahi lakeshore walk","Grilled lake fish for lunch"]},
+    {id:"tangkahan",type:"hike",name:"Tangkahan",place:"Elephant patrol unit, river swimming, quiet forest edge",days:1,min:1,max:2,alt:300,temp:30,crowd:"low",hrs:4,hist:"",
+      see:["Bathing the patrol elephants in the river","Forest walk to the hot spring","Tube the Buluh river"],note:"Long rough road; only if Bukit Lawang is already in."}
+  ],
+  season:(s,e)=>["June to August is the driest stretch of the year in North Sumatra; still expect a shower.","Toba 26°C by day, 18°C at night; Berastagi cooler; Medan 32°C.","No tourist season to speak of: guesthouses are empty and prices stay low all summer."]
+},
+{
+  id:"pacific", zone:"americas", name:"Vancouver + Olympic Peninsula", region:"Pacific Northwest",
+  tagline:"Rainforest, wild coast and First Nations art. Easiest logistics, highest hotel bills.",
+  palette:["#8fbdb3","#4f8a80","#2d5e5a","#1d3b3c","#dfe9e4"],
+  flight:{base:1200, route:"Brussels→Vancouver via Amsterdam, Frankfurt or Montreal; open-jaw Seattle in / Vancouver out costs the same"},
+  rates:{city:160, hike:130, transit:150}, nights:"10–14°C on the coast, 5°C at Hurricane Ridge",
+  why:"The only one of the seven in a region none of you has seen. Cool coast, zero altitude, and the hikes are long walks in old-growth forest rather than high passes.",
+  fit:"Perfect on altitude and heat. Crowds are the issue in Vancouver, Whistler and Seattle in July; the Olympic coast, Sunshine Coast and Vancouver Island are quiet. Over the €15,000 budget even with Airbnbs, because of flights and the car.",
+  guides:[["Lonely Planet British Columbia","https://www.lonelyplanet.com/canada/british-columbia"],["Routard Canada","https://www.routard.com/guide/code_dest/canada.htm"],["Routard États-Unis","https://www.routard.com/guide/code_dest/etats_unis.htm"]],
+  presets:[
+    {name:"Balanced", picks:{vancouver:3,olympicnp:3,olycoast:2,seattle:2,tofino:3,victoria:1}},
+    {name:"Quietest", picks:{vancouver:2,sunshine:3,strathcona:2,tofino:3,townsend:1,olycoast:2,olympicnp:2}},
+    {name:"Haida Gwaii", picks:{vancouver:2,haida:4,olympicnp:3,olycoast:2,seattle:2}}
+  ],
+  modules:[
+    {id:"vancouver",type:"city",name:"Vancouver",place:"Museum of Anthropology, Stanley Park, Granville Island",days:3,min:1,max:4,alt:0,temp:23,crowd:"high",hrs:0.5,hist:"Coast Salish, Haida art",gb:true,
+      see:["Museum of Anthropology at UBC (Haida poles, Bill Reid)","Stanley Park seawall by bike, early","Granville Island market on a weekday","Bill Reid Gallery","Lynn Canyon instead of Capilano"]},
+    {id:"victoria",type:"city",name:"Victoria",place:"Royal BC Museum, Inner Harbour",days:1,min:1,max:2,alt:0,temp:22,crowd:"med",hrs:3,hist:"Colonial capital, First Peoples gallery",
+      see:["Royal BC Museum","Butchart Gardens late afternoon","Fisherman's Wharf"]},
+    {id:"seattle",type:"city",name:"Seattle",place:"Chihuly Garden, MoPOP, Olympic Sculpture Park",days:2,min:1,max:3,alt:0,temp:26,crowd:"high",hrs:3,hist:"",
+      see:["Chihuly Garden and Glass","Olympic Sculpture Park and the waterfront","Seattle Art Museum","Pike Place at 8 am","Ferry to Bainbridge"]},
+    {id:"townsend",type:"city",name:"Port Townsend",place:"Victorian seaport, gateway to the Olympics",days:1,min:1,max:2,alt:0,temp:21,crowd:"low",hrs:2.5,hist:"Victorian seaport",
+      see:["Victorian waterfront and bookshops","Fort Worden state park","Northwest Maritime Center"]},
+    {id:"olympicnp",type:"hike",name:"Olympic NP: Hoh rainforest + Hurricane Ridge",place:"Old-growth temperate rainforest and alpine meadows",days:3,min:2,max:4,alt:1600,temp:22,crowd:"med",hrs:3,hist:"",gb:true,
+      see:["Hoh River trail (flat, as far as you like)","Hurricane Ridge: Klahhane ridge trail","Sol Duc falls and hot springs","Lake Crescent, Marymere falls"],
+      note:"Stay in Forks or Lake Quinault to reach trails before the day crowds."},
+    {id:"olycoast",type:"hike",name:"Olympic wilderness coast",place:"Shi Shi, Rialto, the Ozette triangle",days:2,min:1,max:3,alt:0,temp:19,crowd:"low",hrs:2,hist:"Makah petroglyphs",gb:true,
+      see:["Ozette triangle loop (15 km, boardwalk and beach, petroglyphs)","Rialto beach to Hole-in-the-Wall at low tide","Shi Shi beach and Point of Arches"],
+      note:"Tide tables decide the day. Fog in the morning, sun by noon."},
+    {id:"tofino",type:"hike",name:"Tofino + Pacific Rim",place:"Vancouver Island west coast: rainforest trails, whales, surf",days:3,min:2,max:4,alt:0,temp:19,crowd:"med",hrs:5,hist:"Nuu-chah-nulth territory",gb:true,
+      see:["Rainforest trail and Schooner Cove","Whale watching to Hot Springs Cove","Meares Island big-tree trail with a Tla-o-qui-aht guide","Wild Pacific Trail at Ucluelet"]},
+    {id:"strathcona",type:"hike",name:"Strathcona Provincial Park",place:"Vancouver Island's alpine interior",days:2,min:1,max:3,alt:1500,temp:21,crowd:"low",hrs:2,hist:"",
+      see:["Forbidden Plateau to Lake Helen Mackenzie","Elk River trail","Myra Falls"]},
+    {id:"sunshine",type:"hike",name:"Sunshine Coast Trail section",place:"Hut-to-hut, free huts, 180 km total; walk 3 days of it",days:3,min:2,max:4,alt:1200,temp:23,crowd:"low",hrs:3,hist:"",
+      see:["Tin Hat mountain hut (360° view)","Inland lake loop","Ferries from Horseshoe Bay; Powell River base"],
+      note:"Canada's longest hut-to-hut trail and almost unknown outside BC."},
+    {id:"garibaldi",type:"hike",name:"Garibaldi + Joffre Lakes",place:"Sea-to-Sky corridor icons",days:2,min:1,max:3,alt:2000,temp:22,crowd:"high",hrs:1.5,hist:"",gb:true,
+      see:["Garibaldi lake and Panorama ridge","Joffre lakes (day pass required)"],note:"Beautiful and heaving in July. Strathcona gives the same alpine without the queue."},
+    {id:"haida",type:"hike",name:"Haida Gwaii",place:"Gwaii Haanas by boat: SGang Gwaay poles, rainforest, Haida culture",days:4,min:3,max:6,alt:0,temp:18,crowd:"low",hrs:3,hist:"Haida villages and poles (UNESCO)",gb:true,extraFlight:450,
+      see:["Gwaii Haanas multi-day boat trip with Haida watchmen sites","Haida Heritage Centre at Kay Llnagaay","Naikoon beaches"],
+      note:"Adds about €450 pp in flights plus a boat charter; the most memorable block on this page."}
+  ],
+  season:(s,e)=>{
+    const out=["Driest, warmest weeks of the year on the coast: 19–26°C, cold water, fog mornings.","Backcountry permits (Olympic NP, BC Parks) open months ahead; book in winter."];
+    if(e>D(7,28)) out.push("From late July the wildfire-smoke risk rises in the BC interior; the coast is usually clear.");
+    if(s>=D(8,1)) out.push("Early August: BC Day long weekend (2 Aug) fills ferries and campgrounds.");
+    return out;
+  }
+},
+{
+  id:"iceland", zone:"europe", name:"Iceland + East Greenland", region:"North Atlantic and the Denmark Strait",
+  tagline:"A week of empty Iceland, then a 2-hour flight to icebergs and Inuit villages on Greenland's east coast.",
+  palette:["#b9cfd9","#6f93a6","#3e5d70","#1c2b36","#eef3f5"],
+  flight:{base:600, route:"Icelandair direct Brussels→Keflavík, 3.5 h"},
+  rates:{city:170, hike:200, transit:170}, nights:"5–9°C everywhere, 2°C in Greenland",
+  why:"Closest to the <strong>Alta Via / Haute Route</strong> days: multi-day walking in huge landscapes, light packs, huts or a guide's camp. Least history of the seven, most scenery.",
+  fit:"No altitude, no heat (9–15°C), no crowds. The most expensive trip on this page: Greenland adds €750 in flights and about €350 per day. Here so you can see the price of the dream; the Iceland-only trip is the realistic one.",
+  guides:[["Lonely Planet Iceland","https://www.lonelyplanet.com/iceland"],["Routard Islande","https://www.routard.com/guide/code_dest/islande.htm"],["Routard Groenland","https://www.routard.com/guide/code_dest/groenland.htm"]],
+  presets:[
+    {name:"Westfjords + Greenland", picks:{reykjavik:2,hornstrandir:4,westfjords:2,greenland:5}},
+    {name:"Highlands + Greenland", picks:{reykjavik:2,highlands:3,snaefellsnes:2,greenland:5}},
+    {name:"Quiet Iceland", picks:{reykjavik:2,westfjords:3,hornstrandir:4,highlands:3,eastfjords:2}},
+    {name:"Iceland on a budget", picks:{reykjavik:2,snaefellsnes:2,westfjords:2,hornself:4,eastfjords:2}},
+    {name:"Classic (crowded)", picks:{reykjavik:2,snaefellsnes:2,laugavegur:4,myvatn:2,highlands:2}}
+  ],
+  modules:[
+    {id:"reykjavik",type:"city",name:"Reykjavík",place:"National Museum, Settlement Exhibition, Harpa",days:2,min:1,max:3,alt:0,temp:14,crowd:"med",hrs:0.75,hist:"Viking settlement, sagas",gb:true,
+      see:["National Museum of Iceland","Settlement Exhibition (10th-century longhouse in situ)","Harpa; check the summer programme","Reykjavík Art Museum","Vesturbæjarlaug pool with the locals"]},
+    {id:"isafjordur",type:"city",name:"Ísafjörður",place:"Westfjords capital, base for Hornstrandir",days:1,min:1,max:2,alt:0,temp:12,crowd:"low",hrs:5,hist:"Fishing and whaling history",
+      see:["Westfjords Heritage Museum","Tjöruhúsið fish restaurant","Vigur island puffins by boat"]},
+    {id:"myvatn",type:"city",name:"Akureyri + Mývatn",place:"North: whales from Húsavík, geothermal fields",days:2,min:1,max:3,alt:300,temp:15,crowd:"med",hrs:6,hist:"",gb:true,
+      see:["Húsavík whale watching (humpbacks)","Dimmuborgir and Hverir","Akureyri botanical garden and art museum","Goðafoss"]},
+    {id:"eastfjords",type:"city",name:"East Fjords",place:"Seyðisfjörður, Borgarfjörður eystri",days:2,min:1,max:3,alt:0,temp:13,crowd:"low",hrs:3,hist:"",
+      see:["Seyðisfjörður art village and Skaftfell centre","Borgarfjörður eystri puffin cliff and Stórurð boulder walk","Petra's stone collection"]},
+    {id:"hornstrandir",type:"hike",name:"Hornstrandir nature reserve",place:"Roadless peninsula, guided 4-day traverse, boat access",days:4,min:3,max:5,alt:500,temp:11,crowd:"low",hrs:2,hist:"Abandoned farms, 1950s",gb:true,
+      see:["Hornbjarg cliffs (534 m straight into the sea)","Arctic foxes at Hornvík","Hesteyri abandoned village","Boat from Ísafjörður; guide and tents or the doctor's house"],
+      note:"The emptiest hiking in Europe. Weather can hold the boat for a day; keep a buffer."},
+    {id:"hornself",type:"hike",name:"Hornstrandir self-guided",place:"Same traverse, your own tents and food, boat drop-off and pick-up",days:4,min:3,max:5,alt:500,temp:11,crowd:"low",hrs:2,hist:"Abandoned farms, 1950s",rate:110,
+      see:["Veiðileysufjörður to Hornvík, Hornbjarg, out via Hesteyri","Camp at the ranger-staffed sites","Boat from Ísafjörður or Bolungarvík, book both legs"],
+      note:"About €110 pp per day instead of €200 with a guide. Needs one confident navigator in the group and a weather buffer day."},
+    {id:"westfjords",type:"hike",name:"Westfjords road trip",place:"Dynjandi, Látrabjarg, Rauðisandur",days:3,min:2,max:4,alt:600,temp:13,crowd:"low",hrs:4,hist:"",gb:true,
+      see:["Látrabjarg bird cliffs","Dynjandi waterfall staircase","Rauðisandur red beach","Gravel passes and day walks from the farmhouses"]},
+    {id:"highlands",type:"hike",name:"Highlands: Kerlingarfjöll + Landmannalaugar",place:"F-roads, rhyolite mountains, geothermal valleys",days:3,min:2,max:4,alt:1100,temp:12,crowd:"med",hrs:4,hist:"",gb:true,
+      see:["Hveradalir geothermal valley at Kerlingarfjöll","Landmannalaugar day loop early on a weekday","Hveravellir hot pool between glaciers"],
+      note:"Landmannalaugar is busy by 11 am; sleep at Kerlingarfjöll or Hrauneyjar and arrive at 8."},
+    {id:"laugavegur",type:"hike",name:"Laugavegur hut trek",place:"4-day classic, Landmannalaugar to Þórsmörk",days:4,min:3,max:5,alt:1100,temp:11,crowd:"high",hrs:3,hist:"",gb:true,
+      see:["Rhyolite, obsidian, ice caves and black desert in four days","Hut dorms booked out months ahead"],
+      note:"Iceland's busiest trail. Hornstrandir gives the same drama with nobody there."},
+    {id:"askja",type:"hike",name:"Askja + Herðubreið",place:"Volcanic highlands, crater lake, super-jeep day",days:2,min:1,max:3,alt:1100,temp:10,crowd:"low",hrs:5,hist:"",
+      see:["Víti crater and Öskjuvatn","Herðubreiðarlindir oasis","Holuhraun lava field (2014)"]},
+    {id:"snaefellsnes",type:"hike",name:"Snæfellsnes peninsula",place:"Glacier volcano, lava fields, fishing villages",days:2,min:1,max:3,alt:700,temp:13,crowd:"med",hrs:2.5,hist:"Saga sites",gb:true,
+      see:["Snæfellsjökull national park coast walk","Stykkishólmur and Breiðafjörður islands","Arnarstapi cliffs"]},
+    {id:"greenland",type:"hike",name:"East Greenland: Tasiilaq + Kulusuk",place:"2 h flight from Reykjavík; icebergs, Inuit villages, guided hiking",days:5,min:4,max:7,alt:800,temp:9,crowd:"low",hrs:3,hist:"Inuit East Greenland culture",gb:true,rate:350,extraFlight:750,
+      see:["Flower valley and Qorlortoq hikes from Tasiilaq","Boat through Sermilik fjord icebergs","Kulusuk village, drum dance, Tasiilaq museum","Optional ice-cap edge day"],
+      note:"Adds about €750 pp in flights and runs at ~€350 pp per day."}
+  ],
+  season:(s,e)=>{
+    const out=["F-roads and highland huts fully open across the window.","Hornstrandir boats run daily until mid-August; after that service thins."];
+    if(e>D(8,5)) out.push("First weekend of August is Iceland's big holiday weekend; campsites fill.");
+    if(s>=D(8,8)) out.push("From 10 August the Greenland weather gets less reliable; keep the Greenland block early.");
+    return out;
+  }
+},
+{
+  id:"norway", zone:"europe", name:"Norway: cities, a festival and the fjells", region:"Central and Arctic Norway",
+  tagline:"Oslo's museums, Trondheim's St Olav festival, then hut-to-hut in Jotunheimen or the Arctic islands.",
+  palette:["#9cb8c6","#5e8299","#36546b","#1b2e3d","#e8eef1"],
+  flight:{base:350, route:"Brussels→Oslo direct (SAS, Norwegian), 2 h; home from Tromsø or Bergen via Oslo"},
+  rates:{city:130, hike:140, transit:140}, nights:"6–10°C at the huts, 12°C in the cities",
+  why:"The <strong>Salzburg</strong> pattern: a real festival in a cathedral city, then mountains. Olavsfest (28 Jul–3 Aug) is concerts in Nidaros cathedral plus a medieval market, and the fjells start an hour away.",
+  fit:"Nothing above 2,000 m, cool weather, and the DNT hut network means Mom never carries more than a day pack. Crowds only in Lofoten and on Besseggen; both have quieter neighbours. Fits the budget with cabins and hut half-board; hotels would break it.",
+  guides:[["Lonely Planet Norway","https://www.lonelyplanet.com/norway"],["Routard Norvège","https://www.routard.com/guide/code_dest/norvege.htm"]],
+  presets:[
+    {name:"Festival + fjells", picks:{oslo:2,trondheim:3,roros:1,jotunheimen:4,sunnmore:3,bergen:2}},
+    {name:"Arctic", picks:{oslo:1,trondheim:3,senja:4,lofoten:2,bergen:2}},
+    {name:"Fjords and huts", picks:{bergen:2,hardanger:3,aurland:2,jotunheimen:4,oslo:2}}
+  ],
+  modules:[
+    {id:"oslo",type:"city",name:"Oslo",place:"Munch, National Museum, Vigeland, Fram",days:2,min:1,max:3,alt:0,temp:22,crowd:"med",hrs:0.5,hist:"Polar exploration, Munch",gb:true,
+      see:["National Museum (The Scream, Scandinavian design)","Munch museum on the waterfront","Fram and Kon-Tiki museums at Bygdøy","Vigeland park at 8 pm light"]},
+    {id:"bergen",type:"city",name:"Bergen",place:"Bryggen, KODE museums, Grieg's Troldhaugen",days:2,min:1,max:3,alt:0,temp:19,crowd:"high",hrs:6,hist:"Hanseatic League (UNESCO)",gb:true,
+      see:["KODE 3 for Munch and Astrup","Troldhaugen lunchtime concert","Fløyen walk down through the forest","Bryggen before 9 am"],note:"Crowded on cruise days; check the port schedule."},
+    {id:"trondheim",type:"city",name:"Trondheim + Olavsfest",place:"Nidaros cathedral, St Olav festival 28 Jul–3 Aug, Bakklandet",days:3,min:2,max:4,alt:0,temp:20,crowd:"med",hrs:6,hist:"Medieval pilgrimage capital",gb:true,
+      see:["Olavsfest: evening concerts in Nidaros cathedral, medieval market","Nidaros cathedral and the Archbishop's palace museum","Rockheim","Bakklandet wooden quarter","Munkholmen island by boat"],
+      note:"Only the festival makes this a 3-day stop; outside the dates, 2 days."},
+    {id:"roros",type:"city",name:"Røros",place:"UNESCO copper-mining town, 17th-century timber streets",days:1,min:1,max:2,alt:650,temp:19,crowd:"low",hrs:2.5,hist:"Copper mining town (UNESCO)",gb:true,
+      see:["Olavsgruva mine tour","Smelthytta museum","The church and the slag heaps"]},
+    {id:"alesund",type:"city",name:"Ålesund",place:"Art Nouveau town rebuilt after the 1904 fire",days:1,min:1,max:2,alt:0,temp:18,crowd:"med",hrs:1.5,hist:"Art Nouveau rebuild, 1904",
+      see:["Jugendstilsenteret","Aksla viewpoint steps","Atlantic Sea Park"]},
+    {id:"jotunheimen",type:"hike",name:"Jotunheimen hut-to-hut",place:"DNT huts: Gjendesheim, Memurubu, Gjendebu, Leirvassbu",days:4,min:3,max:5,alt:1900,temp:16,crowd:"med",hrs:4,hist:"",gb:true,
+      see:["Boat to Memurubu, walk to Gjendebu along the lake (quiet alternative to Besseggen)","Bukkelægret or Svartdalen pass","Besseggen ridge for the siblings (crowded)","Three-course dinners at staffed huts"],
+      note:"Staffed DNT huts mean day packs only. Book huts in January."},
+    {id:"senja",type:"hike",name:"Senja",place:"Arctic island: Segla, Hesten, Husfjellet; midnight sun",days:3,min:2,max:5,alt:900,temp:15,crowd:"low",hrs:4,hist:"",gb:true,
+      see:["Hesten summit facing Segla (4 h)","Husfjellet ridge","Tungeneset and the Okshornan peaks","Fishing village stays in Hamn or Mefjordvær"],
+      note:"Lofoten's scenery with a fifth of the visitors. Fly Oslo–Bardufoss or Tromsø."},
+    {id:"lofoten",type:"hike",name:"Lofoten",place:"Reine, Reinebringen, Kvalvika beach",days:3,min:2,max:4,alt:700,temp:15,crowd:"high",hrs:4,hist:"Viking chieftain's hall at Borg",gb:true,
+      see:["Reinebringen stairs at 6 am","Kvalvika beach and Ryten","Lofotr Viking museum at Borg","Å fishing village"],note:"Busiest place in northern Norway in July. Two nights, or swap for Senja."},
+    {id:"hardanger",type:"hike",name:"Hardangervidda plateau",place:"Europe's largest mountain plateau, DNT huts, reindeer",days:3,min:2,max:4,alt:1300,temp:14,crowd:"low",hrs:4,hist:"",
+      see:["Finse to Rembesdalseter under the Hardangerjøkulen glacier","Kinsarvik to Stavali through the four waterfalls","Trolltunga is here too (crowded; skip or go at 5 am)"]},
+    {id:"sunnmore",type:"hike",name:"Sunnmøre Alps + Hjørundfjord",place:"Steep fjord peaks from Ålesund, boat-and-walk days",days:3,min:2,max:4,alt:1500,temp:17,crowd:"low",hrs:1.5,hist:"",
+      see:["Slogen or the easier Saksa","Hjørundfjord by boat to Trandal or Sæbø","Hotel Union Øye, 1891"],
+      note:"Combine with Ålesund. The fjord nobody photographs."},
+    {id:"aurland",type:"hike",name:"Aurlandsdalen",place:"Two-day valley walk from Østerbø to Vassbygdi",days:2,min:1,max:3,alt:1200,temp:17,crowd:"med",hrs:3,hist:"Old farm road to the fjord",gb:true,
+      see:["Day 1 Finse or Geiterygghytta to Østerbø","Day 2 the valley to Vassbygdi: ledges, farms, the Vetlahelleren overhang","Flåm railway as the exit"]},
+    {id:"rondane",type:"hike",name:"Rondane",place:"Rounded 2,000 m peaks, reindeer, quiet DNT huts",days:3,min:2,max:4,alt:2000,temp:16,crowd:"low",hrs:4,hist:"",
+      see:["Rondvassbu base, Storronden summit (2,138 m, walk-up)","Rondvatnet boat and the Rondslottet cirque","Peer Gynt country"]}
+  ],
+  season:(s,e)=>{
+    const out=["Norwegian school holidays end about 15 August; huts and ferries are busiest 15 July–5 August.","Senja and Lofoten: midnight sun until about 25 July, then long golden evenings."];
+    if(e>=D(7,28) && s<=D(8,3)) out.push("Olavsfest in Trondheim (28 Jul–3 Aug) falls inside these dates.");
+    else out.push("Olavsfest in Trondheim (28 Jul–3 Aug) falls outside these dates; shift departure to include it, or drop Trondheim to 2 days.");
+    return out;
+  }
+}
+];
+
+/* Iceland on its own, as a separate trip from the Iceland + Greenland combination */
+(function(){
+  const ice=OPTIONS.find(o=>o.id==="iceland");
+  const only=Object.assign({},ice,{
+    id:"icelandonly", name:"Iceland", region:"North Atlantic",
+    palette:["#c5d5dc","#7fa3b4","#4a6b7c","#223440","#f1f5f6"],
+    tagline:"Fjords with no roads, highland deserts, and nobody around if you avoid the south coast.",
+    fit:"No altitude, no heat (10–15°C). Crowds are severe on the south coast, Golden Circle and Laugavegur, so this version lives in the Westfjords, the east and the highlands. Around €17–20k for 16 days; under the cap at about 14 days with the self-guided Hornstrandir and a 2WD car.",
+    nights:"5–9°C everywhere",
+    guides:ice.guides.filter(g=>!/Groenland/.test(g[0])),
+    modules:ice.modules.filter(m=>m.id!=="greenland"),
+    presets:[
+      {name:"Iceland on a budget", picks:{reykjavik:2,snaefellsnes:2,westfjords:2,hornself:4,eastfjords:2}},
+      {name:"Quiet Iceland", picks:{reykjavik:2,westfjords:3,hornstrandir:4,highlands:3,eastfjords:2}},
+      {name:"North + East", picks:{reykjavik:2,myvatn:2,askja:2,eastfjords:2,highlands:3}},
+      {name:"Classic (crowded)", picks:{reykjavik:2,snaefellsnes:2,laugavegur:4,myvatn:2,highlands:2}}
+    ],
+    season:(s,e)=>ice.season(s,e).filter(t=>!/Greenland/.test(t))
+  });
+  OPTIONS.splice(OPTIONS.indexOf(ice),0,only);
+})();
+
+/* Season and weather fit, 0–100, for the chosen dates */
+const SEASON_FIT={
+  caucasus:(s,e)=>70, kyrgyz:(s,e)=>s>=D(8,5)?85:92, mexico:(s,e)=>62, peru:(s,e)=>95, brazil:(s,e)=>s>=D(8,1)?92:85,
+  cantabria:(s,e)=>e>=D(8,1)?80:88, slovenia:(s,e)=>78, scotland:(s,e)=>e>=D(8,6)?65:75, tatras:(s,e)=>78,
+  sweden:(s,e)=>s>=D(8,1)?88:72, mongolia:(s,e)=>s>=D(8,1)?92:85, indonesia:(s,e)=>s<=D(7,18)?80:90, flores:(s,e)=>s<=D(7,31)?85:92, borneo:(s,e)=>85, sumatra:(s,e)=>85, pacific:(s,e)=>e>D(7,28)?85:95, icelandonly:(s,e)=>90, iceland:(s,e)=>s>=D(8,8)?75:90, norway:(s,e)=>(e>=D(7,28)&&s<=D(8,3))?92:82
+};
+function seasonFit(o){ const f=SEASON_FIT[o.id]; return f?f(startDate(),endDate()):75; }
+function criteria(o,c){
+  const clamp=(v)=>Math.max(0,Math.min(100,v));
+  return {
+    cost: c.fits ? clamp(100-(c.pp-1500)/(5500-1500)*100) : Math.min(20, clamp(100-(c.pp-1500)/(5500-1500)*100)),
+    alt: clamp(100-(c.maxAlt-1000)/(4250-1000)*100),
+    heat: clamp(100-(c.maxTemp-22)/(38-22)*100),
+    crowd: {low:100,med:60,high:20}[c.worstCrowd],
+    hrs: clamp(100-(c.hrs-12)/(35-12)*100),
+    hist: clamp(c.histN/6*100),
+    season: seasonFit(o)
+  };
+}
+function score(o,c){ const w=state.weights, k=criteria(o,c); let tot=0,wt=0; for(const key in w){ tot+=w[key]*k[key]; wt+=w[key]; } return wt?Math.round(tot/wt):0; }
+const CRIT_LABELS={cost:"Cost",alt:"Low altitude",heat:"Cool weather",crowd:"Few crowds",hrs:"Short transfers",hist:"History",season:"Season fit"};
+
+/* ---------- State ---------- */
+const state = { start:"2027-07-12", end:"2027-07-26", len:15, travellers:5, comfort:1.0, cap:15000, balance:45,
+  filters:{fit:false,train:false,showVisited:false,notfullhike:false,zone:"all",maxAlt:99999,maxTemp:99,maxHrs:999,q:""},
+  weights:{cost:2,alt:1,heat:1,crowd:1,hrs:1,hist:1,season:1}, ideas:[], rest:{},
+  picks:{}, photos:{}, preset:{}, open:{}, sort:"score" };
+const FILTER_DEFAULTS=JSON.parse(JSON.stringify(state.filters));
+function restOf(o){ return state.rest[o.id] ?? 2; }
+function hikeShare(c){ const pl=c.city+c.hike; return pl?c.hike/pl:0; }
+
+function isoToDate(iso){const [y,m,d]=iso.split("-").map(Number);return new Date(Date.UTC(y,m-1,d));}
+function dateToIso(d){return d.toISOString().slice(0,10);}
+function syncLen(){ let s=isoToDate(state.start), e=isoToDate(state.end); if(e<s){e=addDays(s,13);state.end=dateToIso(e);} state.len=Math.round((e-s)/86400000)+1; if(state.len>35){state.end=dateToIso(addDays(s,34));state.len=35;} }
+
+/* Redistribute days of one type across a trip's selected blocks to hit a target total */
+function rebalance(o,type,target){
+  const picks=state.picks[o.id]; const all=o.modules.filter(m=>m.type===type);
+  const sel=()=>all.filter(m=>picks[m.id].on);
+  const sum=()=>sel().reduce((a,m)=>a+picks[m.id].days,0);
+  target=Math.max(0,target);
+  if(sel().length===0 && target>0){ const first=all[0]; picks[first.id]={on:true,days:first.min}; }
+  let guard=200;
+  for(let pass=0;pass<2;pass++){
+  while(sum()<target && guard--){ const cands=sel().filter(m=>picks[m.id].days<m.max); if(!cands.length){ const off=all.find(m=>!picks[m.id].on); if(!off) break; picks[off.id]={on:true,days:off.min}; continue; }
+    cands.sort((a,b)=>(picks[a.id].days/a.days)-(picks[b.id].days/b.days)); picks[cands[0].id].days++; }
+  while(sum()>target && guard--){ const cands=sel().filter(m=>picks[m.id].days>m.min); if(!cands.length){ const on=sel(); if(!on.length) break; const drop=on[on.length-1]; picks[drop.id].on=false; continue; }
+    cands.sort((a,b)=>(picks[b.id].days/b.days)-(picks[a.id].days/a.days)); picks[cands[0].id].days--; }
+  }
+  state.preset[o.id]=-1;
+}
+function applyBalanceAll(){
+  const travel=state.len>=14?3:2, planned=Math.max(0,state.len-travel);
+  const hikeT=Math.round(planned*state.balance/100), cityT=planned-hikeT;
+  OPTIONS.forEach(o=>{ rebalance(o,"city",cityT); rebalance(o,"hike",hikeT); });
+}
+OPTIONS.forEach(o=>applyPreset(o,0,false));
+state.open[OPTIONS[0].id]=true;
+
+function applyPreset(o, idx, rerender){
+  const p=o.presets[idx]; const picks={};
+  o.modules.forEach(m=>{ picks[m.id]= p.picks[m.id] ? {on:true,days:p.picks[m.id]} : {on:false,days:m.days}; });
+  state.picks[o.id]=picks; state.preset[o.id]=idx;
+  if(rerender) renderAll();
+}
+
+/* ---------- Helpers ---------- */
+const fmtEUR = n => "€"+Math.round(n).toLocaleString("en-GB");
+const fmtDate = d => d.toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short",timeZone:"UTC"});
+const addDays=(d,n)=>new Date(d.getTime()+n*86400000);
+const startDate=()=>isoToDate(state.start);
+const endDate=()=>isoToDate(state.end);
+function flightFactor(){ const s=startDate(); if(s<D(7,1)) return 0.95; if(s<D(7,10)) return 1.0; if(s<D(7,26)) return 1.05; if(s<D(8,3)) return 1.0; if(s<D(8,10)) return 0.95; if(s<D(8,20)) return 0.9; return 0.8; }
+const CROWD={low:["good","Few visitors"],med:["warn","Some visitors"],high:["crit","Crowded"]};
+const altClass=a=>a>4250?"crit":a>3500?"warn":"good";
+const tempClass=t=>t>33?"crit":t>28?"warn":"good";
+const hrsClass=h=>h>30?"crit":h>20?"warn":"good";
+const hrsFmt=h=>(Math.round(h*2)/2).toString().replace(".5","½")+" h";
+
+function compute(o){
+  const picks=state.picks[o.id]; const rank={low:0,med:1,high:2};
+  let city=0,hike=0,cityCost=0,hikeCost=0,extraFlights=0,maxAlt=0,maxTemp=0,minTemp=99,worstCrowd="low",hrs=0,longest=0,histN=0,gbN=0,flags=[];
+  o.modules.forEach(m=>{
+    const p=picks[m.id]; if(!p.on) return;
+    const rate=m.rate||o.rates[m.type];
+    if(m.type==="city"){city+=p.days;cityCost+=p.days*rate;} else {hike+=p.days;hikeCost+=p.days*rate;}
+    if(m.extraFlight) extraFlights+=m.extraFlight;
+    maxAlt=Math.max(maxAlt,m.alt); maxTemp=Math.max(maxTemp,m.temp); minTemp=Math.min(minTemp,m.temp);
+    if(rank[m.crowd]>rank[worstCrowd]) worstCrowd=m.crowd;
+    hrs+=m.hrs; longest=Math.max(longest,m.hrs); if(m.hist) histN++; if(m.gb) gbN++;
+    if(m.alt>4250) flags.push(m.name+" reaches "+m.alt.toLocaleString("en-GB")+" m, above the ~4,200 m ceiling");
+    if(m.temp>33) flags.push(m.name+" runs at ~"+m.temp+"°C");
+    if(m.crowd==="high") flags.push(m.name+" is crowded in this season");
+  });
+  if(minTemp===99) minTemp=0;
+  const rest=restOf(o); const alloc=city+hike+rest, free=state.len-alloc;
+  const transitCost=(Math.max(free,0)+rest)*o.rates.transit;
+  const flights=o.flight.base*flightFactor();
+  const ground=(cityCost+hikeCost+transitCost)*state.comfort;
+  const sub=flights+extraFlights+ground, cont=sub*0.08, pp=sub+cont, total=pp*state.travellers;
+  hrs += 1.5; // airport transfer at arrival and departure
+  return {city,hike,rest,free,alloc,flights,extraFlights,cityCost:cityCost*state.comfort,hikeCost:hikeCost*state.comfort,transitCost:transitCost*state.comfort,cont,pp,total,maxAlt,maxTemp,minTemp,worstCrowd,hrs,longest,histN,gbN,flags,fits:total<=state.cap,over:total-state.cap};
+}
+
+/* ---------- Scenes ---------- */
+function drawScene(canvas,pal,seed){
+  const W=canvas.width=600,H=canvas.height=400,ctx=canvas.getContext("2d");
+  let s=seed*9301+49297; const rnd=()=>{s=(s*9301+49297)%233280;return s/233280;};
+  const sky=ctx.createLinearGradient(0,0,0,H*0.7); sky.addColorStop(0,pal[4]); sky.addColorStop(1,pal[0]);
+  ctx.fillStyle=sky; ctx.fillRect(0,0,W,H);
+  ctx.globalAlpha=0.9; ctx.fillStyle="#fff6d6"; ctx.beginPath(); ctx.arc(W*(0.2+rnd()*0.6),H*0.22,26+rnd()*10,0,Math.PI*2); ctx.fill(); ctx.globalAlpha=1;
+  for(let r=0;r<4;r++){
+    const base=H*(0.42+r*0.14),amp=40+r*18,f1=1.5+rnd()*2,f2=3+rnd()*4,ph=rnd()*6;
+    const yAt=x=>{const t=x/W;return base-amp*(0.6*Math.sin(t*f1*Math.PI+ph)+0.4*Math.sin(t*f2*Math.PI+ph*2))-(r===0?30*Math.max(0,Math.sin(t*Math.PI*2.2+ph)):0);};
+    ctx.fillStyle=pal[r]; ctx.beginPath(); ctx.moveTo(0,H); for(let x=0;x<=W;x+=4) ctx.lineTo(x,yAt(x)); ctx.lineTo(W,H); ctx.closePath(); ctx.fill();
+    if(r===0){ ctx.fillStyle="rgba(255,255,255,0.5)"; ctx.beginPath(); ctx.moveTo(0,H); for(let x=0;x<=W;x+=4) ctx.lineTo(x,yAt(x)+10+18*Math.abs(Math.sin(x*0.07))); ctx.lineTo(W,H); ctx.closePath(); ctx.globalCompositeOperation="source-atop"; ctx.fill(); ctx.globalCompositeOperation="source-over"; }
+  }
+  const wg=ctx.createLinearGradient(0,H*0.84,0,H); wg.addColorStop(0,pal[1]); wg.addColorStop(1,pal[3]);
+  ctx.fillStyle=wg; ctx.fillRect(0,H*0.86,W,H*0.14);
+  ctx.strokeStyle="rgba(255,255,255,0.25)"; for(let i=0;i<8;i++){const y=H*0.88+i*6;ctx.beginPath();ctx.moveTo(rnd()*W*0.5,y);ctx.lineTo(rnd()*W*0.5+W*0.5,y);ctx.stroke();}
+}
+
+/* ---------- Rendering ---------- */
+const $=s=>document.querySelector(s);
+const cardsEl=$("#cards"), stripEl=$("#strip"), compareEl=$("#compare");
+const chip=(cls,label)=>`<span class="chip ${cls}">${label}</span>`;
+function splitBar(c,cls){ const L=state.len; const pc=Math.max(0,c.city)/L*100,ph=Math.max(0,c.hike)/L*100,pr=Math.max(0,c.rest||0)/L*100,pf=Math.max(0,c.free)/L*100; return `<div class="${cls}"><i class="ci" style="width:${pc}%"></i><i class="hi" style="width:${ph}%"></i><i class="re" style="width:${pr}%"></i><i class="fr" style="width:${pf}%"></i></div>`; }
+function ranked(){ return OPTIONS.map(o=>({o,c:compute(o)})).sort((a,b)=>a.c.pp-b.c.pp); }
+function passes(o){ const f=state.filters, c=compute(o);
+  if(o.visited && !f.showVisited) return false;
+  if(f.q){ const q=f.q.toLowerCase(); const hay=[o.name,o.region,o.tagline,o.zone,...(o.modules||[]).flatMap(m=>[m.name,m.place,m.hist||"",...(m.see||[])])].join(" ").toLowerCase(); if(!hay.includes(q)) return false; }
+  if(f.fit && !c.fits) return false; if(f.train && !o.train) return false; if(f.quiet && c.worstCrowd==="high") return false;
+  if(f.notfullhike && hikeShare(c)>0.6) return false;
+  if(f.zone!=="all" && o.zone!==f.zone) return false; if(c.maxAlt>f.maxAlt) return false; if(c.maxTemp>f.maxTemp) return false; if(c.hrs>f.maxHrs) return false; return true; }
+function visible(){ return OPTIONS.filter(passes); }
+const WORDS=["Zero","One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten","Eleven","Twelve"];
+function renderHeader(){
+  const pool=OPTIONS.filter(o=>!o.visited||state.filters.showVisited); const all=pool.length, fit=pool.filter(o=>compute(o).fits).length, train=pool.filter(o=>o.train).length;
+  $("#h1").textContent=(WORDS[all]||all)+" trips, one choice";
+  $("#h1sub").textContent=`${fit} of ${all} fit the ${fmtEUR(state.cap)} budget at these settings, ${train} need no flights. Pick an itinerary for each trip, set the days between cities, mountains and rest, and watch cost, transport hours and Mom's limits (altitude, heat, crowds) update.`;
+}
+
+function renderControls(){
+  syncLen();
+  if(document.activeElement!==$("#startDate")) $("#startDate").value=state.start;
+  if(document.activeElement!==$("#endDate")) $("#endDate").value=state.end;
+  $("#lenVal").textContent=state.len+" days, "+fmtDate(startDate())+" → "+fmtDate(endDate())+" "+Y;
+
+  $("#trav").textContent=state.travellers;
+  $("#cmfMid").setAttribute("aria-pressed",state.comfort===1.0); $("#cmfHigh").setAttribute("aria-pressed",state.comfort!==1.0);
+  if(document.activeElement!==$("#capInput")) $("#capInput").value=state.cap;
+  const f=state.filters;
+  document.querySelectorAll("#filters .toggle").forEach(b=>b.setAttribute("aria-pressed",!!f[b.dataset.f]));
+  document.querySelectorAll("#filters .seg").forEach(seg=>{const k=seg.dataset.fs; seg.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(f[k])===b.dataset.v));});
+  if(document.activeElement!==$("#q")) $("#q").value=state.filters.q;
+
+  const n=OPTIONS.filter(passes).length; $("#filterCount").textContent=n+" of "+OPTIONS.filter(o=>!o.visited||state.filters.showVisited).length+" trips shown"+(state.ideas.length?" · "+state.ideas.length+" idea"+(state.ideas.length>1?"s":"")+" to explore":"");
+  renderIdeas();
+}
+
+function renderStrip(){
+  const rows=ranked().filter(r=>passes(r.o));
+  stripEl.innerHTML=rows.map(({o,c},i)=>`<a class="tile" href="#card-${o.id}" data-goto="${o.id}">
+    <div class="t">${o.name}${o.train?' <span class="chip gb" style="font-size:10px;padding:1px 6px;vertical-align:1px">no flights</span>':""}</div>
+    <div class="c num">${fmtEUR(c.pp)} <span style="font-size:12px;font-weight:400;color:var(--ink-2)">pp</span></div>
+    <div class="d num">${fmtEUR(c.total)} for ${state.travellers} · ${c.city}d cities / ${c.hike}d mountains / ${c.rest}d rest · ${hrsFmt(c.hrs)} transit</div>
+    ${splitBar(c,"bar")}
+    <span class="pill ${c.fits?"good":"crit"}">${c.fits?"Within budget, "+fmtEUR(-c.over)+" spare":"Over budget by "+fmtEUR(c.over)}</span>
+  </a>`).join("");
+}
+
+function renderCards(){
+  const vis=visible();
+  cardsEl.innerHTML=vis.map(o=>{
+    const c=compute(o), picks=state.picks[o.id], presetIdx=state.preset[o.id];
+    const modsHtml=type=>o.modules.filter(m=>m.type===type).map(m=>{
+      const p=picks[m.id];
+      return `<div class="mod ${p.on?"on":""}" data-opt="${o.id}" data-mod="${m.id}">
+        <div class="mod-row">
+          <input type="checkbox" id="chk-${o.id}-${m.id}" ${p.on?"checked":""} aria-label="Include ${m.name}">
+          <label for="chk-${o.id}-${m.id}"><div class="name">${m.name}</div><div class="place">${m.place}</div></label>
+          <div class="step"><button data-act="minus" aria-label="One day fewer" ${(!p.on||p.days<=m.min)?"disabled":""}>−</button><span class="n num">${p.on?p.days+"d":"—"}</span><button data-act="plus" aria-label="One day more" ${(!p.on||p.days>=m.max)?"disabled":""}>+</button></div>
+        </div>
+        <div class="meta">
+          ${(m.type==="hike"||m.alt>=1000)?chip(altClass(m.alt),"↑ "+m.alt.toLocaleString("en-GB")+" m"):""}
+          ${chip(tempClass(m.temp),"~"+m.temp+"°C")}
+          ${chip(CROWD[m.crowd][0],CROWD[m.crowd][1])}
+          ${chip("","⏱ "+hrsFmt(m.hrs)+" to get there")}
+          ${m.hist?chip("","History: "+m.hist):""}
+          ${m.gb?chip("gb","Guidebook pick"):""}
+          ${m.extraFlight?chip("warn","+"+fmtEUR(m.extraFlight)+" flights"):""}
+        </div>
+        <details><summary>What you'd see</summary><ul>${m.see.map(s=>`<li>${s}</li>`).join("")}</ul></details>
+        ${m.note?`<div class="note">${m.note}</div>`:""}
+      </div>`;
+    }).join("");
+    const alerts=[];
+    if(c.alloc>state.len) alerts.push(`<div class="alert crit">${c.alloc} days planned in a ${state.len}-day trip. Drop ${c.alloc-state.len} day${c.alloc-state.len>1?"s":""} or lengthen the trip.</div>`);
+    else if(c.free<2) alerts.push(`<div class="alert">Only ${c.free} travel day${c.free===1?"":"s"}. Flights and transfers usually need 2.</div>`);
+    else alerts.push(`<div class="alert ok">${c.free} days for flights and transfers. Comfortable.</div>`);
+    if(c.flags.length) alerts.push(`<div class="alert crit"><b>Mom check:</b> ${c.flags.join("; ")}.</div>`);
+    if(hikeShare(c)>0.6) alerts.push(`<div class="alert"><b>Mostly a hiking trip:</b> ${Math.round(hikeShare(c)*100)}% of planned days are in the mountains. Add city or rest days if that is too much for someone.</div>`);
+    if(!c.fits) alerts.push(`<div class="alert crit"><b>Budget:</b> ${fmtEUR(c.total)} for ${state.travellers} is ${fmtEUR(c.over)} over the ${fmtEUR(state.cap)} cap.</div>`);
+    const photo=state.photos[o.id];
+    return `<article class="card ${state.open[o.id]?"open":""} ${c.fits?"":"dim"}" id="card-${o.id}" data-opt="${o.id}">
+      <div class="hero">
+        <div class="scene">${photo?`<img src="${photo}" alt="${o.name}">`:`<canvas aria-hidden="true"></canvas>`}
+          <label class="photo-btn">${photo?"Change photo":"Add your photo"}<input type="file" accept="image/*" data-photo="${o.id}"></label>
+        </div>
+        <div class="hero-body">
+          <div class="hero-top">
+            <div><div class="kicker">${o.region}${o.train?" · no flights":""}${o.visited?" · some of us have been":""}</div><h2>${o.name}</h2><p class="sub">${o.tagline}</p></div>
+            <div class="cost-big"><div class="pp num">${fmtEUR(c.pp)}</div><div class="tot num">per person · ${fmtEUR(c.total)} for ${state.travellers}</div><span class="pill ${c.fits?"good":"crit"}">${c.fits?"Within budget":"Over by "+fmtEUR(c.over)}</span></div>
+          </div>
+          <div class="facts">
+            <div class="fact"><div class="k">Highest point</div><div class="v ${altClass(c.maxAlt)} num">${c.maxAlt.toLocaleString("en-GB")} m</div></div>
+            <div class="fact"><div class="k">Day temps</div><div class="v ${tempClass(c.maxTemp)} num">${c.minTemp}–${c.maxTemp}°C</div></div>
+            <div class="fact"><div class="k">Crowds</div><div class="v ${CROWD[c.worstCrowd][0]}">${CROWD[c.worstCrowd][1]}</div></div>
+            <div class="fact"><div class="k">In transit</div><div class="v ${hrsClass(c.hrs)} num">${hrsFmt(c.hrs)} · longest ${hrsFmt(c.longest)}</div></div>
+          </div>
+          <p class="why">${o.why}</p>
+          <p class="why">${o.fit} <span style="white-space:nowrap">Nights: ${o.nights}.</span></p>
+          <div class="splitctl" data-split="${o.id}">
+            <span class="lbl">Days:</span>
+            <span><i style="background:var(--city)"></i>Cities</span><div class="step"><button data-sp="city" data-d="-1" aria-label="One city day fewer" ${c.city<=0?"disabled":""}>−</button><span class="n num">${c.city} d</span><button data-sp="city" data-d="1" aria-label="One city day more" ${c.alloc>=state.len?"disabled":""}>+</button></div>
+            <span><i style="background:var(--hike)"></i>Mountains</span><div class="step"><button data-sp="hike" data-d="-1" aria-label="One mountain day fewer" ${c.hike<=0?"disabled":""}>−</button><span class="n num">${c.hike} d</span><button data-sp="hike" data-d="1" aria-label="One mountain day more" ${c.alloc>=state.len?"disabled":""}>+</button></div>
+            <span><i style="background:var(--accent);opacity:.55"></i>Rest / sea</span><div class="step"><button data-sp="rest" data-d="-1" aria-label="One rest day fewer" ${c.rest<=0?"disabled":""}>−</button><span class="n num">${c.rest} d</span><button data-sp="rest" data-d="1" aria-label="One rest day more" ${c.alloc>=state.len?"disabled":""}>+</button></div>
+            <span class="lbl">${Math.max(c.free,0)} d travel</span>
+          </div>
+          <div class="row presets"><span class="lbl">Itinerary:</span>${o.presets.map((p,i)=>`<button data-preset="${i}" aria-pressed="${i===presetIdx}">${p.name}</button>`).join("")}<button data-preset="clear" aria-pressed="false">Start empty</button></div>
+          <div class="row links"><span class="lbl">Guidebooks:</span>${o.guides.map(g=>`<a href="${g[1]}" target="_blank" rel="noopener">${g[0]}</a>`).join(" · ")}</div>
+        </div>
+      </div>
+      <button class="build-toggle" data-toggle="${o.id}" aria-expanded="${!!state.open[o.id]}">${state.open[o.id]?"Hide the day-by-day builder":"Build this trip: choose blocks and days"}<span class="hint">${c.city}d cities · ${c.hike}d mountains · ${c.rest}d rest · ${Math.max(c.free,0)}d travel</span></button>
+      <div class="builder">
+        <div class="cols">
+          <div class="col"><div class="col-h"><h3><i style="background:var(--city)"></i>Cities &amp; culture</h3><span class="num">${c.city} days</span></div>${modsHtml("city")}</div>
+          <div class="col"><div class="col-h"><h3><i style="background:var(--hike)"></i>Mountains &amp; hiking</h3><span class="num">${c.hike} days</span></div>${modsHtml("hike")}</div>
+        </div>
+        <div class="foot">
+          <div>
+            <h3>Days: ${c.city} in cities · ${c.hike} in the mountains · ${c.rest} rest or sea · ${Math.max(c.free,0)} travel</h3>
+            ${splitBar(c,"split-bar")}
+            <div class="legend"><span><i style="background:var(--city)"></i>Cities</span><span><i style="background:var(--hike)"></i>Mountains</span><span><i style="background:var(--accent);opacity:.55"></i>Rest / sea</span><span><i style="background:var(--free)"></i>Travel</span></div>
+            ${alerts.join("")}
+            <div class="season"><b>For ${fmtDate(startDate())} – ${fmtDate(endDate())}:</b><ul>${o.season(startDate(),endDate()).map(s=>`<li>${s}</li>`).join("")}</ul></div>
+          </div>
+          <div>
+            <h3>Budget per person</h3>
+            <table class="budget num">
+              <tr><td>${o.train?"Trains from Brussels":"Flights from Brussels"} <span style="color:var(--ink-2);font-size:12px">(${o.flight.route})</span></td><td>${fmtEUR(c.flights)}</td></tr>
+              ${c.extraFlights?`<tr><td>Flights inside the trip</td><td>${fmtEUR(c.extraFlights)}</td></tr>`:""}
+              <tr><td>City days: hotels, food, museums, local transport (${c.city} × ${fmtEUR(o.rates.city*state.comfort)})</td><td>${fmtEUR(c.cityCost)}</td></tr>
+              <tr><td>Mountain days: guide or outfitter, lodging, food, van or 4x4</td><td>${fmtEUR(c.hikeCost)}</td></tr>
+              <tr><td>Rest and travel days (${c.rest+Math.max(c.free,0)} × ${fmtEUR(o.rates.transit*state.comfort)})</td><td>${fmtEUR(c.transitCost)}</td></tr>
+              <tr><td>Contingency 8%</td><td>${fmtEUR(c.cont)}</td></tr>
+              <tr class="total"><td>Per person</td><td>${fmtEUR(c.pp)}</td></tr>
+              <tr class="total"><td>Group of ${state.travellers}</td><td>${fmtEUR(c.total)}</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </article>`;
+  }).join("");
+  OPTIONS.forEach((o,i)=>{const cv=document.querySelector(`#card-${o.id} canvas`); if(cv) drawScene(cv,o.palette,i+3);});
+}
+
+function renderCompare(){
+  let rows=OPTIONS.map(o=>({o,c:compute(o)})).filter(r=>passes(r.o));
+  rows.forEach(r=>{ r.s=score(r.o,r.c); });
+  const keyFn={score:r=>-r.s,pp:r=>r.c.pp,hrs:r=>r.c.hrs,alt:r=>r.c.maxAlt,temp:r=>r.c.maxTemp,hist:r=>-r.c.histN,hike:r=>-r.c.hike,season:r=>-seasonFit(r.o)}[state.sort]||(r=>-r.s);
+  rows.sort((a,b)=>keyFn(a)-keyFn(b));
+  const ideas=state.ideas.filter(ideaPasses);
+  const w=state.weights;
+  const rankHtml=`<div class="rank" id="rank"><div class="hd"><h3>Rank by what matters</h3><span class="sub">Set how much each criterion counts (0 = ignore). The score column combines them; click any heading to sort by one thing instead.</span></div>
+    ${Object.keys(CRIT_LABELS).map(k=>`<div><label for="w-${k}"><span>${CRIT_LABELS[k]}</span><span class="num">${["off","low","medium","high"][w[k]]}</span></label><input type="range" id="w-${k}" data-w="${k}" min="0" max="3" step="1" value="${w[k]}"></div>`).join("")}
+  </div>`;
+  const maxPP=Math.max(...rows.map(r=>r.c.pp), state.cap/state.travellers);
+  const capPct=(state.cap/state.travellers)/maxPP*100;
+  const th=(key,label)=>`<th><button data-sort="${key}" aria-pressed="${state.sort===key}">${label}${state.sort===key?" ↓":""}</button></th>`;
+  const sc=v=>`<span class="score ${v>=70?"":v>=50?"mid":"low"} num">${v}</span>`;
+  compareEl.innerHTML=`<h2>Side by side · ${fmtDate(startDate())} – ${fmtDate(endDate())} ${Y} · ${state.len} days · ${state.travellers} travellers · cap ${fmtEUR(state.cap)}</h2>
+  <p class="sub" style="margin:4px 0 0">Days split = cities / mountains / travel and rest. "History" counts the blocks with real historical weight in the current itinerary. "Season" is how well the chosen dates suit the place (weather, festivals, holidays, insects).</p>
+  ${rankHtml}
+  <div class="scroller"><table class="cmp" style="min-width:1000px">
+    <thead><tr>${th("score","Score")}<th>Trip</th><th>Itinerary</th>${th("pp","Per person")}<th>Group</th><th>Budget</th>${th("hike","Days split")}${th("alt","Highest")}${th("temp","Day temps")}<th>Crowds</th>${th("hrs","Transit")}${th("hist","History")}${th("season","Season")}<th>Getting there</th></tr></thead>
+    <tbody>${rows.map(({o,c,s})=>`<tr class="${c.fits?"":"over"}">
+      <td>${sc(s)}</td>
+      <td>${o.name}<div style="font-weight:400;color:var(--ink-2);font-size:12px">${o.region}</div></td>
+      <td>${o.presets[state.preset[o.id]]?o.presets[state.preset[o.id]].name:"Custom"}</td>
+      <td class="num">${fmtEUR(c.pp)}</td><td class="num">${fmtEUR(c.total)}</td>
+      <td><span class="pill ${c.fits?"good":"crit"}" style="margin:0">${c.fits?fmtEUR(-c.over)+" spare":"+"+fmtEUR(c.over)}</span></td>
+      <td class="num">${c.city} / ${c.hike} / ${Math.max(c.free,0)}${splitBar(c,"mini")}</td>
+      <td>${chip(altClass(c.maxAlt),c.maxAlt.toLocaleString("en-GB")+" m")}</td>
+      <td>${chip(tempClass(c.maxTemp),c.minTemp+"–"+c.maxTemp+"°C")}</td>
+      <td>${chip(CROWD[c.worstCrowd][0],CROWD[c.worstCrowd][1])}</td>
+      <td>${chip(hrsClass(c.hrs),hrsFmt(c.hrs))}<div style="font-size:11px;color:var(--ink-2);margin-top:3px">longest leg ${hrsFmt(c.longest)}</div></td>
+      <td class="num">${c.histN} blocks</td>
+      <td>${chip(seasonFit(o)>=85?"good":seasonFit(o)>=70?"warn":"crit",seasonFit(o)+"/100")}</td>
+      <td style="font-size:12px;color:var(--ink-2)">${o.train?'<span class="chip gb" style="font-size:10px">no flights</span> ':""}${o.flight.route}</td>
+    </tr>`).join("")}
+    ${ideas.map(i=>`<tr class="over"><td><span class="pill warn" style="margin:0">To explore</span></td><td>${esc(i.name)}<div style="font-weight:400;color:var(--ink-2);font-size:12px">${esc(i.region||"")}</div></td><td colspan="2">${i.pp?'<span class="num">~'+fmtEUR(i.pp)+'</span>':"—"}</td><td class="num">${i.pp?fmtEUR(i.pp*state.travellers):"—"}</td><td>${i.pp?`<span class="pill ${i.pp*state.travellers<=state.cap?"good":"crit"}" style="margin:0">${i.pp*state.travellers<=state.cap?"fits":"over"}</span>`:"—"}</td><td colspan="8" style="font-size:13px;color:var(--ink-2)">${esc(i.note||"Not built out yet.")}</td></tr>`).join("")}
+    </tbody></table></div>
+  <h3 style="margin-top:18px">Cost per person against the cap (${fmtEUR(state.cap/state.travellers)} each)</h3>
+  <div class="costchart">${rows.map(({o,c})=>`<div class="costrow"><span>${o.name}</span><div class="track"><div class="fill ${c.fits?"":"over"}" style="width:${Math.min(100,c.pp/maxPP*100)}%"></div><div class="cap" style="left:${capPct}%"></div></div><span class="num" style="text-align:right">${fmtEUR(c.pp)}</span></div>`).join("")}</div>
+  <h3 style="margin-top:18px">Temperatures and altitude at a glance</h3>
+  <ul class="season" style="font-size:14px;margin-top:4px">${rows.map(({o,c})=>`<li><b>${o.name}:</b> days ${c.minTemp}–${c.maxTemp}°C, nights ${o.nights}; highest point ${c.maxAlt.toLocaleString("en-GB")} m.</li>`).join("")}</ul>`;
+}
+
+function ideaPasses(i){ const f=state.filters; if(f.zone!=="all"&&i.zone!==f.zone) return false; if(f.q){ const q=f.q.toLowerCase(); if(![i.name,i.region,i.note].join(" ").toLowerCase().includes(q)) return false; } if(f.train) return false; if(f.fit && i.pp && i.pp*state.travellers>state.cap) return false; return true; }
+function renderIdeas(){ const list=$("#ideaList"); if(!list) return; const ideas=state.ideas.filter(ideaPasses);
+  list.innerHTML = ideas.length? ideas.map(i=>`<div class="idea" data-idea="${i.id}"><button class="del" aria-label="Remove idea" data-del="${i.id}">✕</button><div class="name">${esc(i.name)}</div><div class="meta">${esc(i.region||"")}${i.region?" · ":""}${({europe:"Europe",asia:"Caucasus & Asia",americas:"Americas",africa:"Africa",oceania:"Oceania"})[i.zone]||""}${i.pp?" · ~"+fmtEUR(i.pp)+" pp":""}</div>${i.note?`<div class="note">${esc(i.note)}</div>`:""}<span class="pill warn">To explore</span></div>`).join("") : `<p class="sub">No ideas yet.</p>`; }
+function esc(t){ return String(t||"").replace(/[&<>"]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch])); }
+function fitAll(){ OPTIONS.forEach(o=>{ let c=compute(o), guard=40; while(c.alloc>state.len && guard--){ if(c.rest>0 && c.rest>=2 && c.alloc-state.len<=1){ state.rest[o.id]=c.rest-1; } else if(c.hike>=c.city) rebalance(o,"hike",c.hike-1); else rebalance(o,"city",c.city-1); c=compute(o);} }); }
+function renderAll(){ fitAll(); renderControls(); renderHeader(); renderStrip(); renderCards(); renderCompare(); saveLocal(); }
+
+/* ---------- Events ---------- */
+$("#startDate").addEventListener("change",e=>{ if(!e.target.value) return; const oldLen=state.len; state.start=e.target.value; let s=isoToDate(state.start), en=isoToDate(state.end); if(en<=s){ state.end=dateToIso(addDays(s,oldLen-1)); } syncLen(); renderAll(); });
+$("#endDate").addEventListener("change",e=>{ if(!e.target.value) return; state.end=e.target.value; if(isoToDate(state.end)<isoToDate(state.start)){ state.end=dateToIso(addDays(isoToDate(state.start),13)); } syncLen(); renderAll(); });
+
+$("#filters").addEventListener("click",e=>{
+  const t=e.target.closest(".toggle[data-f]"); if(t){ state.filters[t.dataset.f]=!state.filters[t.dataset.f]; renderAll(); return; }
+  const b=e.target.closest(".seg[data-fs] button"); if(b){ const k=b.closest(".seg").dataset.fs; const v=b.dataset.v; state.filters[k]=isNaN(+v)?v:+v; renderAll(); return; }
+  if(e.target.id==="filterReset"){ state.filters=JSON.parse(JSON.stringify(FILTER_DEFAULTS)); renderAll(); }
+});
+$("#cmfMid").addEventListener("click",()=>{state.comfort=1.0;renderAll();});
+$("#cmfHigh").addEventListener("click",()=>{state.comfort=1.4;renderAll();});
+$("#travMinus").addEventListener("click",()=>{state.travellers=Math.max(1,state.travellers-1);renderAll();});
+$("#travPlus").addEventListener("click",()=>{state.travellers=Math.min(12,state.travellers+1);renderAll();});
+$("#capInput").addEventListener("input",e=>{const v=+e.target.value;if(v>=1000){state.cap=v;renderAll();}});
+
+stripEl.addEventListener("click",e=>{const a=e.target.closest("a[data-goto]"); if(a){state.open[a.dataset.goto]=true;renderAll(); const el=document.getElementById("card-"+a.dataset.goto); if(el){e.preventDefault(); el.scrollIntoView({behavior:"smooth",block:"start"});}}});
+
+cardsEl.addEventListener("click",e=>{
+  const tg=e.target.closest("button[data-toggle]"); if(tg){state.open[tg.dataset.toggle]=!state.open[tg.dataset.toggle];renderAll();return;}
+  const sp=e.target.closest("button[data-sp]"); if(sp){ const o=OPTIONS.find(x=>x.id===sp.closest(".splitctl").dataset.split); const c=compute(o);
+    if(sp.dataset.sp==="rest"){ state.rest[o.id]=Math.max(0,restOf(o)+(+sp.dataset.d)); renderAll(); return; }
+    const cur=sp.dataset.sp==="city"?c.city:c.hike; rebalance(o,sp.dataset.sp,cur+(+sp.dataset.d)); renderAll(); return; }
+
+  const pb=e.target.closest("button[data-preset]");
+  if(pb){const card=pb.closest(".card");const o=OPTIONS.find(x=>x.id===card.dataset.opt);
+    if(pb.dataset.preset==="clear"){const picks={};o.modules.forEach(m=>picks[m.id]={on:false,days:m.days});state.picks[o.id]=picks;state.preset[o.id]=-1;state.open[o.id]=true;renderAll();}
+    else applyPreset(o,+pb.dataset.preset,true); return;}
+  const sb=e.target.closest("button[data-act]");
+  if(sb){const mod=sb.closest(".mod");const o=OPTIONS.find(x=>x.id===mod.dataset.opt);const m=o.modules.find(x=>x.id===mod.dataset.mod);
+    const p=state.picks[o.id][m.id];p.days=Math.min(m.max,Math.max(m.min,p.days+(sb.dataset.act==="plus"?1:-1)));state.preset[o.id]=-1;renderAll();}
+});
+cardsEl.addEventListener("change",e=>{
+  if(e.target.matches("input[type=checkbox]")){const mod=e.target.closest(".mod");state.picks[mod.dataset.opt][mod.dataset.mod].on=e.target.checked;state.preset[mod.dataset.opt]=-1;renderAll();}
+  if(e.target.matches("input[data-photo]")){const f=e.target.files[0];if(!f)return;const id=e.target.dataset.photo;const img=new Image();const url=URL.createObjectURL(f);
+    img.onload=()=>{const cv=document.createElement("canvas");const sc=Math.min(1,900/img.width);cv.width=img.width*sc;cv.height=img.height*sc;cv.getContext("2d").drawImage(img,0,0,cv.width,cv.height);state.photos[id]=cv.toDataURL("image/jpeg",0.8);URL.revokeObjectURL(url);renderAll();};
+    img.src=url;}
+});
+compareEl.addEventListener("click",e=>{const b=e.target.closest("button[data-sort]"); if(b){state.sort=b.dataset.sort;renderCompare();}});
+compareEl.addEventListener("input",e=>{const r=e.target.closest("input[data-w]"); if(r){state.weights[r.dataset.w]=+r.value; state.sort="score"; renderCompare(); saveLocal();}});
+$("#q").addEventListener("input",e=>{ state.filters.q=e.target.value.trim(); renderAll(); });
+
+$("#ideaForm").addEventListener("submit",e=>{ e.preventDefault(); const name=$("#ideaName").value.trim(); if(!name) return;
+  state.ideas.push({id:"i"+Date.now(),name,region:$("#ideaRegion").value.trim(),zone:$("#ideaZone").value,pp:+$("#ideaPP").value||0,note:$("#ideaNote").value.trim()});
+  e.target.reset(); renderAll(); });
+$("#ideaList").addEventListener("click",e=>{ const d=e.target.closest("button[data-del]"); if(d){ state.ideas=state.ideas.filter(i=>i.id!==d.dataset.del); renderAll(); } });
+
+$("#presentBtn").addEventListener("click",e=>{const on=document.body.classList.toggle("present");e.currentTarget.setAttribute("aria-pressed",on);e.currentTarget.textContent=on?"Exit presentation":"Presentation mode"; if(on){OPTIONS.forEach(o=>state.open[o.id]=true);renderAll();}});
+$("#copyBtn").addEventListener("click",e=>{
+  const lines=[`Anniversary trip options · ${fmtDate(startDate())} – ${fmtDate(endDate())} ${Y} · ${state.len} days · ${state.travellers} travellers · cap ${fmtEUR(state.cap)}`,""];
+  ranked().forEach(({o,c})=>{const picks=state.picks[o.id];
+    lines.push(`${o.name} — ${fmtEUR(c.pp)} pp, ${fmtEUR(c.total)} total (${c.fits?"within budget":"over by "+fmtEUR(c.over)}) · ${c.city}d cities / ${c.hike}d mountains / ${Math.max(c.free,0)}d travel · ${hrsFmt(c.hrs)} in transit · highest ${c.maxAlt} m · days ${c.minTemp}–${c.maxTemp}°C`);
+    o.modules.filter(m=>picks[m.id].on).forEach(m=>lines.push(`  • ${m.name} (${picks[m.id].days}d) — ${m.place}`));lines.push("");});
+  const txt=lines.join("\n");
+  const btn=e.currentTarget;
+  if(navigator.clipboard){navigator.clipboard.writeText(txt).then(()=>{btn.textContent="Copied";setTimeout(()=>btn.textContent="Copy summary",1500);}).catch(()=>{btn.textContent="Copy failed";setTimeout(()=>btn.textContent="Copy summary",1500);});}
+});
+
+function route(){const h=location.hash==="#compare"?"compare":"plan";$("#viewPlan").classList.toggle("hidden",h!=="plan");$("#viewCompare").classList.toggle("hidden",h!=="compare");$("#tabPlan").setAttribute("aria-current",h==="plan"?"page":"false");$("#tabCompare").setAttribute("aria-current",h==="compare"?"page":"false");}
+window.addEventListener("hashchange",route);
+
+function saveLocal(){try{localStorage.setItem("anniv-trip-v6",JSON.stringify({start:state.start,end:state.end,travellers:state.travellers,comfort:state.comfort,cap:state.cap,balance:state.balance,filters:state.filters,weights:state.weights,ideas:state.ideas,sort:state.sort,rest:state.rest,picks:state.picks,preset:state.preset,photos:state.photos,open:state.open}));}catch(e){}}
+function loadLocal(){try{const s=JSON.parse(localStorage.getItem("anniv-trip-v6"));if(!s)return;
+  Object.assign(state,{start:s.start||state.start,end:s.end||state.end,travellers:s.travellers,comfort:s.comfort,cap:s.cap||15000,balance:s.balance??45,filters:Object.assign({},FILTER_DEFAULTS,s.filters||{}),weights:Object.assign({},state.weights,s.weights||{}),ideas:s.ideas||[],sort:s.sort||"score",rest:s.rest||{},preset:s.preset||{},photos:s.photos||{},open:s.open||{}});
+  OPTIONS.forEach(o=>{if(s.picks&&s.picks[o.id]){o.modules.forEach(m=>{if(!s.picks[o.id][m.id])s.picks[o.id][m.id]={on:false,days:m.days};});state.picks[o.id]=s.picks[o.id];}});
+}catch(e){}}
+
+loadLocal(); syncLen(); route(); renderAll();
+})();
+</script>
+</body>
+</html>

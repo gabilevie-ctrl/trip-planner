@@ -1,0 +1,354 @@
+{
+  "id": "haute-route-ski",
+  "kind": "skitour",
+  "zone": "europe",
+  "name": "Haute Route on skis (Chamonix–Zermatt)",
+  "region": "France and Switzerland",
+  "noFlights": true,
+  "tagline": "The most famous ski tour in the world: six days of glaciers and 3,000 m cols from the Argentière hut to the Matterhorn.",
+  "tags": [
+    "skitour",
+    "huts",
+    "glaciers",
+    "classic",
+    "big-days"
+  ],
+  "access": [
+    {
+      "originRegion": "europe-west",
+      "originCity": "Brussels",
+      "mode": "train",
+      "costPerPerson": 230,
+      "route": "Brussels→Paris→Chamonix; home Zermatt→Visp→Basel"
+    },
+    {
+      "originRegion": "uk",
+      "originCity": "London",
+      "mode": "train",
+      "costPerPerson": 250,
+      "route": "Eurostar→Paris→Chamonix; home via Basel"
+    }
+  ],
+  "rates": {
+    "stage": 110,
+    "transit": 120,
+    "guide": 150
+  },
+  "lodgingAssumption": "Swiss cabanes half board; hotels in Chamonix and Zermatt",
+  "presets": [
+    {
+      "name": "Classic 6 days",
+      "picks": {
+        "chamonix": 1,
+        "s1": 1,
+        "s2": 1,
+        "s3": 1,
+        "s4": 1,
+        "s5": 1,
+        "s6": 1,
+        "zermatt": 1
+      }
+    }
+  ],
+  "blocks": [
+    {
+      "id": "chamonix",
+      "type": "city",
+      "name": "Chamonix",
+      "place": "Gear check, guide briefing",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 3,
+      "crowd": "high",
+      "transitHours": 7,
+      "maxAltitudeM": 1035,
+      "dayHighC": 6,
+      "see": [],
+      "history": null,
+      "guidebookPick": false
+    },
+    {
+      "id": "s1",
+      "type": "stage",
+      "name": "Day 1: Grands Montets to Refuge d'Argentière",
+      "place": "Across the Argentière glacier, 2,771 m",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "high",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "ascentM": 300,
+      "descentM": 500,
+      "hours": 3,
+      "maxAltitudeM": 3275,
+      "difficulty": "WS",
+      "hut": {
+        "name": "Refuge d'Argentière",
+        "bookAheadMonths": 4
+      },
+      "dayHighC": -4
+    },
+    {
+      "id": "s2",
+      "type": "stage",
+      "name": "Day 2: Col du Chardonnet, Fenêtre de Saleina, to Cabane du Trient",
+      "place": "3,323 m col with an abseil",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "high",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "ascentM": 1000,
+      "descentM": 600,
+      "hours": 7,
+      "maxAltitudeM": 3323,
+      "difficulty": "ZS",
+      "hut": {
+        "name": "Cabane du Trient",
+        "bookAheadMonths": 4
+      },
+      "dayHighC": -7
+    },
+    {
+      "id": "s3",
+      "type": "stage",
+      "name": "Day 3: Val d'Arpette to Champex, transfer to Verbier, up to Cabane du Mont Fort",
+      "place": "",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "low",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "ascentM": 500,
+      "descentM": 1700,
+      "hours": 6,
+      "maxAltitudeM": 3170,
+      "difficulty": "ZS-",
+      "hut": {
+        "name": "Cabane du Mont Fort",
+        "bookAheadMonths": 4
+      },
+      "dayHighC": -1
+    },
+    {
+      "id": "s4",
+      "type": "stage",
+      "name": "Day 4: Rosablanche, to Cabane de Prafleuri",
+      "place": "3,336 m summit",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "low",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "ascentM": 1200,
+      "descentM": 1000,
+      "hours": 7,
+      "maxAltitudeM": 3336,
+      "difficulty": "ZS",
+      "hut": {
+        "name": "Cabane de Prafleuri",
+        "bookAheadMonths": 4
+      },
+      "dayHighC": -6
+    },
+    {
+      "id": "s5",
+      "type": "stage",
+      "name": "Day 5: Lac des Dix, Pas du Chat, to Cabane des Vignettes",
+      "place": "Pigne d'Arolla 3,796 m",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "high",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "ascentM": 1500,
+      "descentM": 1000,
+      "hours": 8,
+      "maxAltitudeM": 3796,
+      "difficulty": "ZS+",
+      "hut": {
+        "name": "Cabane des Vignettes",
+        "bookAheadMonths": 4
+      },
+      "dayHighC": -9
+    },
+    {
+      "id": "s6",
+      "type": "stage",
+      "name": "Day 6: three cols to Zermatt",
+      "place": "Col de l'Évêque, Col du Mont Brulé, Col de Valpelline 3,568 m, down the Stockji glacier",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "crowd": "low",
+      "transitHours": 0,
+      "see": [],
+      "history": null,
+      "guidebookPick": true,
+      "ascentM": 1200,
+      "descentM": 2500,
+      "hours": 9,
+      "maxAltitudeM": 3568,
+      "difficulty": "ZS+",
+      "hut": {
+        "name": "Hotel in Zermatt",
+        "bookAheadMonths": 3
+      },
+      "dayHighC": -5,
+      "note": "The long day; start at 4 am."
+    },
+    {
+      "id": "zermatt",
+      "type": "city",
+      "name": "Zermatt",
+      "place": "Recovery day",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 3,
+      "crowd": "high",
+      "transitHours": 0,
+      "maxAltitudeM": 1600,
+      "dayHighC": 5,
+      "see": [],
+      "history": null,
+      "guidebookPick": false
+    }
+  ],
+  "season": {
+    "fitByMonth": [
+      10,
+      40,
+      90,
+      95,
+      50,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "events": [
+      {
+        "name": "Patrouille des Glaciers",
+        "from": "04-15",
+        "to": "04-30",
+        "effect": "crowds",
+        "note": "Race week every two years; huts full"
+      }
+    ],
+    "notes": [
+      "Late March to early May, with April the classic month.",
+      "Guided for almost everyone: glaciers, crevasse rescue, navigation in whiteout.",
+      "Huts fill months ahead; guides block-book in autumn."
+    ]
+  },
+  "climate": {
+    "representative": "Cabanes at 2,800–3,200 m",
+    "dayHighC": [
+      -9,
+      -9,
+      -6,
+      -2,
+      3,
+      7,
+      10,
+      10,
+      6,
+      1,
+      -5,
+      -8
+    ],
+    "nightLowC": [
+      -18,
+      -18,
+      -15,
+      -11,
+      -6,
+      -2,
+      1,
+      1,
+      -2,
+      -7,
+      -13,
+      -17
+    ],
+    "rainDays": [
+      7,
+      7,
+      8,
+      9,
+      11,
+      11,
+      10,
+      10,
+      9,
+      9,
+      8,
+      8
+    ],
+    "snowMonths": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      9,
+      10,
+      11,
+      12
+    ]
+  },
+  "bulletins": [
+    {
+      "name": "SLF avalanche bulletin (Switzerland)",
+      "url": "https://www.slf.ch/en/avalanche-bulletin-and-snow-situation.html",
+      "type": "avalanche"
+    },
+    {
+      "name": "Météo-France avalanche bulletin (BRA)",
+      "url": "https://meteofrance.com/meteo-montagne",
+      "type": "avalanche"
+    },
+    {
+      "name": "MeteoSwiss",
+      "url": "https://www.meteoswiss.admin.ch/",
+      "type": "weather"
+    },
+    {
+      "name": "Météo-France montagne",
+      "url": "https://meteofrance.com/meteo-montagne",
+      "type": "weather"
+    },
+    {
+      "name": "SAC hut portal",
+      "url": "https://www.sac-cas.ch/en/huts-and-tours/",
+      "type": "huts"
+    }
+  ],
+  "guides": [
+    {
+      "name": "Camptocamp Haute Route",
+      "url": "https://www.camptocamp.org/"
+    }
+  ],
+  "lastReviewed": "2026-11-08",
+  "sources": []
+}

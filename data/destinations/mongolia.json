@@ -1,0 +1,388 @@
+{
+  "id": "mongolia",
+  "name": "Mongolia",
+  "region": "Ulaanbaatar, Orkhon valley, Khövsgöl",
+  "zone": "asia",
+  "tagline": "Gers, horses and a steppe with no fences. July and August are the only months it works, and Naadam opens the window.",
+  "noFlights": false,
+  "palette": [
+    "#c9d3a3",
+    "#8ea86a",
+    "#5a7a4e",
+    "#2f4a3a",
+    "#eef1dd"
+  ],
+  "access": [
+    {
+      "originRegion": "europe-west",
+      "originCity": "Brussels",
+      "mode": "flight",
+      "costPerPerson": 1200,
+      "route": "Brussels→Ulaanbaatar via Istanbul (Turkish, 1 stop, 13 h) or via Frankfurt (MIAT)"
+    },
+    {
+      "originRegion": "uk",
+      "originCity": "London",
+      "mode": "flight",
+      "costPerPerson": 1100,
+      "route": "London→Ulaanbaatar via Istanbul or Beijing"
+    }
+  ],
+  "rates": {
+    "city": 80,
+    "hike": 110,
+    "transit": 100
+  },
+  "nightsNote": "3–8°C in the gers, 12°C in Ulaanbaatar",
+  "whyNotes": "The emptiest country on the page. Not Central Asia in the Silk Road sense: no bazaars, no Soviet-era towns, just the steppe, Buddhist monasteries and families who still move with the herds. Horses do the hiking's work when Mom wants a day off her feet.",
+  "fitNotes": "Altitude 1,350–2,300 m on the main routes (Altai is higher and left out of the presets). 20–26°C days, cold nights. Crowds only at Terelj and at Naadam in the capital. The cost is the car: 4–6 h on dirt roads between stops, so transit hours are high.",
+  "guides": [
+    {
+      "name": "Lonely Planet Mongolia",
+      "url": "https://www.lonelyplanet.com/mongolia"
+    },
+    {
+      "name": "Routard Mongolie",
+      "url": "https://www.routard.com/guide/code_dest/mongolie.htm"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Heartland",
+      "picks": {
+        "ub": 2,
+        "karakorum": 1,
+        "orkhon": 3,
+        "khustai": 1,
+        "terelj": 2
+      }
+    },
+    {
+      "name": "Lake + steppe",
+      "picks": {
+        "ub": 2,
+        "khovsgol": 3,
+        "orkhon": 3,
+        "karakorum": 1
+      }
+    },
+    {
+      "name": "Fewest hours in the car",
+      "picks": {
+        "ub": 2,
+        "terelj": 2,
+        "khustai": 1,
+        "orkhon": 3
+      }
+    }
+  ],
+  "blocks": [
+    {
+      "id": "ub",
+      "type": "city",
+      "name": "Ulaanbaatar",
+      "place": "Gandan monastery, National Museum, Chinggis Khaan museum, Zaisan",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 1350,
+      "dayHighC": 24,
+      "crowd": "med",
+      "transitHours": 1,
+      "history": "Mongol empire, Buddhist purges, Soviet satellite",
+      "guidebookPick": true,
+      "see": [
+        "Gandan monastery morning chanting",
+        "National Museum of Mongolia and the new Chinggis Khaan museum",
+        "Choijin Lama temple museum",
+        "Zaisan hill and the Bogd Khan winter palace",
+        "Naadam stadium (11–13 July) if the dates fit"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "naadam",
+      "type": "city",
+      "name": "Naadam in Ulaanbaatar",
+      "place": "Opening ceremony, wrestling, archery, horse races at Khui Doloon Khudag",
+      "defaultDays": 2,
+      "minDays": 2,
+      "maxDays": 3,
+      "maxAltitudeM": 1350,
+      "dayHighC": 24,
+      "crowd": "high",
+      "transitHours": 0,
+      "history": "The three manly games since the 13th century",
+      "guidebookPick": true,
+      "see": [
+        "Opening ceremony 11 July (tickets through a local agency, months ahead)",
+        "Wrestling rounds in the stadium",
+        "Horse races on the steppe outside town, children riding",
+        "Countryside naadams later in July are smaller and better"
+      ],
+      "note": "Only if the trip starts by 10 July. Hotels triple; the smaller district naadams in late July are quieter and more fun.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "karakorum",
+      "type": "city",
+      "name": "Karakorum + Erdene Zuu",
+      "place": "Site of the 13th-century capital, 16th-century monastery, museum",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 1500,
+      "dayHighC": 24,
+      "crowd": "low",
+      "transitHours": 6,
+      "history": "Capital of the Mongol empire, 1235",
+      "guidebookPick": true,
+      "see": [
+        "Erdene Zuu monastery inside its 108 stupas",
+        "Karakorum museum (the city reconstructed)",
+        "Turtle rocks and the phallic rock",
+        "Orkhon valley UNESCO landscape begins here"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "orkhon",
+      "type": "hike",
+      "name": "Orkhon valley",
+      "place": "Waterfall, Tövkhön monastery hike, ger family stays, horses",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 2300,
+      "dayHighC": 23,
+      "crowd": "low",
+      "transitHours": 3,
+      "history": "Orkhon valley cultural landscape (UNESCO)",
+      "guidebookPick": true,
+      "see": [
+        "Orkhon waterfall and the lava gorge",
+        "Tövkhön monastery walk (2,300 m, 2 h up through larch forest)",
+        "Two nights with a herder family: milking, airag, horse rides",
+        "Eight lakes (Naiman Nuur) for a longer horse trek"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "khovsgol",
+      "type": "hike",
+      "name": "Khövsgöl lake",
+      "place": "Siberian-blue lake at 1,650 m, taiga, Tsaatan reindeer herders",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 2000,
+      "dayHighC": 20,
+      "crowd": "low",
+      "transitHours": 5,
+      "history": "Tsaatan reindeer culture",
+      "guidebookPick": true,
+      "see": [
+        "Lakeshore walks and horse rides from Khatgal",
+        "Boat on the lake, 2% of the world's fresh water",
+        "Tsaatan camp visit (long ride, optional)",
+        "Ger camp nights, cold and clear"
+      ],
+      "note": "Fly Ulaanbaatar→Mörön (1.5 h), then 3 h. Mosquitoes in July, gone by mid-August.",
+      "ratePerDay": null,
+      "extraTransportCost": 220
+    },
+    {
+      "id": "terelj",
+      "type": "hike",
+      "name": "Gorkhi-Terelj",
+      "place": "Granite valleys 2 h from the capital, Aryabal meditation temple",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 1800,
+      "dayHighC": 23,
+      "crowd": "med",
+      "transitHours": 2,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Aryabal temple walk",
+        "Turtle rock and the valley trails",
+        "Khagiin Khar lake overnight on horseback for the siblings"
+      ],
+      "note": "The busiest park in Mongolia, which still means almost nobody.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "khustai",
+      "type": "hike",
+      "name": "Khustai national park",
+      "place": "Takhi wild horses at dusk, steppe walks",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 1700,
+      "dayHighC": 24,
+      "crowd": "low",
+      "transitHours": 2,
+      "history": "Turkic grave stones",
+      "guidebookPick": false,
+      "see": [
+        "Evening drive and walk to see takhi (Przewalski's horses)",
+        "Ungut Turkic memorial stones",
+        "Ger camp night"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "gobi",
+      "type": "hike",
+      "name": "Gobi: Yolyn Am, Khongor dunes, Flaming Cliffs",
+      "place": "Ice gorge, 300 m dunes, dinosaur cliffs",
+      "defaultDays": 4,
+      "minDays": 3,
+      "maxDays": 5,
+      "maxAltitudeM": 2200,
+      "dayHighC": 32,
+      "crowd": "med",
+      "transitHours": 10,
+      "history": "Dinosaur egg discoveries, 1920s",
+      "guidebookPick": true,
+      "see": [
+        "Yolyn Am gorge walk (ice until July)",
+        "Khongoryn Els dune climb at sunset, camels",
+        "Bayanzag flaming cliffs",
+        "Long drives between each"
+      ],
+      "note": "Hot (32°C) and far: over Mom's heat line and heavy on the car.",
+      "ratePerDay": null,
+      "extraTransportCost": 200
+    },
+    {
+      "id": "altai",
+      "type": "hike",
+      "name": "Altai Tavan Bogd",
+      "place": "Kazakh eagle hunters, glaciers, base camp at 3,100 m",
+      "defaultDays": 5,
+      "minDays": 4,
+      "maxDays": 6,
+      "maxAltitudeM": 3100,
+      "dayHighC": 16,
+      "crowd": "low",
+      "transitHours": 7,
+      "history": "Kazakh eagle-hunting culture, petroglyphs (UNESCO)",
+      "guidebookPick": true,
+      "see": [
+        "Fly to Ölgii, 6 h drive to the park",
+        "Walk or ride to the Potanin glacier viewpoint",
+        "Eagle hunter family stay",
+        "Tsagaan Salaa petroglyphs"
+      ],
+      "note": "The far west; a trip in itself. Altitude fine at 3,100 m, logistics heavy.",
+      "ratePerDay": null,
+      "extraTransportCost": 300
+    }
+  ],
+  "season": {
+    "fitByMonth": [
+      10,
+      10,
+      15,
+      30,
+      55,
+      85,
+      85,
+      92,
+      80,
+      50,
+      20,
+      10
+    ],
+    "events": [
+      {
+        "name": "Naadam",
+        "from": "07-11",
+        "to": "07-13",
+        "effect": "festival",
+        "note": "Capital full"
+      }
+    ],
+    "notes": [
+      "July is the wettest month, which means afternoon showers on green steppe, not monsoon. August is drier and clearer.",
+      "Nights 3–8°C in the gers; camps supply stoves and blankets.",
+      "Mosquitoes around Khövsgöl and the northern lakes in July; none on the central steppe."
+    ]
+  },
+  "kind": "explore",
+  "tags": [
+    "nomad",
+    "horses",
+    "remote",
+    "steppe"
+  ],
+  "lodgingAssumption": "Local B&B or Airbnb, two rooms for five, one meal out a day; shared van or hire car",
+  "climate": {
+    "representative": "Orkhon valley (1,500 m)",
+    "dayHighC": [
+      -16,
+      -11,
+      -1,
+      9,
+      17,
+      22,
+      24,
+      22,
+      16,
+      7,
+      -5,
+      -14
+    ],
+    "nightLowC": [
+      -28,
+      -25,
+      -15,
+      -6,
+      1,
+      7,
+      10,
+      8,
+      1,
+      -7,
+      -18,
+      -26
+    ],
+    "rainDays": [
+      1,
+      1,
+      2,
+      3,
+      5,
+      9,
+      13,
+      11,
+      5,
+      3,
+      2,
+      1
+    ],
+    "snowMonths": [
+      1,
+      2,
+      3,
+      4,
+      10,
+      11,
+      12
+    ]
+  }
+}

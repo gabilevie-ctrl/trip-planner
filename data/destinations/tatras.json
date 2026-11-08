@@ -1,0 +1,405 @@
+{
+  "id": "tatras",
+  "name": "Kraków + the Slovak Tatras",
+  "region": "Poland and Slovakia, by train",
+  "zone": "europe",
+  "tagline": "A great medieval city, then the smallest high mountains in Europe, with wooden churches and Spiš castles between.",
+  "noFlights": true,
+  "palette": [
+    "#b8c9a0",
+    "#7a9a6a",
+    "#4d6b4e",
+    "#2d4236",
+    "#edf0e2"
+  ],
+  "access": [
+    {
+      "originRegion": "europe-west",
+      "originCity": "Brussels",
+      "mode": "train",
+      "costPerPerson": 220,
+      "route": "Train: European Sleeper Brussels→Berlin or Prague, then Berlin→Kraków (7 h) or Prague→Kraków (7 h)"
+    },
+    {
+      "originRegion": "uk",
+      "originCity": "London",
+      "mode": "train",
+      "costPerPerson": 260,
+      "route": "Eurostar→Brussels, European Sleeper→Berlin, train→Kraków"
+    }
+  ],
+  "rates": {
+    "city": 60,
+    "hike": 70,
+    "transit": 70
+  },
+  "nightsNote": "6–9°C at the Tatra huts, 15°C in Kraków",
+  "whyNotes": "The cheapest trip on this page and the Eastern Europe you have not seen. Kraków carries the history; the High Tatras give a compact hut-to-hut at 2,000–2,300 m, the Slovak side with a quarter of the Polish crowds.",
+  "fitNotes": "Highest point 2,300 m, 20–25°C in the mountains, Kraków 27°C. Crowds concentrate in Kraków's Old Town and Zakopane; both are optional or short. This is the option to test Mom's feeling about the region before anything else.",
+  "guides": [
+    {
+      "name": "Lonely Planet Poland",
+      "url": "https://www.lonelyplanet.com/poland"
+    },
+    {
+      "name": "Routard Pologne",
+      "url": "https://www.routard.com/guide/code_dest/pologne.htm"
+    },
+    {
+      "name": "Routard Slovaquie",
+      "url": "https://www.routard.com/guide/code_dest/slovaquie.htm"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Kraków + Slovak Tatras",
+      "picks": {
+        "krakow": 3,
+        "hightatras": 3,
+        "belianske": 2,
+        "levoca": 1,
+        "raj": 2
+      }
+    },
+    {
+      "name": "Quiet Slovakia",
+      "picks": {
+        "krakow": 2,
+        "rohace": 2,
+        "lowtatras": 2,
+        "stiavnica": 1,
+        "levoca": 1,
+        "bardejov": 1,
+        "raj": 2
+      }
+    },
+    {
+      "name": "Fewest hours in transit",
+      "picks": {
+        "krakow": 3,
+        "zakopane": 2,
+        "hightatras": 3,
+        "belianske": 2
+      }
+    }
+  ],
+  "blocks": [
+    {
+      "id": "krakow",
+      "type": "city",
+      "name": "Kraków",
+      "place": "Wawel, Kazimierz, Schindler's factory, Wieliczka salt mine",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 220,
+      "dayHighC": 27,
+      "crowd": "high",
+      "transitHours": 16,
+      "history": "Royal capital, Jewish Kazimierz, Auschwitz",
+      "guidebookPick": true,
+      "see": [
+        "Wawel castle and cathedral",
+        "Kazimierz: synagogues, Galicia Jewish museum",
+        "Schindler's factory museum (book)",
+        "Wieliczka salt mine (half day)",
+        "Auschwitz-Birkenau (a full, heavy day; decide as a family)",
+        "Czartoryski museum: Leonardo's Lady with an Ermine"
+      ],
+      "note": "Old Town is packed at midday; mornings and Kazimierz evenings are calm. Arrival by overnight train.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "levoca",
+      "type": "city",
+      "name": "Levoča + Spiš castle",
+      "place": "Walled Renaissance town, Master Paul's altar, the largest castle ruin in Central Europe",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 600,
+      "dayHighC": 25,
+      "crowd": "low",
+      "transitHours": 2,
+      "history": "Medieval Spiš (UNESCO)",
+      "guidebookPick": true,
+      "see": [
+        "St James church and the 18 m Gothic altar",
+        "Spiš castle and Spišská Kapitula",
+        "Žehra wall paintings"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "bardejov",
+      "type": "city",
+      "name": "Bardejov + wooden churches",
+      "place": "Gothic-Renaissance square, Carpathian wooden churches",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 280,
+      "dayHighC": 25,
+      "crowd": "low",
+      "transitHours": 2,
+      "history": "Medieval trading town, Ruthenian churches (UNESCO)",
+      "guidebookPick": true,
+      "see": [
+        "Bardejov square and the Šariš museum icons",
+        "Hervartov and Ladomirová wooden churches",
+        "Bardejovské Kúpele spa and open-air museum"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "stiavnica",
+      "type": "city",
+      "name": "Banská Štiavnica",
+      "place": "Silver-mining town in a volcanic caldera",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 620,
+      "dayHighC": 26,
+      "crowd": "low",
+      "transitHours": 3,
+      "history": "Mining town and first mining academy (UNESCO)",
+      "guidebookPick": true,
+      "see": [
+        "Open-air mining museum tunnel",
+        "Calvary hill",
+        "Tajch lakes swim"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "hightatras",
+      "type": "hike",
+      "name": "High Tatras hut-to-hut (Slovak side)",
+      "place": "Téryho, Zbojnícka, Zamkovského chaty; 1,500–2,300 m",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 2300,
+      "dayHighC": 18,
+      "crowd": "med",
+      "transitHours": 2.5,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Tatranská Lomnica up the Malá Studená valley to Téryho chata",
+        "Over Priečne sedlo (chains; siblings) or back round to Zbojnícka",
+        "Skalnaté pleso and the Lomnický štít cable car for the view",
+        "Štrbské pleso lakeside"
+      ],
+      "note": "Compact and well kept; Slovak huts are simple and cheap. Rysy (2,499 m) is the highest walkable point if anyone wants it.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "belianske",
+      "type": "hike",
+      "name": "Ždiar, Belianske Tatras + Pieniny rafting",
+      "place": "Goral village, limestone ridge, Dunajec gorge on a wooden raft",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 1500,
+      "dayHighC": 21,
+      "crowd": "low",
+      "transitHours": 1,
+      "history": "Goral highland culture",
+      "guidebookPick": true,
+      "see": [
+        "Monkova dolina walk from Ždiar",
+        "Belianska cave",
+        "Dunajec gorge raft at Červený Kláštor",
+        "Red Monastery"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "zakopane",
+      "type": "hike",
+      "name": "Zakopane + Morskie Oko (Polish side)",
+      "place": "Wooden-architecture resort, the famous lake",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 1400,
+      "dayHighC": 21,
+      "crowd": "high",
+      "transitHours": 2,
+      "history": "Zakopane-style architecture, Witkiewicz",
+      "guidebookPick": true,
+      "see": [
+        "Morskie Oko before 7 am",
+        "Dolina Kościeliska",
+        "Zakopane style museum and the Jaszczurówka chapel"
+      ],
+      "note": "Poland's busiest mountain resort. Here for completeness; the Slovak side is calmer.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "raj",
+      "type": "hike",
+      "name": "Slovenský raj",
+      "place": "Gorges with ladders and walkways, 1,000 m",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 1000,
+      "dayHighC": 23,
+      "crowd": "med",
+      "transitHours": 1.5,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Suchá Belá gorge ladders",
+        "Prielom Hornádu river walkways",
+        "Kláštorisko ruined monastery hut"
+      ],
+      "note": "Ladders are easy but one-way; check Mom is happy with them.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "lowtatras",
+      "type": "hike",
+      "name": "Low Tatras ridge",
+      "place": "Chopok to Ďumbier, Demänovská caves",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 2000,
+      "dayHighC": 19,
+      "crowd": "low",
+      "transitHours": 2,
+      "history": null,
+      "guidebookPick": false,
+      "see": [
+        "Cable car to Chopok, ridge walk to Ďumbier (2,043 m)",
+        "Demänovská ice cave",
+        "Vrbické pleso"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "rohace",
+      "type": "hike",
+      "name": "Western Tatras: Roháče",
+      "place": "Quiet valleys and lakes below 2,100 m, Orava folk villages",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 2100,
+      "dayHighC": 19,
+      "crowd": "low",
+      "transitHours": 1.5,
+      "history": "Orava wooden villages, Zuberec museum",
+      "guidebookPick": false,
+      "see": [
+        "Roháčske plesá lakes loop",
+        "Zuberec open-air village museum",
+        "Orava castle"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    }
+  ],
+  "season": {
+    "fitByMonth": [
+      35,
+      35,
+      40,
+      55,
+      70,
+      85,
+      78,
+      78,
+      85,
+      70,
+      40,
+      35
+    ],
+    "events": [],
+    "notes": [
+      "Full hut season; Slovak huts need booking a few weeks ahead, Polish ones months.",
+      "Afternoon storms are the Tatra rule in July and August: on the ridge by 8, down by 2.",
+      "Kraków 27°C and busy with weekend visitors; Spiš and Šariš towns are quiet all summer."
+    ]
+  },
+  "kind": "explore",
+  "tags": [
+    "history",
+    "cities",
+    "mountains"
+  ],
+  "lodgingAssumption": "Local B&B or Airbnb, two rooms for five, one meal out a day; shared van or hire car",
+  "climate": {
+    "representative": "Zakopane (850 m) / Kraków",
+    "dayHighC": [
+      0,
+      2,
+      6,
+      11,
+      17,
+      20,
+      22,
+      22,
+      17,
+      12,
+      6,
+      1
+    ],
+    "nightLowC": [
+      -7,
+      -6,
+      -3,
+      2,
+      6,
+      10,
+      12,
+      11,
+      8,
+      4,
+      0,
+      -5
+    ],
+    "rainDays": [
+      11,
+      11,
+      11,
+      12,
+      15,
+      16,
+      15,
+      13,
+      10,
+      10,
+      11,
+      12
+    ],
+    "snowMonths": [
+      1,
+      2,
+      3,
+      4,
+      11,
+      12
+    ]
+  }
+}

@@ -1,0 +1,479 @@
+{
+  "id": "iceland",
+  "name": "Iceland + East Greenland",
+  "region": "North Atlantic and the Denmark Strait",
+  "zone": "europe",
+  "tagline": "A week of empty Iceland, then a 2-hour flight to icebergs and Inuit villages on Greenland's east coast.",
+  "noFlights": false,
+  "palette": [
+    "#b9cfd9",
+    "#6f93a6",
+    "#3e5d70",
+    "#1c2b36",
+    "#eef3f5"
+  ],
+  "access": [
+    {
+      "originRegion": "europe-west",
+      "originCity": "Brussels",
+      "mode": "flight",
+      "costPerPerson": 600,
+      "route": "Icelandair direct Brussels→Keflavík, 3.5 h"
+    },
+    {
+      "originRegion": "uk",
+      "originCity": "London",
+      "mode": "flight",
+      "costPerPerson": 350,
+      "route": "London→Keflavík direct, then Reykjavík→Kulusuk"
+    }
+  ],
+  "rates": {
+    "city": 170,
+    "hike": 200,
+    "transit": 170
+  },
+  "nightsNote": "5–9°C everywhere, 2°C in Greenland",
+  "whyNotes": "Closest to the Alta Via / Haute Route days: multi-day walking in huge landscapes, light packs, huts or a guide's camp. Least history of the seven, most scenery.",
+  "fitNotes": "No altitude, no heat (9–15°C), no crowds. The most expensive trip on this page: Greenland adds €750 in flights and about €350 per day. Here so you can see the price of the dream; the Iceland-only trip is the realistic one.",
+  "guides": [
+    {
+      "name": "Lonely Planet Iceland",
+      "url": "https://www.lonelyplanet.com/iceland"
+    },
+    {
+      "name": "Routard Islande",
+      "url": "https://www.routard.com/guide/code_dest/islande.htm"
+    },
+    {
+      "name": "Routard Groenland",
+      "url": "https://www.routard.com/guide/code_dest/groenland.htm"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Westfjords + Greenland",
+      "picks": {
+        "reykjavik": 2,
+        "hornstrandir": 4,
+        "westfjords": 2,
+        "greenland": 5
+      }
+    },
+    {
+      "name": "Highlands + Greenland",
+      "picks": {
+        "reykjavik": 2,
+        "highlands": 3,
+        "snaefellsnes": 2,
+        "greenland": 5
+      }
+    },
+    {
+      "name": "Quiet Iceland",
+      "picks": {
+        "reykjavik": 2,
+        "westfjords": 3,
+        "hornstrandir": 4,
+        "highlands": 3,
+        "eastfjords": 2
+      }
+    },
+    {
+      "name": "Iceland on a budget",
+      "picks": {
+        "reykjavik": 2,
+        "snaefellsnes": 2,
+        "westfjords": 2,
+        "hornself": 4,
+        "eastfjords": 2
+      }
+    },
+    {
+      "name": "Classic (crowded)",
+      "picks": {
+        "reykjavik": 2,
+        "snaefellsnes": 2,
+        "laugavegur": 4,
+        "myvatn": 2,
+        "highlands": 2
+      }
+    }
+  ],
+  "blocks": [
+    {
+      "id": "reykjavik",
+      "type": "city",
+      "name": "Reykjavík",
+      "place": "National Museum, Settlement Exhibition, Harpa",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 0,
+      "dayHighC": 14,
+      "crowd": "med",
+      "transitHours": 0.75,
+      "history": "Viking settlement, sagas",
+      "guidebookPick": true,
+      "see": [
+        "National Museum of Iceland",
+        "Settlement Exhibition (10th-century longhouse in situ)",
+        "Harpa; check the summer programme",
+        "Reykjavík Art Museum",
+        "Vesturbæjarlaug pool with the locals"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "isafjordur",
+      "type": "city",
+      "name": "Ísafjörður",
+      "place": "Westfjords capital, base for Hornstrandir",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 0,
+      "dayHighC": 12,
+      "crowd": "low",
+      "transitHours": 5,
+      "history": "Fishing and whaling history",
+      "guidebookPick": false,
+      "see": [
+        "Westfjords Heritage Museum",
+        "Tjöruhúsið fish restaurant",
+        "Vigur island puffins by boat"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "myvatn",
+      "type": "city",
+      "name": "Akureyri + Mývatn",
+      "place": "North: whales from Húsavík, geothermal fields",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 300,
+      "dayHighC": 15,
+      "crowd": "med",
+      "transitHours": 6,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Húsavík whale watching (humpbacks)",
+        "Dimmuborgir and Hverir",
+        "Akureyri botanical garden and art museum",
+        "Goðafoss"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "eastfjords",
+      "type": "city",
+      "name": "East Fjords",
+      "place": "Seyðisfjörður, Borgarfjörður eystri",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 0,
+      "dayHighC": 13,
+      "crowd": "low",
+      "transitHours": 3,
+      "history": null,
+      "guidebookPick": false,
+      "see": [
+        "Seyðisfjörður art village and Skaftfell centre",
+        "Borgarfjörður eystri puffin cliff and Stórurð boulder walk",
+        "Petra's stone collection"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "hornstrandir",
+      "type": "hike",
+      "name": "Hornstrandir nature reserve",
+      "place": "Roadless peninsula, guided 4-day traverse, boat access",
+      "defaultDays": 4,
+      "minDays": 3,
+      "maxDays": 5,
+      "maxAltitudeM": 500,
+      "dayHighC": 11,
+      "crowd": "low",
+      "transitHours": 2,
+      "history": "Abandoned farms, 1950s",
+      "guidebookPick": true,
+      "see": [
+        "Hornbjarg cliffs (534 m straight into the sea)",
+        "Arctic foxes at Hornvík",
+        "Hesteyri abandoned village",
+        "Boat from Ísafjörður; guide and tents or the doctor's house"
+      ],
+      "note": "The emptiest hiking in Europe. Weather can hold the boat for a day; keep a buffer.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "hornself",
+      "type": "hike",
+      "name": "Hornstrandir self-guided",
+      "place": "Same traverse, your own tents and food, boat drop-off and pick-up",
+      "defaultDays": 4,
+      "minDays": 3,
+      "maxDays": 5,
+      "maxAltitudeM": 500,
+      "dayHighC": 11,
+      "crowd": "low",
+      "transitHours": 2,
+      "history": "Abandoned farms, 1950s",
+      "guidebookPick": false,
+      "see": [
+        "Veiðileysufjörður to Hornvík, Hornbjarg, out via Hesteyri",
+        "Camp at the ranger-staffed sites",
+        "Boat from Ísafjörður or Bolungarvík, book both legs"
+      ],
+      "note": "About €110 pp per day instead of €200 with a guide. Needs one confident navigator in the group and a weather buffer day.",
+      "ratePerDay": 110,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "westfjords",
+      "type": "hike",
+      "name": "Westfjords road trip",
+      "place": "Dynjandi, Látrabjarg, Rauðisandur",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 600,
+      "dayHighC": 13,
+      "crowd": "low",
+      "transitHours": 4,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Látrabjarg bird cliffs",
+        "Dynjandi waterfall staircase",
+        "Rauðisandur red beach",
+        "Gravel passes and day walks from the farmhouses"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "highlands",
+      "type": "hike",
+      "name": "Highlands: Kerlingarfjöll + Landmannalaugar",
+      "place": "F-roads, rhyolite mountains, geothermal valleys",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 1100,
+      "dayHighC": 12,
+      "crowd": "med",
+      "transitHours": 4,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Hveradalir geothermal valley at Kerlingarfjöll",
+        "Landmannalaugar day loop early on a weekday",
+        "Hveravellir hot pool between glaciers"
+      ],
+      "note": "Landmannalaugar is busy by 11 am; sleep at Kerlingarfjöll or Hrauneyjar and arrive at 8.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "laugavegur",
+      "type": "hike",
+      "name": "Laugavegur hut trek",
+      "place": "4-day classic, Landmannalaugar to Þórsmörk",
+      "defaultDays": 4,
+      "minDays": 3,
+      "maxDays": 5,
+      "maxAltitudeM": 1100,
+      "dayHighC": 11,
+      "crowd": "high",
+      "transitHours": 3,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Rhyolite, obsidian, ice caves and black desert in four days",
+        "Hut dorms booked out months ahead"
+      ],
+      "note": "Iceland's busiest trail. Hornstrandir gives the same drama with nobody there.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "askja",
+      "type": "hike",
+      "name": "Askja + Herðubreið",
+      "place": "Volcanic highlands, crater lake, super-jeep day",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 1100,
+      "dayHighC": 10,
+      "crowd": "low",
+      "transitHours": 5,
+      "history": null,
+      "guidebookPick": false,
+      "see": [
+        "Víti crater and Öskjuvatn",
+        "Herðubreiðarlindir oasis",
+        "Holuhraun lava field (2014)"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "snaefellsnes",
+      "type": "hike",
+      "name": "Snæfellsnes peninsula",
+      "place": "Glacier volcano, lava fields, fishing villages",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 700,
+      "dayHighC": 13,
+      "crowd": "med",
+      "transitHours": 2.5,
+      "history": "Saga sites",
+      "guidebookPick": true,
+      "see": [
+        "Snæfellsjökull national park coast walk",
+        "Stykkishólmur and Breiðafjörður islands",
+        "Arnarstapi cliffs"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "greenland",
+      "type": "hike",
+      "name": "East Greenland: Tasiilaq + Kulusuk",
+      "place": "2 h flight from Reykjavík; icebergs, Inuit villages, guided hiking",
+      "defaultDays": 5,
+      "minDays": 4,
+      "maxDays": 7,
+      "maxAltitudeM": 800,
+      "dayHighC": 9,
+      "crowd": "low",
+      "transitHours": 3,
+      "history": "Inuit East Greenland culture",
+      "guidebookPick": true,
+      "see": [
+        "Flower valley and Qorlortoq hikes from Tasiilaq",
+        "Boat through Sermilik fjord icebergs",
+        "Kulusuk village, drum dance, Tasiilaq museum",
+        "Optional ice-cap edge day"
+      ],
+      "note": "Adds about €750 pp in flights and runs at ~€350 pp per day.",
+      "ratePerDay": 350,
+      "extraTransportCost": 750
+    }
+  ],
+  "season": {
+    "fitByMonth": [
+      15,
+      15,
+      20,
+      30,
+      55,
+      85,
+      90,
+      80,
+      60,
+      35,
+      20,
+      15
+    ],
+    "events": [
+      {
+        "name": "Greenland weather less reliable",
+        "from": "08-10",
+        "to": "09-30",
+        "effect": "weather",
+        "note": "Keep Greenland early"
+      }
+    ],
+    "notes": [
+      "F-roads and highland huts fully open across the window.",
+      "Hornstrandir boats run daily until mid-August; after that service thins.",
+      "First weekend of August is Iceland's big holiday weekend; campsites fill."
+    ]
+  },
+  "kind": "explore",
+  "tags": [
+    "mountains",
+    "coast",
+    "remote",
+    "arctic"
+  ],
+  "lodgingAssumption": "Local B&B or Airbnb, two rooms for five, one meal out a day; shared van or hire car",
+  "climate": {
+    "representative": "Tasiilaq / Reykjavík",
+    "dayHighC": [
+      -2,
+      -2,
+      -1,
+      2,
+      6,
+      9,
+      11,
+      10,
+      7,
+      3,
+      0,
+      -2
+    ],
+    "nightLowC": [
+      -9,
+      -9,
+      -8,
+      -5,
+      -1,
+      2,
+      4,
+      4,
+      1,
+      -3,
+      -6,
+      -8
+    ],
+    "rainDays": [
+      10,
+      9,
+      9,
+      8,
+      7,
+      7,
+      8,
+      10,
+      11,
+      12,
+      10,
+      10
+    ],
+    "snowMonths": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      10,
+      11,
+      12
+    ]
+  }
+}

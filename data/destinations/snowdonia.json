@@ -1,0 +1,254 @@
+{
+  "id": "snowdonia",
+  "kind": "explore",
+  "zone": "europe",
+  "name": "Eryri (Snowdonia) + the Llŷn by train",
+  "region": "North Wales",
+  "noFlights": true,
+  "tagline": "Castles, slate and the highest ground south of Scotland, reached by the Conwy Valley line and the Ffestiniog steam railway.",
+  "tags": [
+    "mountains",
+    "castles",
+    "coast",
+    "winter-ok",
+    "short"
+  ],
+  "access": [
+    {
+      "originRegion": "uk",
+      "originCity": "London",
+      "mode": "train",
+      "costPerPerson": 95,
+      "route": "Euston→Llandudno Junction (3 h), Conwy Valley line to Betws-y-Coed / Blaenau"
+    },
+    {
+      "originRegion": "europe-west",
+      "originCity": "Brussels",
+      "mode": "train",
+      "costPerPerson": 230,
+      "route": "Eurostar→London→Llandudno Junction"
+    }
+  ],
+  "rates": {
+    "city": 110,
+    "hike": 95,
+    "transit": 100
+  },
+  "lodgingAssumption": "B&B or hostel; Betws-y-Coed or Llanberis as base",
+  "presets": [
+    {
+      "name": "Betws-y-Coed week",
+      "picks": {
+        "conwy": 1,
+        "betws": 2,
+        "snowdon": 1,
+        "moelwyn": 1,
+        "ffestiniog": 1,
+        "caernarfon": 1
+      }
+    }
+  ],
+  "blocks": [
+    {
+      "id": "conwy",
+      "type": "city",
+      "name": "Conwy",
+      "place": "Walled town and Edward I's castle",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 3,
+      "crowd": "med",
+      "transitHours": 3.5,
+      "maxAltitudeM": 500,
+      "dayHighC": 8,
+      "see": [],
+      "history": "Edwardian castles of Wales (UNESCO)",
+      "guidebookPick": false
+    },
+    {
+      "id": "betws",
+      "type": "city",
+      "name": "Betws-y-Coed",
+      "place": "Forest village base, Swallow Falls, Tŷ Hyll",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 3,
+      "crowd": "med",
+      "transitHours": 0.5,
+      "maxAltitudeM": 500,
+      "dayHighC": 7,
+      "see": [],
+      "history": null,
+      "guidebookPick": false
+    },
+    {
+      "id": "caernarfon",
+      "type": "city",
+      "name": "Caernarfon",
+      "place": "The grandest of the castles, Welsh-speaking town",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 3,
+      "crowd": "low",
+      "transitHours": 1,
+      "maxAltitudeM": 500,
+      "dayHighC": 8,
+      "see": [],
+      "history": "Investiture castle, Roman Segontium",
+      "guidebookPick": false
+    },
+    {
+      "id": "snowdon",
+      "type": "hike",
+      "name": "Yr Wyddfa (Snowdon) in winter",
+      "place": "Llanberis path or Pyg track, 1,085 m; or the Glyderau",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 1085,
+      "dayHighC": 1,
+      "crowd": "med",
+      "transitHours": 0.5,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Llanberis path (safest in winter)",
+        "Glyder Fach and Tryfan for a scramble in good conditions",
+        "Pen-y-Gwryd hotel, where Everest 1953 trained"
+      ],
+      "note": "Winter kit above the snowline; the railway does not run in winter."
+    },
+    {
+      "id": "moelwyn",
+      "type": "hike",
+      "name": "Moelwynion and Cwm Idwal",
+      "place": "Quieter hills, slate ruins, the Devil's Kitchen",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 770,
+      "dayHighC": 3,
+      "crowd": "low",
+      "transitHours": 0.5,
+      "history": "Slate quarrying",
+      "guidebookPick": true,
+      "see": [
+        "Cwm Idwal nature reserve loop",
+        "Moelwyn Mawr from Croesor",
+        "Cwmorthin quarry ruins"
+      ]
+    },
+    {
+      "id": "ffestiniog",
+      "type": "hike",
+      "name": "Ffestiniog railway and Blaenau slate",
+      "place": "Steam railway to Porthmadog, Llechwedd caverns",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 1,
+      "maxAltitudeM": 300,
+      "dayHighC": 6,
+      "crowd": "low",
+      "transitHours": 0.5,
+      "history": "Slate landscape of north-west Wales (UNESCO)",
+      "guidebookPick": true,
+      "see": [
+        "Llechwedd deep mine tour",
+        "Steam train down to Porthmadog",
+        "Portmeirion from Minffordd"
+      ]
+    }
+  ],
+  "season": {
+    "fitByMonth": [
+      55,
+      55,
+      65,
+      80,
+      85,
+      80,
+      70,
+      70,
+      85,
+      80,
+      60,
+      55
+    ],
+    "events": [],
+    "notes": [
+      "Wet and windy in winter; the castles and railways fill the bad days.",
+      "Short days; plan hill days for the clear forecast.",
+      "Welsh is the first language in Caernarfon and Blaenau."
+    ]
+  },
+  "climate": {
+    "representative": "Betws-y-Coed (60 m); tops 700–1,000 m",
+    "dayHighC": [
+      7,
+      7,
+      9,
+      12,
+      15,
+      18,
+      19,
+      19,
+      17,
+      13,
+      10,
+      8
+    ],
+    "nightLowC": [
+      1,
+      1,
+      2,
+      3,
+      6,
+      9,
+      11,
+      11,
+      9,
+      6,
+      3,
+      2
+    ],
+    "rainDays": [
+      18,
+      14,
+      16,
+      13,
+      12,
+      12,
+      14,
+      15,
+      15,
+      18,
+      19,
+      19
+    ],
+    "snowMonths": [
+      1,
+      2,
+      3,
+      12
+    ]
+  },
+  "bulletins": [
+    {
+      "name": "Met Office mountain forecast (Snowdonia)",
+      "url": "https://www.metoffice.gov.uk/weather/specialist-forecasts/mountain",
+      "type": "weather"
+    }
+  ],
+  "guides": [
+    {
+      "name": "Lonely Planet Wales",
+      "url": "https://www.lonelyplanet.com/wales"
+    },
+    {
+      "name": "Routard Pays de Galles",
+      "url": "https://www.routard.com/guide/code_dest/pays_de_galles.htm"
+    }
+  ],
+  "lastReviewed": "2026-11-08",
+  "sources": []
+}

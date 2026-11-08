@@ -1,0 +1,429 @@
+{
+  "id": "flores",
+  "name": "Flores + Komodo",
+  "region": "Eastern Indonesia, the Trans-Flores road",
+  "zone": "asia",
+  "tagline": "Dragons and manta rays by boat, then a highland road through megalith villages, a hidden village of conical houses and three coloured crater lakes.",
+  "noFlights": false,
+  "palette": [
+    "#8fd0c6",
+    "#4fa39a",
+    "#2f6f6a",
+    "#1d4547",
+    "#e9f4f0"
+  ],
+  "access": [
+    {
+      "originRegion": "europe-west",
+      "originCity": "Brussels",
+      "mode": "flight",
+      "costPerPerson": 1050,
+      "route": "Brussels→Bali via Doha, Singapore or Kuala Lumpur (17–19 h), then Bali→Labuan Bajo (1.5 h)"
+    },
+    {
+      "originRegion": "uk",
+      "originCity": "London",
+      "mode": "flight",
+      "costPerPerson": 950,
+      "route": "London→Bali via Doha or Singapore, then Labuan Bajo"
+    }
+  ],
+  "rates": {
+    "city": 60,
+    "hike": 80,
+    "transit": 80
+  },
+  "nightsNote": "14–17°C in the Flores highlands, 25°C on the coast",
+  "whyNotes": "Dry season, almost no altitude, and a trip that reads like Colombia in reverse: a boat journey first, then a slow road east through villages where the culture is lived, not displayed. Few foreigners once you leave Labuan Bajo.",
+  "fitNotes": "Highest point 2,200 m if the siblings climb Inerie; otherwise 1,650 m at Kelimutu. 30°C on the coast, 20–23°C in Bajawa and Ruteng, so the highland days carry the trip. Komodo boats are busy in July and August; the road is not. Long legs of 3–4 h between stops.",
+  "guides": [
+    {
+      "name": "Lonely Planet Indonesia",
+      "url": "https://www.lonelyplanet.com/indonesia"
+    },
+    {
+      "name": "Routard Indonésie",
+      "url": "https://www.routard.com/guide/code_dest/indonesie.htm"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Trans-Flores",
+      "picks": {
+        "lbj": 1,
+        "komodo": 3,
+        "ruteng": 1,
+        "waerebo": 2,
+        "bajawa": 2,
+        "kelimutu": 1,
+        "moni": 1
+      }
+    },
+    {
+      "name": "Highlands only",
+      "picks": {
+        "bajawa": 2,
+        "inerie": 1,
+        "waerebo": 2,
+        "ruteng": 1,
+        "kelimutu": 1,
+        "moni": 1,
+        "riung": 1,
+        "maumere": 1
+      }
+    },
+    {
+      "name": "Fewest hours in transit",
+      "picks": {
+        "lbj": 1,
+        "komodo": 3,
+        "ruteng": 1,
+        "waerebo": 2
+      }
+    }
+  ],
+  "blocks": [
+    {
+      "id": "lbj",
+      "type": "city",
+      "name": "Labuan Bajo",
+      "place": "Harbour town, gateway to Komodo",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 0,
+      "dayHighC": 31,
+      "crowd": "med",
+      "transitHours": 3,
+      "history": null,
+      "guidebookPick": false,
+      "see": [
+        "Sunset from Bukit Amelia",
+        "Night fish market",
+        "Boat and guide arrangements for Komodo"
+      ],
+      "note": "Arrival point. Hot; one night either side of the boat.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "ruteng",
+      "type": "city",
+      "name": "Ruteng",
+      "place": "Manggarai hill town at 1,200 m, spider-web rice fields",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 1300,
+      "dayHighC": 23,
+      "crowd": "low",
+      "transitHours": 4,
+      "history": "Manggarai lingko land system, Homo floresiensis cave",
+      "guidebookPick": true,
+      "see": [
+        "Cancar spider-web rice fields",
+        "Liang Bua cave (the 'hobbit' site)",
+        "Ruteng Pu'u traditional village",
+        "Cool evenings, Catholic convent stays"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "bajawa",
+      "type": "city",
+      "name": "Bajawa + Ngada villages",
+      "place": "Bena, Luba, Tololela: megalith villages below Inerie volcano, 1,100 m",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 1200,
+      "dayHighC": 22,
+      "crowd": "low",
+      "transitHours": 4,
+      "history": "Ngada megalithic clan villages",
+      "guidebookPick": true,
+      "see": [
+        "Bena village (ngadhu and bhaga ancestor shrines)",
+        "Luba and Tololela on foot between villages",
+        "Malanage hot springs where a hot and a cold river meet",
+        "Arabica coffee cooperatives"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "moni",
+      "type": "city",
+      "name": "Moni + Ende",
+      "place": "Village below Kelimutu, Sukarno's exile house in Ende",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 700,
+      "dayHighC": 25,
+      "crowd": "low",
+      "transitHours": 3,
+      "history": "Sukarno's exile, 1934–38",
+      "guidebookPick": false,
+      "see": [
+        "Sukarno house museum in Ende",
+        "Lio ikat weaving at Wologai",
+        "Moni waterfall walk"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "maumere",
+      "type": "city",
+      "name": "Maumere + Sikka",
+      "place": "16th-century Portuguese church, Ledalero museum, departure airport",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 0,
+      "dayHighC": 31,
+      "crowd": "low",
+      "transitHours": 3,
+      "history": "Portuguese Flores, 1561",
+      "guidebookPick": false,
+      "see": [
+        "Sikka church and ikat weavers",
+        "Bikon Blewut museum at Ledalero seminary",
+        "Koka beach"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "komodo",
+      "type": "hike",
+      "name": "Komodo by boat",
+      "place": "3 days on a liveaboard: dragons on Rinca and Komodo, Padar ridge, manta point, pink beach",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 300,
+      "dayHighC": 30,
+      "crowd": "high",
+      "transitHours": 1,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Padar island ridge walk at dawn (the three bays)",
+        "Komodo dragons with a ranger on Komodo or Rinca",
+        "Snorkel with mantas at Karang Makassar",
+        "Sleep on deck under the stars"
+      ],
+      "note": "The one crowded block. A private boat for five (~€150 pp per day) avoids the day-trip fleet by moving earlier.",
+      "ratePerDay": 150,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "waerebo",
+      "type": "hike",
+      "name": "Wae Rebo",
+      "place": "Seven conical Mbaru Niang houses at 1,100 m, 3 h walk in through cloud forest",
+      "defaultDays": 2,
+      "minDays": 2,
+      "maxDays": 2,
+      "maxAltitudeM": 1200,
+      "dayHighC": 20,
+      "crowd": "low",
+      "transitHours": 3,
+      "history": "Manggarai ancestral village, UNESCO Asia-Pacific heritage award",
+      "guidebookPick": true,
+      "see": [
+        "Walk in from Denge (3 h, 600 m up)",
+        "Welcome ceremony and a night in the communal house",
+        "Coffee drying on the terraces at dawn",
+        "Walk out and drive on to Ruteng"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "kelimutu",
+      "type": "hike",
+      "name": "Kelimutu",
+      "place": "Three crater lakes that change colour, 1,640 m, dawn",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 1,
+      "maxAltitudeM": 1650,
+      "dayHighC": 18,
+      "crowd": "med",
+      "transitHours": 1,
+      "history": "Lio ancestor-soul lakes",
+      "guidebookPick": true,
+      "see": [
+        "Sunrise at the summit viewpoint",
+        "Walk back down to Moni through the villages (3 h, instead of the car)"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "inerie",
+      "type": "hike",
+      "name": "Inerie volcano + Bajawa walks",
+      "place": "Perfect cone to 2,245 m for the siblings; village paths for everyone",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 2245,
+      "dayHighC": 20,
+      "crowd": "low",
+      "transitHours": 0.5,
+      "history": null,
+      "guidebookPick": false,
+      "see": [
+        "Inerie summit at dawn (4 h up, steep scree)",
+        "Wawomudha crater lake walk",
+        "Village-to-village paths around Bena"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "riung",
+      "type": "hike",
+      "name": "Riung 17 Islands",
+      "place": "Marine park on the north coast, snorkel and flying foxes",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 0,
+      "dayHighC": 31,
+      "crowd": "low",
+      "transitHours": 3,
+      "history": null,
+      "guidebookPick": false,
+      "see": [
+        "Boat to three or four islands",
+        "Flying-fox mangrove at dusk",
+        "Dry savannah hills, unlike the south"
+      ],
+      "note": null,
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    },
+    {
+      "id": "munduk",
+      "type": "hike",
+      "name": "Bali highlands: Munduk",
+      "place": "Waterfalls, rice terraces and temples at 800–1,200 m, as a start or end",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 1500,
+      "dayHighC": 24,
+      "crowd": "med",
+      "transitHours": 2,
+      "history": "Balinese Hindu temples",
+      "guidebookPick": true,
+      "see": [
+        "Munduk waterfall loop",
+        "Ulun Danu Bratan temple early",
+        "Jatiluwih rice terraces (UNESCO)"
+      ],
+      "note": "Cooler and quieter than the south of Bali; useful to break the flights.",
+      "ratePerDay": null,
+      "extraTransportCost": 0
+    }
+  ],
+  "season": {
+    "fitByMonth": [
+      45,
+      40,
+      50,
+      65,
+      80,
+      88,
+      92,
+      92,
+      88,
+      75,
+      55,
+      45
+    ],
+    "events": [
+      {
+        "name": "Komodo high season",
+        "from": "07-01",
+        "to": "07-31",
+        "effect": "crowds",
+        "note": "Book a private boat"
+      }
+    ],
+    "notes": [
+      "Dry season: 30°C on the coast, 20–23°C in the highlands, almost no rain.",
+      "Komodo waters are calmest and the dragons most active in the dry months.",
+      "The Trans-Flores road is paved but slow: budget 4 h for each hop.",
+      "July: Komodo boats are at their busiest with Indonesian and European holidays; book a private boat.",
+      "August: the Komodo fleet thins after the Indonesian holidays end."
+    ]
+  },
+  "kind": "explore",
+  "tags": [
+    "islands",
+    "wildlife",
+    "villages",
+    "boat"
+  ],
+  "lodgingAssumption": "Local B&B or Airbnb, two rooms for five, one meal out a day; shared van or hire car",
+  "climate": {
+    "representative": "Bajawa (1,100 m) / Labuan Bajo",
+    "dayHighC": [
+      29,
+      29,
+      30,
+      31,
+      31,
+      30,
+      30,
+      30,
+      31,
+      32,
+      32,
+      30
+    ],
+    "nightLowC": [
+      22,
+      22,
+      22,
+      22,
+      22,
+      21,
+      20,
+      20,
+      21,
+      22,
+      23,
+      22
+    ],
+    "rainDays": [
+      22,
+      20,
+      18,
+      12,
+      7,
+      4,
+      3,
+      2,
+      3,
+      6,
+      12,
+      19
+    ],
+    "snowMonths": []
+  }
+}

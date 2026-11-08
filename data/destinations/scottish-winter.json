@@ -1,0 +1,262 @@
+{
+  "id": "scottish-winter",
+  "kind": "explore",
+  "zone": "europe",
+  "name": "Highlands in winter by sleeper",
+  "region": "Fort William, Glencoe, Skye in the quiet season",
+  "noFlights": true,
+  "tagline": "The Caledonian Sleeper north, snow on the Ben, empty Skye, whisky and open fires; the Highlands at their most dramatic.",
+  "tags": [
+    "mountains",
+    "islands",
+    "winter",
+    "trains",
+    "short"
+  ],
+  "access": [
+    {
+      "originRegion": "uk",
+      "originCity": "London",
+      "mode": "train",
+      "costPerPerson": 160,
+      "route": "Caledonian Sleeper Euston→Fort William (overnight, 12 h)"
+    },
+    {
+      "originRegion": "europe-west",
+      "originCity": "Brussels",
+      "mode": "train",
+      "costPerPerson": 280,
+      "route": "Eurostar→London, Caledonian Sleeper→Fort William"
+    }
+  ],
+  "rates": {
+    "city": 110,
+    "hike": 95,
+    "transit": 110
+  },
+  "lodgingAssumption": "B&B and one hostel night; hire car for Skye",
+  "presets": [
+    {
+      "name": "Fort William and Glencoe",
+      "picks": {
+        "fortwilliam": 2,
+        "glencoe": 2,
+        "nevisrange": 1,
+        "ardnamurchan": 1
+      }
+    },
+    {
+      "name": "Add Skye",
+      "picks": {
+        "fortwilliam": 1,
+        "glencoe": 2,
+        "skyewinter": 3
+      }
+    }
+  ],
+  "blocks": [
+    {
+      "id": "fortwilliam",
+      "type": "city",
+      "name": "Fort William",
+      "place": "West Highland Museum, Glenfinnan by train, Neptune's Staircase",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 3,
+      "crowd": "low",
+      "transitHours": 12,
+      "maxAltitudeM": 500,
+      "dayHighC": 6,
+      "see": [],
+      "history": "Jacobite rising, Glenfinnan",
+      "guidebookPick": false
+    },
+    {
+      "id": "glencoe",
+      "type": "hike",
+      "name": "Glencoe low-level walks",
+      "place": "Lost Valley, Glencoe Lochan, the Devil's Staircase in good weather",
+      "defaultDays": 2,
+      "minDays": 1,
+      "maxDays": 3,
+      "maxAltitudeM": 550,
+      "dayHighC": 4,
+      "crowd": "low",
+      "transitHours": 0.5,
+      "history": "1692 massacre",
+      "guidebookPick": true,
+      "see": [
+        "Lost Valley (Coire Gabhail), 3 h",
+        "Glencoe visitor centre and the Clachaig",
+        "Devil's Staircase to the top only in settled weather"
+      ],
+      "note": "Winter conditions change fast; the Munros need winter skills."
+    },
+    {
+      "id": "nevisrange",
+      "type": "hike",
+      "name": "Nevis Range and Glen Nevis",
+      "place": "Gondola to 650 m, Steall falls walk",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 1345,
+      "dayHighC": 2,
+      "crowd": "med",
+      "transitHours": 0.5,
+      "history": null,
+      "guidebookPick": true,
+      "see": [
+        "Steall falls through the Nevis gorge",
+        "Nevis Range gondola for the view and a short ridge walk",
+        "Ben Nevis only with winter kit and a guide"
+      ]
+    },
+    {
+      "id": "ardnamurchan",
+      "type": "hike",
+      "name": "Ardnamurchan and the Corran ferry",
+      "place": "Empty peninsula, Sanna beach, the lighthouse",
+      "defaultDays": 1,
+      "minDays": 1,
+      "maxDays": 2,
+      "maxAltitudeM": 200,
+      "dayHighC": 6,
+      "crowd": "low",
+      "transitHours": 2,
+      "history": null,
+      "guidebookPick": false,
+      "see": [
+        "Sanna bay dunes",
+        "Ardnamurchan Point lighthouse",
+        "Otters at Kilchoan"
+      ]
+    },
+    {
+      "id": "skyewinter",
+      "type": "hike",
+      "name": "Skye in the quiet season",
+      "place": "Quiraing, Storr, Fairy Pools with nobody there",
+      "defaultDays": 3,
+      "minDays": 2,
+      "maxDays": 4,
+      "maxAltitudeM": 700,
+      "dayHighC": 5,
+      "crowd": "low",
+      "transitHours": 3,
+      "history": "Clan MacLeod, Dunvegan",
+      "guidebookPick": true,
+      "see": [
+        "Quiraing loop in low sun",
+        "Old Man of Storr",
+        "Talisker distillery and Elgol in a storm"
+      ],
+      "note": "Short daylight (16:00 sunset in January); plan one walk a day."
+    }
+  ],
+  "season": {
+    "fitByMonth": [
+      55,
+      60,
+      70,
+      80,
+      90,
+      85,
+      70,
+      65,
+      85,
+      75,
+      55,
+      50
+    ],
+    "events": [
+      {
+        "name": "Hogmanay",
+        "from": "12-30",
+        "to": "01-02",
+        "effect": "crowds",
+        "note": "Everything booked"
+      }
+    ],
+    "notes": [
+      "January and February: gales and snow, but also the emptiest Highlands and the best light.",
+      "The sleeper is the trip's best moment; book a room 12 weeks ahead.",
+      "Midges are gone; ticks are not an issue; roads can close in snow."
+    ]
+  },
+  "climate": {
+    "representative": "Fort William (sea level); Glencoe tops 1,000 m",
+    "dayHighC": [
+      6,
+      7,
+      9,
+      12,
+      15,
+      17,
+      19,
+      18,
+      16,
+      12,
+      9,
+      7
+    ],
+    "nightLowC": [
+      1,
+      1,
+      2,
+      3,
+      6,
+      9,
+      11,
+      11,
+      9,
+      6,
+      3,
+      1
+    ],
+    "rainDays": [
+      20,
+      16,
+      18,
+      14,
+      13,
+      14,
+      16,
+      16,
+      17,
+      20,
+      19,
+      20
+    ],
+    "snowMonths": [
+      1,
+      2,
+      3,
+      12
+    ]
+  },
+  "bulletins": [
+    {
+      "name": "Scottish Avalanche Information Service",
+      "url": "https://www.sais.gov.uk/",
+      "type": "avalanche"
+    },
+    {
+      "name": "MWIS mountain weather",
+      "url": "https://www.mwis.org.uk/",
+      "type": "weather"
+    }
+  ],
+  "guides": [
+    {
+      "name": "Lonely Planet Scotland",
+      "url": "https://www.lonelyplanet.com/scotland"
+    },
+    {
+      "name": "Routard Écosse",
+      "url": "https://www.routard.com/guide/code_dest/ecosse.htm"
+    }
+  ],
+  "lastReviewed": "2026-11-08",
+  "sources": []
+}

@@ -59,3 +59,15 @@ test("every page has a Send feedback link that opens an email", async () => {
     assert.equal(a.getAttribute("href"), "mailto:gabilevie@gmail.com?subject=Trip%20planner%20feedback");
   }
 });
+
+test("table cells carry their column name so rows can stack on a phone", async () => {
+  await import("../src/main.js"); await go("#home");
+  click($('[data-act="use-template"]')); await tick(150);
+  await go("#itinerary");
+  const table = $("table.itin"); assert.ok(table, "itinerary table renders");
+  const heads = [...table.querySelectorAll("thead th")].map(th => th.textContent.trim());
+  const row = table.querySelector("tbody tr");
+  assert.deepEqual([...row.children].map(td => td.dataset.label), heads);
+  await go("#setup");
+  const people = $("table.people tbody tr td"); assert.equal(people.dataset.label, "Name");
+});

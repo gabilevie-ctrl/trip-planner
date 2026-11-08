@@ -3,7 +3,7 @@ import * as state from "./state.js";
 import * as data from "./data.js";
 import * as compute from "./compute.js";
 import { KINDS } from "./criteria.js";
-import { esc, fmtDateY } from "./ui.js";
+import { esc, fmtDateY, labelCells } from "./ui.js";
 import { feedbackMailto } from "./links.js";
 import * as home from "./views/home.js";
 import * as setup from "./views/setup.js";
@@ -78,6 +78,7 @@ async function render() {
       html = head + `<main class="view view-${view}">${v.render(ctx)}</main>`;
     }
     app.innerHTML = HEAD + html;
+    labelCells(app);
   } catch (e) { console.error(e); app.innerHTML = `<section class="card"><h2>Something went wrong</h2><p>${esc(e.message)}</p><p><a href="#home">Back to trips</a></p></section>`; }
 }
 

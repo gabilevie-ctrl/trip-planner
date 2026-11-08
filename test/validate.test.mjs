@@ -54,3 +54,11 @@ test("existing block checks still apply", () => {
   const d = norway(); d.blocks[0] = Object.assign({}, d.blocks[0], { type: "spa" });
   assert.ok(checkDestination(d, "norway.json", entry(), TODAY).some(m => m.endsWith("bad type spa")));
 });
+
+test("blocks and presets that are not lists are reported, not thrown", () => {
+  for (const [over, msg] of [[{ blocks: { a: 1 } }, "blocks must be an array"], [{ blocks: 5 }, "blocks must be an array"], [{ blocks: [null] }, "blocks[0] is not an object"],
+    [{ presets: {} }, "presets must be an array"], [{ presets: [null] }, "presets[0] is not an object"]]) {
+    let out; assert.doesNotThrow(() => { out = checkDestination(norway(over), "norway.json", entry(), TODAY); }, JSON.stringify(over));
+    assert.ok(out.includes(msg), `${JSON.stringify(over)} → ${msg}; got ${out.join(" | ")}`);
+  }
+});

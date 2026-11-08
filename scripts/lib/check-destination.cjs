@@ -12,6 +12,14 @@ function parseDate(s) {
   return t.getUTCFullYear() === y && t.getUTCMonth() === mo - 1 && t.getUTCDate() === d ? t : null;
 }
 
+const isObject = v => v !== null && typeof v === "object" && !Array.isArray(v);
+// A field that must be a list: reports it once and returns [] so the checks after it still run.
+function listOf(d, key, out) {
+  if (!(key in d)) return [];
+  if (!Array.isArray(d[key])) { out.push(`${key} must be an array`); return []; }
+  return d[key];
+}
+
 function checkDestination(d, file, indexEntry, { today = new Date().toISOString().slice(0, 10), strict = false } = {}) {
   const out = [];
   if (!d.id || d.id + ".json" !== file) out.push("id does not match filename");
@@ -19,15 +27,20 @@ function checkDestination(d, file, indexEntry, { today = new Date().toISOString(
   if (!ZONES.includes(d.zone)) out.push(`bad zone ${d.zone}`);
 
   const bids = new Set();
-  for (const b of d.blocks || []) {
+  const blocks = listOf(d, "blocks", out), presets = listOf(d, "presets", out);
+  blocks.forEach((b, i) => {
+    if (!isObject(b)) { out.push(`blocks[${i}] is not an object`); return; }
     if (bids.has(b.id)) out.push(`duplicate block ${b.id}`); bids.add(b.id);
     if (!BLOCK_TYPES.includes(b.type)) out.push(`block ${b.id}: bad type ${b.type}`);
     if (!(b.minDays <= b.defaultDays && b.defaultDays <= b.maxDays)) out.push(`block ${b.id}: days out of order`);
     if (typeof b.maxAltitudeM !== "number") out.push(`block ${b.id}: maxAltitudeM missing`);
     if (!CROWDS.includes(b.crowd)) out.push(`block ${b.id}: bad crowd ${b.crowd}`);
     if (typeof b.transitHours !== "number") out.push(`block ${b.id}: transitHours missing`);
-  }
-  for (const p of d.presets || []) for (const k of Object.keys(p.picks || {})) if (!bids.has(k)) out.push(`preset "${p.name}" references unknown block ${k}`);
+  });
+  presets.forEach((p, i) => {
+    if (!isObject(p)) { out.push(`presets[${i}] is not an object`); return; }
+    for (const k of Object.keys(isObject(p.picks) ? p.picks : {})) if (!bids.has(k)) out.push(`preset "${p.name}" references unknown block ${k}`);
+  });
 
   const fit = d.season && d.season.fitByMonth;
   if (!Array.isArray(fit) || fit.length !== 12 || !fit.every(v => typeof v === "number" && v >= 0 && v <= 100)) out.push("season.fitByMonth must have 12 numbers 0–100");

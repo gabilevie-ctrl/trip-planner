@@ -5,7 +5,8 @@
 //   2. Fill every field. Each number must come from a source listed in "sources".
 //   3. Add an entry to data/index.json with the same id, kind, name and zone, plus noFlights, tags,
 //      countries and "file": "destinations/<id>.json".
-//   4. Run `npm run validate:strict` (new destinations must list sources) and `npm test`.
+//   4. Run `npm run validate:strict -- data/destinations/<id>.json` (it must print "OK: 1 destinations valid";
+//      new destinations must list sources), then `npm run validate` and `npm test`.
 // Hiking and ski-touring routes are written as code in scripts/seed-routes.cjs instead (`npm run seed`).
 // Field reference: docs/DATA-MODEL.md.
 // The Madeira values below are placeholders that show the shape, not checked facts.

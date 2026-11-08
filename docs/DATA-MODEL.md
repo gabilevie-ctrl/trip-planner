@@ -77,7 +77,7 @@ The 38 v1 destinations carry `"lastReviewed": "2026-11-08"` and `"sources": []`:
     { "name": "Antoine", "limits": { "maxHikeShare": 0.6 } }
   ],
   "dates": { "start": "2027-07-12", "end": "2027-07-26" },      // or { "window": {...}, "lengthDays": 15 }
-  "budget": { "total": 15000, "currency": "EUR" },
+  "budget": { "total": 15000, "currency": "EUR", "perPerson": 3000 },   // perPerson only when the chat was given a per-person amount; the total follows the traveller count
   "lodging": "bnb" | "hotel",
   "type": { "city": 2, "mountains": 2, "beach": 1, "wildlife": 0, "history": 2 },   // weights
   "visited": ["slovenia","scotland","tatras"],
@@ -86,9 +86,14 @@ The 38 v1 destinations carry `"lastReviewed": "2026-11-08"` and `"sources": []`:
     "caucasus": { "preset": "Balanced", "picks": { "tbilisi": 2 }, "rest": 2 }
   },
   "ideas": [ { "name": "Timor-Leste", "zone": "asia", "pp": null, "note": "…" } ],
-  "chosen": null                  // destination id once decided → unlocks Book step
+  "chosen": null,                 // destination id once decided → unlocks Book step
+  "brief": [                      // the "Describe the trip" chat (src/describe.js); [] when unused, filled by migrate()
+    { "who": "you", "text": "Five of us from Brussels, two weeks in July…" },
+    { "who": "app", "text": "Filled in: 5 travellers · …" }
+  ]
 }
 ```
+Each message sent in the chat is also appended to `notes`, so nothing typed is lost if a field is later changed.
 
 ## Scoring (phase 1)
 

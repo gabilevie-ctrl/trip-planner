@@ -35,7 +35,7 @@ export const CRITERIA = [
   { key: "hutsOnly", label: "Huts only (no camping)", type: "bool", kinds: ["hike", "skitour"], combine: "or" }
 ];
 
-const RANK = { crowds: ["any", "prefer", "avoid"], maxDanger: ["3", "2", "1"], maxGradeHike: [...HIKE_GRADES].reverse(), maxGradeSki: [...SKI_GRADES].reverse() };
+export const RANK = { crowds: ["any", "prefer", "avoid"], maxDanger: ["3", "2", "1"], maxGradeHike: [...HIKE_GRADES].reverse(), maxGradeSki: [...SKI_GRADES].reverse() };
 
 export function criteriaFor(kind) { return CRITERIA.filter(c => c.kinds.includes(kind)); }
 

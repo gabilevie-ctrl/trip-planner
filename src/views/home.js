@@ -1,6 +1,7 @@
 import { esc, fmtDateY, fmtMoney, empty } from "../ui.js";
 import { KINDS } from "../criteria.js";
 import { tripLength } from "../compute.js";
+import { readDescription, describeTurn } from "../describe.js";
 
 export function render(ctx) {
   const trips = Object.values(ctx.store.trips).sort((a, b) => (b.updatedAt || "").localeCompare(a.updatedAt || ""));
@@ -20,6 +21,13 @@ export function render(ctx) {
   <section class="hero">
     <h1>Plan a trip together</h1>
     <p class="lead">Set who is coming and their limits once. Get destinations that fit, build the days, book from prefilled links, track the money and the decisions. Share the link; whoever opens it gets the whole plan.</p>
+    <div class="card describe">
+      <h2>Describe your trip</h2>
+      <p class="muted">In your own words: who is coming, when and for how long, the budget, where from, what you love and what someone can't do. The form fills itself in; you check it next.</p>
+      <textarea id="describeText" rows="4" placeholder="e.g. Five of us from Brussels, two weeks in July. Mom can't do heat or altitude. We love old towns and food, a bit of walking, no flights. About €15,000."></textarea>
+      <button type="button" data-act="describe-new">Start from my description</button>
+    </div>
+    <p class="muted">Or pick a kind of trip and fill the form yourself:</p>
     <div class="kinds">
       ${Object.entries(KINDS).map(([k, v]) => `<button type="button" class="kindbtn" data-act="new-trip" data-kind="${k}"><strong>${esc(v.label)}</strong><span>${esc(v.blurb)}</span></button>`).join("")}
     </div>
@@ -37,6 +45,12 @@ export function render(ctx) {
 }
 
 export const actions = {
+  "describe-new": (el, ctx) => {
+    const txt = document.getElementById("describeText").value.trim();
+    if (!txt) { ctx.toast("Write a few words about the trip first."); return; }
+    const t = ctx.createTrip(readDescription(txt).kind);
+    describeTurn(t, txt, { countries: ctx.countries }); ctx.open(t.id, "setup");
+  },
   "new-trip": (el, ctx) => { const t = ctx.createTrip(el.dataset.kind); ctx.open(t.id, "setup"); },
   "open-trip": (el, ctx) => ctx.open(el.dataset.id, "setup"),
   "delete-trip": (el, ctx, ev) => { ev.stopPropagation(); const t = ctx.store.trips[el.dataset.id]; t._ui = t._ui || {}; t._ui.confirmDelete = true; ctx.rerender(); },

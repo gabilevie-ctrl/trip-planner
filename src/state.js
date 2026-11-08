@@ -18,7 +18,7 @@ export function newTrip(kind = "explore") {
     type: kind === "explore" ? { cities: 2, hike: 2, coast: 0, wildlife: 0, history: 1 } : {},
     pace: "normal", visited: [], visitedCountries: [], weights: {},
     plans: {}, chosen: null, ideas: [],
-    steps: {}, expenses: [], decisions: [], dayNotes: {}, log: [], notes: ""
+    steps: {}, expenses: [], decisions: [], dayNotes: {}, log: [], notes: "", brief: []
   };
 }
 

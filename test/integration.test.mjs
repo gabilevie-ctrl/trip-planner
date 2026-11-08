@@ -91,3 +91,15 @@ test("describe a trip on home: the form fills in, the chat replies, step 1 shows
   assert.equal($('[data-bind="travellers.0.limits.maxAltitudeM"]').value, "2000");
   assert.match($('[data-bind="notes"]').value, /Dad can't go higher/);
 });
+
+test("choosing a destination offers a button to the next step", async () => {
+  await import("../src/main.js"); await go("#home");
+  click($('[data-act="new-trip"][data-kind="explore"]')); await tick(80);
+  await go("#destinations");
+  assert.equal(window.document.querySelectorAll("a.next-step").length, 0, "no next button before choosing");
+  const choose = $('[data-act="choose"]'); const id = choose.dataset.id; click(choose); await tick(60);
+  const next = $(`#d-${id} a.next-step`);
+  assert.ok(next, "the chosen card has a next-step button");
+  assert.equal(next.getAttribute("href"), "#build");
+  assert.match(next.textContent, /Next: build the days/);
+});

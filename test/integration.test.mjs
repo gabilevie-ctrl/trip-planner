@@ -48,3 +48,14 @@ test("end to end: create a ski trip, set it up, pick a destination, build, book,
   click($('[data-act="delete-trip-confirm"]')); await tick(60); assert.equal(window.document.querySelectorAll(".tripcard:not([data-act=use-template])").length, 1, "trip deleted without window.confirm");
   click($('[data-act="use-template"]')); await tick(150); assert.equal(window.location.hash, "#setup"); assert.ok(/Parents/.test($(".triphead").textContent), "family template opened");
 });
+
+test("every page has a Send feedback link that opens an email", async () => {
+  await import("../src/main.js"); await go("#home");
+  for (const h of ["#home", "#setup"]) {
+    await go(h);
+    const a = $('header.apphead a[data-feedback]');
+    assert.ok(a, `feedback link on ${h}`);
+    assert.equal(a.textContent.trim(), "Send feedback");
+    assert.equal(a.getAttribute("href"), "mailto:gabilevie@gmail.com?subject=Trip%20planner%20feedback");
+  }
+});

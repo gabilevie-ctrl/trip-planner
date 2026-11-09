@@ -87,8 +87,9 @@ export const actions = {
   "chatbot-fill": (el, ctx) => {
     panel.reply = document.getElementById("chatbotReply").value;
     panel.text = document.getElementById("describeText").value.trim() || panel.text;
-    const read = readReply(panel.reply);
-    const r = read.error ? read : tripFromReply(read.obj, { text: panel.text, today: localToday() });
+    let r;
+    try { const read = readReply(panel.reply); r = read.error ? read : tripFromReply(read.obj, { text: panel.text, today: localToday() }); }
+    catch (e) { console.error(e); r = { error: "Something in that reply could not be read, so nothing was filled. Ask the chatbot for the JSON again." }; }
     if (r.error) { panel.error = r.error; ctx.rerender(); return; }
     const t = ctx.addTrip(r.trip); resetPanel(); ctx.open(t.id, "setup");
   },

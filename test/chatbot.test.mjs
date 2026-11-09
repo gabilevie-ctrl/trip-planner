@@ -127,3 +127,17 @@ test("name falls back to the month, unknown keys are reported", () => {
   const r = fill({ dates: { start: "2027-07-10", end: "2027-07-20" }, colour: "blue" });
   assert.equal(r.trip.name, "July 2027 trip"); assert.match(r.dropped.join(" "), /colour/);
 });
+
+test("inherited names like toString or __proto__ are not valid values or keys", () => {
+  assert.match(fill({ kind: "toString" }).error || "", /Nothing in that reply/);
+  const r = fill({ name: "x", kind: "constructor", travelMode: "toString", lodging: "__proto__", type: { constructor: 2 }, travellers: [{ name: "A", limits: { constructor: 1, toString: 2, __proto__: { x: 1 }, hasOwnProperty: 3 } }] });
+  assert.ok(!r.error, r.error);
+  assert.equal(r.trip.kind, "explore"); assert.equal(r.trip.travel.mode, "any"); assert.equal(r.trip.lodging, "bnb");
+  assert.ok(!Object.hasOwn(r.trip.type, "constructor"));
+  assert.deepEqual(r.trip.travellers[0].limits, {});
+  assert.ok(!/undefined|native code/.test(r.summary), r.summary);
+});
+
+test("a hiking share sent as a fraction means a percentage", () => {
+  assert.equal(fill({ travellers: [{ name: "A", limits: { maxHikeShare: 0.6 } }] }).trip.travellers[0].limits.maxHikeShare, 60);
+});

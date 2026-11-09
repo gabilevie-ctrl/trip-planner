@@ -54,6 +54,7 @@ export function buildPrompt(text, { today }) {
 }
 
 /* ---------- Reading the reply ---------- */
+const own = (o, k) => typeof k === "string" && Object.hasOwn(o, k);
 const isObj = v => v !== null && typeof v === "object" && !Array.isArray(v);
 
 export function readReply(reply) {
@@ -92,11 +93,13 @@ function checkLimits(raw, kind, who, dropped) {
   if (!isObj(raw)) { dropped.push(`${who}'s limits (not a list of limits)`); return out; }
   const allowed = Object.fromEntries(criteriaFor(kind).map(c => [c.key, c]));
   for (const [k, v] of Object.entries(raw)) {
-    const c = allowed[k];
+    const c = own(allowed, k) ? allowed[k] : null;
     if (!c) { dropped.push(`${who}: ${k} (not a limit for ${KINDS[kind].label.toLowerCase()})`); continue; }
     if (v === null || v === "") continue;
     if (c.type === "number") {
-      const n = num(v), [lo, hi] = NUMBER_RANGES[k] || [-Infinity, Infinity];
+      let n = num(v); const [lo, hi] = NUMBER_RANGES[k] || [-Infinity, Infinity];
+      // A share sent as a fraction (0.6) means 60 %.
+      if (k === "maxHikeShare" && n > 0 && n < 1) n = Math.round(n * 100);
       if (Number.isFinite(n) && n >= lo && n <= hi) out[k] = n; else dropped.push(`${who}: ${k} ${JSON.stringify(v)} (needs a number from ${lo} to ${hi}${c.unit ? " " + c.unit : ""})`);
     } else if (c.type === "bool") {
       if (typeof v === "boolean") out[k] = v; else dropped.push(`${who}: ${k} ${JSON.stringify(v)} (needs true or false)`);
@@ -117,7 +120,7 @@ export function tripFromReply(obj, { text = "", today }) {
 
   // Kind first: it decides which limits and interests exist.
   let kind = "explore";
-  if (obj.kind !== undefined) { if (typeof obj.kind === "string" && KINDS[obj.kind]) { kind = obj.kind; real = true; filled.push(KINDS[kind].label); } else dropped.push(`kind ${JSON.stringify(obj.kind)} (not a kind of trip here; set to ${KINDS.explore.label})`); }
+  if (obj.kind !== undefined) { if (own(KINDS, obj.kind)) { kind = obj.kind; real = true; filled.push(KINDS[kind].label); } else dropped.push(`kind ${JSON.stringify(obj.kind)} (not a kind of trip here; set to ${KINDS.explore.label})`); }
   const trip = newTrip(kind);
 
   const name = str(obj.name, 80);
@@ -132,7 +135,7 @@ export function tripFromReply(obj, { text = "", today }) {
 
   const pick = (key, table, apply, label) => {
     if (obj[key] === undefined) return;
-    if (typeof obj[key] === "string" && table[obj[key]]) { apply(obj[key]); real = true; filled.push(label(obj[key])); }
+    if (own(table, obj[key])) { apply(obj[key]); real = true; filled.push(label(obj[key])); }
     else dropped.push(`${key} ${JSON.stringify(obj[key])} (not one of ${Object.keys(table).join(", ")})`);
   };
   pick("travelMode", TRAVEL_MODES, v => { trip.travel.mode = v; }, v => TRAVEL_MODES[v].label.toLowerCase());
@@ -155,7 +158,7 @@ export function tripFromReply(obj, { text = "", today }) {
       const ok = {};
       for (const [k, v] of Object.entries(obj.type)) {
         const n = num(v);
-        if (!TRIP_TYPES[k]) dropped.push(`interest ${k} (not one the app knows)`);
+        if (!own(TRIP_TYPES, k)) dropped.push(`interest ${k} (not one the app knows)`);
         else if (!Number.isFinite(n) || n < 0 || n > 3) dropped.push(`interest ${k} ${JSON.stringify(v)} (needs 0 to 3)`);
         else ok[k] = Math.round(n);
       }

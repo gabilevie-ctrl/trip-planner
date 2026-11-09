@@ -118,7 +118,7 @@ These shape the design below: Claude writes structured data through tools; the a
   - One day-table shape covers all of them, since a day has km, ascent and the night's lodging, which can be a hut.
   - Library routes keep their stage-based views; only live plans use the new shape.
 - **One currency for totals.**
-  - Claude quotes each price in its original currency and also gives the rate to the trip's currency, with the date and source. These are stored in `livePlan.rates: { "GBP": { toTrip, seenOn, source } }`.
+  - Claude quotes each price in its original currency and also gives the rate to the trip's currency, with the date and source. These are stored on the trip, in `trip.rates: { "GBP": { toTrip, seenOn, source } }`, because options and the plan both convert with them.
   - The app converts and totals in the trip currency (`budget.currency`) and shows the original next to each price.
   - A price whose currency has no rate is flagged and left out of the total, never guessed.
 - **Only the current version is shared.**

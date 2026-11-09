@@ -13,6 +13,12 @@ export const TRAVEL_MODES = {
   drive: { label: "We drive ourselves", blurb: "Own car from home; fuel and tolls shared" }
 };
 
+/* Where a trip can leave from (access routes and costs are held per origin region), the explore interests, and budget currencies. */
+export const ORIGINS = [["Brussels", "europe-west"], ["London", "uk"], ["Paris", "europe-west"], ["Amsterdam", "europe-west"], ["Geneva", "europe-west"], ["Other", "europe-west"]];
+export const ORIGIN_REGIONS = Object.fromEntries(ORIGINS.filter(([c]) => c !== "Other"));
+export const TRIP_TYPES = { cities: "Cities & museums", hike: "Mountains & walking", coast: "Coast & islands", wildlife: "Wildlife", history: "History", food: "Food & wine", festival: "A festival" };
+export const CURRENCIES = ["EUR", "GBP", "CHF", "USD"];
+
 export const LODGING = { bnb: { label: "B&B / Airbnb / huts", factor: 1.0 }, hotel: { label: "Hotels", factor: 1.4 }, camp: { label: "Camping where possible", factor: 0.8 } };
 
 export const HIKE_GRADES = ["T1", "T2", "T3", "T3+", "T4", "T4+", "T5"];

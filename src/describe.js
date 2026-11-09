@@ -1,15 +1,15 @@
 // Reads a plain-English trip description into trip fields, applies it, and writes the reply.
 // Pure, rule-based, no network: what it cannot read it asks about.
-import { KINDS, TRAVEL_MODES, LODGING, HIKE_GRADES, SKI_GRADES, RANK, criteriaFor } from "./criteria.js";
+import { KINDS, TRAVEL_MODES, LODGING, HIKE_GRADES, SKI_GRADES, RANK, ORIGIN_REGIONS, criteriaFor } from "./criteria.js";
 import { uid, newTrip } from "./state.js";
 
 const NUM = { one: 1, a: 1, an: 1, two: 2, couple: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12 };
 const NUMW = "\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve";
 const MONTHS = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
 const MON = "(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|june?|july?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)";
-export const ORIGIN_REGIONS = { Brussels: "europe-west", London: "uk", Paris: "europe-west", Amsterdam: "europe-west", Geneva: "europe-west" };
+export { ORIGIN_REGIONS };
 const CUR = { "€": "EUR", eur: "EUR", euro: "EUR", euros: "EUR", "£": "GBP", gbp: "GBP", pound: "GBP", pounds: "GBP", chf: "CHF", francs: "CHF", "$": "USD", usd: "USD", dollars: "USD" };
-// Interest words per explore trip-type key (setup.js TYPE_TAGS).
+// Interest words per explore trip-type key (criteria.js TRIP_TYPES).
 const INTERESTS = {
   cities: ["city", "cities", "town", "towns", "museum", "museums", "culture", "art", "architecture", "galleries"],
   hike: ["hike", "hikes", "hiking", "walk", "walks", "walking", "trek", "trekking", "mountain", "mountains", "outdoors", "nature"],

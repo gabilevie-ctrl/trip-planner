@@ -58,3 +58,12 @@ test("a 200 that is not JSON becomes bad-response", async () => {
   const { fetchImpl } = recorder([reply(200, "<html>oops</html>")]);
   const r = await ask({ ...base, fetchImpl }); assert.equal(r.error, "bad-response");
 });
+test("review I1: after propose_options the tool result is sent back so Claude can finish its reply", async () => {
+  const first = { stop_reason: "tool_use", usage: {}, content: [{ type: "text", text: "Searching done. " }, { type: "tool_use", id: "t1", name: "propose_options", input: { options: [] } }] };
+  const { calls, fetchImpl } = recorder([reply(200, first), reply(200, { stop_reason: "end_turn", usage: {}, content: [{ type: "text", text: "My pick is La Palma." }] })]);
+  const r = await ask({ ...base, fetchImpl });
+  assert.equal(calls.length, 2); assert.equal(r.toolCalls[0].name, "propose_options");
+  assert.match(r.text, /My pick is La Palma\./);
+  const msgs = calls[1].body.messages; assert.equal(msgs.at(-2).role, "assistant");
+  const tr = msgs.at(-1); assert.equal(tr.role, "user"); assert.equal(tr.content[0].type, "tool_result"); assert.equal(tr.content[0].tool_use_id, "t1");
+});

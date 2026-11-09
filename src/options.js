@@ -47,11 +47,11 @@ const https = v => { try { const u = new URL(str(v)); return u.protocol === "htt
 function source(s, today) { if (!isObj(s)) return null; const url = https(s.url); if (!url) return null; return { name: str(s.name) || new URL(url).hostname, url, seenOn: day(s.seenOn, today) }; }
 const list = (v, f) => Array.isArray(v) ? v.map(f).filter(x => x !== null && x !== undefined && x !== "") : [];
 
-function cleanOption(o, today) {
+function cleanOption(o, today, keepIds) {
   if (!isObj(o) || !str(o.name)) return null;
   const w = isObj(o.weather) ? o.weather : {}, a = isObj(o.access) ? o.access : {}, e = isObj(o.estimate) ? o.estimate : {};
   return {
-    id: uid("o"), name: str(o.name), region: str(o.region),
+    id: keepIds && /^o_[A-Za-z0-9_]+$/.test(str(o.id)) ? str(o.id) : uid("o"), name: str(o.name), region: str(o.region),
     countryCodes: list(o.countryCodes, c => /^[A-Za-z]{2}$/.test(str(c)) ? str(c).toUpperCase() : null),
     lat: num(o.lat), lon: num(o.lon), why: str(o.why),
     weather: { text: str(w.text), highC: num(w.highC), lowC: num(w.lowC), source: source(w.source, today) },
@@ -65,8 +65,8 @@ function cleanOption(o, today) {
 }
 
 /* Clean Claude's propose_options input; returns the options and the trip's rates with the new ones merged in. */
-export function normalizeOptions(input, trip, { today = new Date().toISOString().slice(0, 10) } = {}) {
-  const options = list(isObj(input) ? input.options : null, o => cleanOption(o, today)).slice(0, MAX_OPTIONS);
+export function normalizeOptions(input, trip, { today = new Date().toISOString().slice(0, 10), keepIds = false } = {}) {
+  const options = list(isObj(input) ? input.options : null, o => cleanOption(o, today, keepIds)).slice(0, MAX_OPTIONS);
   const first = options.findIndex(o => o.pick);
   const pickAt = first >= 0 ? first : Math.max(0, options.findIndex(o => !o.mention));
   options.forEach((o, i) => { o.pick = i === pickAt; });
@@ -76,6 +76,17 @@ export function normalizeOptions(input, trip, { today = new Date().toISOString()
     if (c && v && v > 0) rates[c] = { toTrip: v, seenOn: day(r.seenOn, today), source: source(r.source, today) };
   }
   return { options, rates };
+}
+
+/* A trip from a share link or a file is untrusted: re-clean its options, rates and budget currency in place
+   (ids kept so a later plan still points at its option). */
+export function cleanImported(trip, { today = new Date().toISOString().slice(0, 10) } = {}) {
+  trip.options = normalizeOptions({ options: Array.isArray(trip.options) ? trip.options : [] }, { rates: {} }, { today, keepIds: true }).options;
+  const rates = {};
+  for (const [k, r] of Object.entries(isObj(trip.rates) ? trip.rates : {})) { const c = cur(k), v = num(r?.toTrip); if (c && v && v > 0) rates[c] = { toTrip: v, seenOn: day(r.seenOn, today), source: source(r.source, today) }; }
+  trip.rates = rates;
+  if (trip.budget && !/^[A-Z]{3}$/.test(String(trip.budget.currency || ""))) trip.budget.currency = "EUR";
+  return trip;
 }
 
 /* ---------- Checks ---------- */

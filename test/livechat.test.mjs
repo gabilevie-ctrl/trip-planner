@@ -60,3 +60,8 @@ test("only the last three replaced option sets are kept", async () => {
   assert.equal(t._local.optionHistory.length, 3); assert.equal(t.options[0].name, "Round 4");
   assert.equal(t._local.optionHistory.at(-1).options[0].name, "Round 3");
 });
+test("review I2: a failed turn reports its error code so the app can lock again on auth", async () => {
+  const t = situTrip();
+  const { ask } = fakeAsk({ ok: false, error: "auth", message: "The saved key no longer works. Ask Gabriel for the new password." });
+  const r = await liveTurn(t, "hello", opts(ask)); assert.equal(r.ok, false); assert.equal(r.error, "auth");
+});

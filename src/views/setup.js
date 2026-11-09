@@ -71,13 +71,13 @@ export function render(ctx) {
 }
 
 function chat(t, ctx) {
-  const msgs = t.brief || []; const live = ctx.liveStatus === "unlocked";
+  const msgs = t.brief || []; const live = ctx.liveStatus === "unlocked"; const busy = !!ctx.busyTrips?.has(t.id);
   const status = live ? `<p class="livestatus small">Live search is on: Claude searches the web for options. <button type="button" class="linklike" data-act="live-forget">Forget on this device</button></p>`
     : ctx.liveStatus === "locked" ? `<p class="muted small">Unlock live search above for real options from the web.</p>` : "";
   return `<section class="card chat">
     <h2>Describe the trip</h2>${status}
-    ${msgs.length || ctx.busy ? `<ol class="thread">${msgs.map(m => `<li class="msg ${m.who === "app" ? "app" : "you"}${m.error ? " err" : ""}">${esc(m.text)}</li>`).join("")}${ctx.busy ? `<li class="msg app busy" aria-live="polite">Searching live… this can take a minute</li>` : ""}</ol>` : `<p class="muted">Tell the planner about the trip in your own words; it fills in the form below${live ? ", searches the web for options that fit," : ""} and asks about what is missing.</p>`}
-    <div class="chatin"><textarea id="chatText" rows="2" placeholder="${msgs.length ? "Add more: a limit for someone, a change of dates, what to skip…" : "e.g. Four of us, ten days in May, from London, about £1,500 each, love the coast"}"></textarea><button type="button" data-act="chat-send" ${ctx.busy ? "disabled aria-busy=\"true\"" : ""}>Send</button></div>
+    ${msgs.length || busy ? `<ol class="thread">${msgs.map(m => `<li class="msg ${m.who === "app" ? "app" : "you"}${m.error ? " err" : ""}">${esc(m.text)}</li>`).join("")}${busy ? `<li class="msg app busy" aria-live="polite">Searching live… this can take a minute</li>` : ""}</ol>` : `<p class="muted">Tell the planner about the trip in your own words; it fills in the form below${live ? ", searches the web for options that fit," : ""} and asks about what is missing.</p>`}
+    <div class="chatin"><textarea id="chatText" rows="2" placeholder="${msgs.length ? "Add more: a limit for someone, a change of dates, what to skip…" : "e.g. Four of us, ten days in May, from London, about £1,500 each, love the coast"}"></textarea><button type="button" data-act="chat-send" ${busy ? "disabled aria-busy=\"true\"" : ""}>Send</button></div>
   </section>`;
 }
 /* Shown only when a locked key is published and this device has not unlocked it. */
@@ -110,7 +110,7 @@ function optionsCard(t) {
       ${o.why ? `<p>${esc(o.why)}</p>` : ""}
       ${c.flags.length ? `<p class="chips">${c.flags.map(f => chip("crit", esc(f))).join(" ")}</p>` : ""}
       <dl class="optfacts">
-        ${o.weather?.text || o.weather?.highC !== null ? `<dt>Weather</dt><dd>${esc(o.weather.text)}${o.weather.highC !== null ? ` · highs ~${o.weather.highC}°C` : ""} ${link(o.weather.source)}</dd>` : ""}
+        ${o.weather?.text || o.weather?.highC !== null ? `<dt>Weather</dt><dd>${esc(o.weather.text)}${o.weather.highC !== null ? ` · highs ~${esc(o.weather.highC)}°C` : ""} ${link(o.weather.source)}</dd>` : ""}
         ${o.activities?.length ? `<dt>Do</dt><dd>${o.activities.map(esc).join(" · ")}</dd>` : ""}
         ${a.from || a.time ? `<dt>Getting there</dt><dd>${esc(MODE_LABEL[a.mode] || "")} from ${esc(a.from)}${a.time ? `, ${esc(a.time)}` : ""}${a.connections ? ` (${esc(a.connections)})` : ""}${a.pricePP !== null ? ` · ${money(a.pricePP, a.currency, t)} pp${seen(a.seenOn)}` : ""} ${link(a.source)}</dd>` : ""}
         ${o.lodging?.length ? `<dt>Sleep</dt><dd>${o.lodging.map(l => `${esc(LODGING_LABEL[l.type] || l.type)}${range(l.low, l.high, l.currency || t.budget.currency) ? ` ${range(l.low, l.high, l.currency || t.budget.currency)}/night` : ""}`).join(" · ")}</dd>` : ""}
@@ -164,7 +164,7 @@ export const actions = {
   "chat-send": async (el, ctx) => {
     const box = document.getElementById("chatText"); const text = box.value.trim();
     if (!text) { ctx.toast("Write something first."); return; }
-    if (ctx.busy) return;
+    if (ctx.busyTrips?.has(ctx.trip.id)) return;
     if (ctx.liveStatus === "unlocked") { await ctx.runLive(ctx.trip, text); return; }
     describeTurn(ctx.trip, text, { countries: ctx.countries, suggest: suggestFor(ctx) }); ctx.commit();
   },

@@ -7,7 +7,7 @@ Object.defineProperty(globalThis, "navigator", { value: window.navigator, config
 import { fileURLToPath } from "node:url";
 const fakeFiles = new Map(); let fakeApi = null; // in-memory files (checked before disk) and the Claude API stand-in
 globalThis.fetch = async (u, init) => { const url = new URL(String(u));
-  if (url.hostname === "api.anthropic.com") { if (!fakeApi) return { ok: false, status: 503, text: async () => "" }; const r = await fakeApi(url, init); return { ok: true, status: 200, text: async () => JSON.stringify(r) }; }
+  if (url.hostname === "api.anthropic.com") { if (!fakeApi) return { ok: false, status: 503, text: async () => "" }; const r = await fakeApi(url, init); const st = r.__status || 200; return { ok: st < 400, status: st, text: async () => JSON.stringify(r) }; }
   for (const [k, v] of fakeFiles) if (url.pathname.endsWith(k)) return { ok: true, status: 200, json: async () => JSON.parse(JSON.stringify(v)) };
   if (url.pathname.endsWith("/data/claude-key.json")) return { ok: false, status: 404, json: async () => null }; const file = url.protocol === "file:" ? fileURLToPath(url) : fileURLToPath(new URL("../" + url.pathname.replace(/^\//, ""), import.meta.url)); return { ok: fs.existsSync(file), json: async () => JSON.parse(fs.readFileSync(file, "utf8")) }; };
 const sb = { module: { exports: {} } }; sb.exports = sb.module.exports; vm.runInNewContext(fs.readFileSync(new URL("../vendor/lz-string.min.js", import.meta.url), "utf8"), sb); window.LZString = sb.module.exports;
@@ -210,4 +210,29 @@ test("live search: unlock with the family password, ask, see flagged options, an
   t._local = { optionHistory: [{ at: "x", options: [] }], lastSynced: null };
   const back = decodeShare(encodeShare(t, window.LZString), window.LZString);
   assert.equal(back.options.length, 4); assert.equal(back.rates.EUR.toTrip, 0.86); assert.equal(back._local, undefined);
+});
+
+test("review: a crafted share link can't inject HTML through option fields", async () => {
+  const { newTrip, encodeShare } = await import("../src/state.js");
+  const t = newTrip("explore"); t.name = "Crafted";
+  t.options = [{ id: "o_x1", name: "Trap", weather: { text: "", highC: "<img id=pwn src=x>", lowC: null, source: null }, access: { from: "", currency: "<img id=pwn2 src=x>", pricePP: 5 }, estimate: { perPerson: 5, group: 10, currency: "<img id=pwn3 src=x>", breakdown: [] } }, { id: "o_x2", name: "No weather at all" }];
+  t.budget = { total: 100, currency: "<img id=pwn4 src=x>" };
+  window.location.hash = "#" + encodeShare(t, window.LZString).replace(/^#/, ""); await tick(250);
+  await go("#setup"); await tick(100);
+  assert.ok(window.document.querySelectorAll(".optcard").length >= 2, "imported options render without crashing");
+  for (const id of ["pwn", "pwn2", "pwn3", "pwn4"]) assert.equal(window.document.getElementById(id), null, id + " must not be an element");
+  await go("#home"); assert.equal(window.document.getElementById("pwn4"), null);
+});
+test("review: the typed message is saved before the answer arrives, busy is per trip, and a dead key locks again", async () => {
+  let release; fakeApi = () => new Promise(r => { release = r; });
+  await go("#home"); click($('[data-act="new-trip"][data-kind="explore"]')); await tick(150);
+  if ($("#livePass")) { $("#livePass").value = "correct horse battery staple long"; click($('[data-act="live-unlock"]')); await tick(150); }
+  $("#chatText").value = "tents only please"; click($('[data-act="chat-send"]')); await tick(120);
+  const store = JSON.parse(window.localStorage.getItem("tripplanner.v1")); const t = store.trips[store.current];
+  assert.ok(t.brief.some(m => m.text === "tents only please"), "saved before the answer");
+  assert.ok($(".msg.busy"), "shows Searching live");
+  release({ __status: 401, type: "error", error: { message: "invalid x-api-key" } }); await tick(250);
+  assert.equal($(".msg.busy"), null);
+  assert.match($(".thread").textContent, /no longer works/);
+  assert.ok($("#livePass"), "the unlock card is back after a dead key");
 });

@@ -4,6 +4,7 @@ export const API_URL = "https://api.anthropic.com/v1/messages";
 export const MODEL = "claude-opus-5-5";
 export const WEB_SEARCH = { type: "web_search_20260209", name: "web_search", max_uses: 5 };
 const MAX_CONTINUES = 3;
+const TOOL_ACK = "Saved. The app now shows these as cards and checks them against every traveller's limits. Now reply to the traveller in text only, as the instructions say.";
 
 export const MESSAGES = {
   auth: "The saved key no longer works. Ask Gabriel for the new password.",
@@ -39,8 +40,12 @@ export async function ask({ apiKey, system, messages, tools = [], fetchImpl = (.
     if (!res.ok || !data || !Array.isArray(data.content)) return fail("bad-response");
     if (data.stop_reason === "refusal") return fail("refusal");
     content.push(...data.content); usage = data.usage || usage;
-    if (data.stop_reason !== "pause_turn") break;
+    if (data.stop_reason === "pause_turn") { convo.push({ role: "assistant", content: data.content }); continue; }
+    // Claude waits for our tool result before writing its reply: acknowledge every app tool call once, then let it finish.
+    const uses = data.stop_reason === "tool_use" ? data.content.filter(b => b.type === "tool_use") : [];
+    if (!uses.length) break;
     convo.push({ role: "assistant", content: data.content });
+    convo.push({ role: "user", content: uses.map(b => ({ type: "tool_result", tool_use_id: b.id, content: TOOL_ACK })) });
   }
   return {
     ok: true,

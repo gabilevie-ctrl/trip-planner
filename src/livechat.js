@@ -31,7 +31,7 @@ export async function liveTurn(trip, text, { ask, apiKey, today = new Date().toI
   const res = await ask({ apiKey, system: SYSTEM_PROMPT, messages, tools: [OPTIONS_TOOL] });
   if (!res || !res.ok) {
     trip.brief.push({ who: "app", text: res?.message || "Live search failed.", live: true, error: true });
-    return { ok: false, reply: res?.message || "", optionsChanged: false };
+    return { ok: false, error: res?.error || "bad-response", reply: res?.message || "", optionsChanged: false };
   }
   const call = res.toolCalls.find(c => c.name === "propose_options");
   let optionsChanged = false;

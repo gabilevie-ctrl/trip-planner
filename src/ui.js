@@ -1,6 +1,6 @@
 // Small rendering helpers shared by the views.
 export const esc = t => String(t ?? "").replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
-export const fmtMoney = (n, cur = "EUR") => { const sym = { EUR: "€", GBP: "£", USD: "$", CHF: "CHF " }[cur] || cur + " "; return sym + Math.round(n || 0).toLocaleString("en-GB"); };
+export const fmtMoney = (n, cur = "EUR") => { const sym = { EUR: "€", GBP: "£", USD: "$", CHF: "CHF " }[cur] || esc(cur) + " "; return sym + Math.round(n || 0).toLocaleString("en-GB"); };
 export const fmtDate = iso => { if (!iso) return ""; const [y, m, d] = iso.split("-").map(Number); return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" }); };
 export const fmtDateY = iso => { if (!iso) return ""; const [y, m, d] = iso.split("-").map(Number); return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }); };
 export const hrs = h => (Math.round(h * 2) / 2).toString().replace(".5", "½") + " h";

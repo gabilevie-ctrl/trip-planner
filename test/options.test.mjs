@@ -70,3 +70,17 @@ test("with no budget set, a missing exchange rate is not flagged (nothing to com
   const t = situTrip(); t.budget = { total: 0, currency: "EUR" };
   const c = checkOption(opt(), t); assert.deepEqual(c.flags, []); assert.deepEqual(c.missingRates, ["GBP"]); assert.equal(c.groupTotal, null);
 });
+test("review C1: options and rates from an imported link are cleaned, ids kept, HTML can't get through", async () => {
+  const { cleanImported } = await import("../src/options.js");
+  const { fmtMoney } = await import("../src/ui.js");
+  const t = situTrip();
+  t.options = [{ id: "o_abc123", name: "Evil", weather: { text: "", highC: "<img src=x onerror=alert(1)>", lowC: null, source: null }, access: { currency: "<b>x</b>", pricePP: 10 }, lodging: [{ type: "hut", low: 1, high: 2, currency: "<i>" }], estimate: { group: 100, currency: "GBP", breakdown: [] } },
+    { id: "bad id\"><", name: "No weather" }];
+  t.rates = { "<x>": { toTrip: 2, seenOn: TODAY, source: null }, EUR: { toTrip: "abc", seenOn: TODAY, source: null }, USD: { toTrip: 0.8, seenOn: TODAY, source: null } };
+  cleanImported(t, { today: TODAY });
+  assert.equal(t.options[0].id, "o_abc123"); assert.equal(t.options[0].weather.highC, null);
+  assert.equal(t.options[0].access.currency, ""); assert.equal(t.options[0].lodging[0].currency, "");
+  assert.ok(t.options[1].id.startsWith("o_") && !/["<>]/.test(t.options[1].id)); assert.equal(typeof t.options[1].weather, "object");
+  assert.deepEqual(Object.keys(t.rates), ["USD"]);
+  assert.ok(!fmtMoney(5, "<b>").includes("<b>"), "fmtMoney escapes an odd currency code");
+});

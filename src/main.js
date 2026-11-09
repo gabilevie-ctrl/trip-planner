@@ -5,6 +5,9 @@ import * as compute from "./compute.js";
 import { KINDS } from "./criteria.js";
 import { esc, fmtDateY, labelCells } from "./ui.js";
 import { feedbackMailto } from "./links.js";
+import { browserVault } from "./vault.js";
+import { ask } from "./claude.js";
+import { liveTurn } from "./livechat.js";
 import * as home from "./views/home.js";
 import * as setup from "./views/setup.js";
 import * as destinations from "./views/destinations.js";
@@ -38,7 +41,12 @@ const ctx = {
   importText: txt => { let t = null; const m = txt.match(/#(s-[A-Za-z0-9-]+)/); if (m) t = state.decodeShare(m[1], lz); else { try { t = JSON.parse(txt); } catch (e) { t = null; } } if (!t || !t.id) return null; return importTrip(t); },
   shareLink: () => { const url = new URL(location.href); url.hash = state.encodeShare(ctx.trip, lz); return url.toString(); },
   copy: (text, el) => { const done = () => { if (el) { const old = el.textContent; el.textContent = "Copied"; setTimeout(() => el.textContent = old, 1500); } }; if (navigator.clipboard) navigator.clipboard.writeText(text).then(done).catch(() => toast("Copy failed; select the text and copy it yourself.")); else toast("Copy is not available here; select the text and copy it yourself."); },
-  toast, confirm: msg => window.confirm ? window.confirm(msg) : true
+  toast, confirm: msg => window.confirm ? window.confirm(msg) : true,
+  /* Live search: the vault holds the unlocked key; liveStatus is refreshed before Home and Setup render. */
+  vault: browserVault(), liveStatus: "none", busy: false,
+  live: async (trip, text) => liveTurn(trip, text, { ask, apiKey: await ctx.vault.apiKey(), countries }),
+  /* Start a live turn: the form fill and the typed message show at once with "Searching live…", then the answer. */
+  runLive: async (trip, text) => { const p = ctx.live(trip, text); ctx.busy = true; ctx.commit(); try { await p; } finally { ctx.busy = false; ctx.commit(); } }
 };
 
 function importTrip(t) {
@@ -65,6 +73,7 @@ async function render() {
   if (view === "new") view = "home";
   try {
     if (trip) await ensureDests(trip.kind);
+    if (view === "home" || view === "setup" || !VIEWS[view]) ctx.liveStatus = await ctx.vault.status();
     let html;
     if (view === "home") html = home.render(ctx);
     else {

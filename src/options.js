@@ -105,8 +105,9 @@ export function checkOption(option, trip) {
   const est = option.estimate || {}; const tc = trip.budget?.currency || "EUR";
   const groupTotal = toTripCurrency(est.group, est.currency, trip);
   const missingRates = est.group !== null && est.group !== undefined && groupTotal === null && est.currency ? [est.currency] : [];
-  if (missingRates.length) flags.push(`No exchange rate for ${est.currency} yet; the total is left out`);
   const budget = trip.budget?.total || 0;
+  // Without a budget there is nothing to compare against, so a missing rate is not worth a flag.
+  if (missingRates.length && budget > 0) flags.push(`No exchange rate for ${est.currency} yet; the total is left out`);
   const overBudget = groupTotal !== null && budget > 0 && groupTotal > budget;
   if (overBudget) flags.push(`About ${fmtMoney(groupTotal, tc)} for the group, over the ${fmtMoney(budget, tc)} budget`);
   return { flags, countryBreach, overBudget, groupTotal, missingRates };

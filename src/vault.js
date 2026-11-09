@@ -6,7 +6,8 @@ const ENTRY = "family";
 
 export function createVault({ loadLock, store }) {
   let lockP = null, key = null;
-  const lock = () => (lockP = lockP || Promise.resolve().then(loadLock).catch(() => null));
+  // A missing lock is not cached, so a key published later is picked up without a reload.
+  const lock = async () => { lockP = lockP || Promise.resolve().then(loadLock).catch(() => null); const l = await lockP; if (!l) lockP = null; return l; };
 
   async function fromRemembered(l) {
     const saved = await store.get(ENTRY).catch(() => null);

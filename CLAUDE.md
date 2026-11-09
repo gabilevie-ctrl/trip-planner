@@ -1,7 +1,7 @@
 # CLAUDE.md — working notes for Claude Code
 
 ## What this is
-A static, no-build web app for planning group trips (README.md). Vanilla JS ES modules, `index.html` at the root, data as JSON under `data/`, vendored CSS and lz-string. Hosted on GitHub Pages or as a Claude artifact.
+A static, no-build web app for planning group trips (README.md). Vanilla JS ES modules, `index.html` at the root, data as JSON under `data/`, vendored CSS and lz-string. Hosted on GitHub Pages (the Claude-artifact copy is retired).
 
 ## Workflow (superpowers conventions, as in polaris-events)
 - Spec first: `docs/superpowers/specs/`. Plan with checkbox tasks: `docs/superpowers/plans/`. Implement task by task; tests on pure modules before UI.
@@ -9,8 +9,9 @@ A static, no-build web app for planning group trips (README.md). Vanilla JS ES m
 - Commits: imperative subject, one topic per commit.
 
 ## Ground rules
-- No framework, no bundler. A library only when it does substantial work; vendor a pinned build under `vendor/` (the artifact host blocks most CDNs for stylesheets and all cross-site fetch).
-- The app runs where cross-site `fetch` is blocked: never fetch bulletins, weather or prices live; link out instead.
+- No framework, no bundler. A library only when it does substantial work; vendor a pinned build under `vendor/`.
+- Live fetches only to this allow-list: `api.anthropic.com` (live search, through `src/claude.js` with the family-password key, see `docs/LIVE-SETUP.md`), `*.open-meteo.com`, `en.wikivoyage.org`, OSM tile servers. Everything must still work without them: no lock file or no password means the rule-based chat and the library, as before.
+- The Anthropic key is never in the repo in clear, in localStorage, in a trip or in a share link; only `data/claude-key.json` (locked) is committed.
 - Every number shown has a source: a destination field, a trip input, or a formula in `src/compute.js` / `src/scoring.js`. No magic constants in views.
 - Traveller limits are flags, never silent exclusion.
 - Hash routing uses plain names only (`#build`, `#s-…`); no slashes or query strings in the hash.

@@ -50,6 +50,7 @@ export const actions = {
     const txt = document.getElementById("describeText").value.trim();
     if (!txt) { ctx.toast("Write a few words about the trip first."); return; }
     const t = ctx.createTrip(readDescription(txt).kind);
+    if (ctx.liveStatus === "unlocked") { ctx.open(t.id, "setup"); ctx.runLive(t, txt); return; }
     describeTurn(t, txt, { countries: ctx.countries, suggest: suggestFor(ctx) }); ctx.open(t.id, "setup");
   },
   "new-trip": (el, ctx) => { const t = ctx.createTrip(el.dataset.kind); ctx.open(t.id, "setup"); },

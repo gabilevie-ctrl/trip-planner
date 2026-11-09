@@ -66,3 +66,7 @@ test("the tool schema is strict at every object level", () => {
   assert.deepEqual([...item.required].sort(), Object.keys(item.properties).sort());
   assert.equal(item.properties.access.additionalProperties, false); assert.equal(item.properties.estimate.additionalProperties, false);
 });
+test("with no budget set, a missing exchange rate is not flagged (nothing to compare against)", () => {
+  const t = situTrip(); t.budget = { total: 0, currency: "EUR" };
+  const c = checkOption(opt(), t); assert.deepEqual(c.flags, []); assert.deepEqual(c.missingRates, ["GBP"]); assert.equal(c.groupTotal, null);
+});

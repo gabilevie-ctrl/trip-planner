@@ -80,6 +80,12 @@ const daysBetween = (a, b) => Math.round((Date.parse(b) - Date.parse(a)) / 86400
 const num = v => typeof v === "number" ? (Number.isFinite(v) ? v : NaN) : typeof v === "string" && /^\s*-?\d+(\.\d+)?\s*$/.test(v) ? parseFloat(v) : NaN;
 const str = (v, max) => typeof v === "string" ? v.trim().slice(0, max) : "";
 
+function sayLimit(k, v) {
+  const c = CRITERIA.find(x => x.key === k);
+  const val = v === true ? "yes" : v === false ? "no" : c.unit ? `${v} ${c.unit}` : (c.options?.find(o => o[0] === v)?.[1] || v);
+  return `${c.label.toLowerCase()} ${val}`;
+}
+
 function checkLimits(raw, kind, who, dropped) {
   const out = {};
   if (raw === undefined) return out;
@@ -167,7 +173,7 @@ export function tripFromReply(obj, { text = "", today }) {
         const named = trip.travellers.filter(p => p.name).length, limited = trip.travellers.filter(p => Object.keys(p.limits).length);
         if (named || limited.length) real = true;
         filled.push(`${trip.travellers.length} traveller${trip.travellers.length > 1 ? "s" : ""}${named ? ": " + trip.travellers.map(p => p.name || "(no name)").join(", ") : ""}`);
-        for (const p of limited) filled.push(`limits for ${p.name || "a traveller"}: ${Object.entries(p.limits).map(([k, v]) => `${CRITERIA.find(c => c.key === k).label.toLowerCase()} ${v}`).join(", ")}`);
+        for (const p of limited) filled.push(`limits for ${p.name || "a traveller"}: ${Object.entries(p.limits).map(([k, v]) => `${sayLimit(k, v)}`).join(", ")}`);
       }
     }
   }

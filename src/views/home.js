@@ -3,6 +3,27 @@ import { KINDS } from "../criteria.js";
 import { tripLength } from "../compute.js";
 import { readDescription, describeTurn } from "../describe.js";
 import { suggestFor } from "./setup.js";
+import { buildPrompt, readReply, tripFromReply } from "../chatbot.js";
+
+// The "Ask a chatbot" panel lives here, not in the store: a reload simply closes it.
+const panel = { text: "", open: false, prompt: "", reply: "", error: "" };
+const resetPanel = () => Object.assign(panel, { text: "", open: false, prompt: "", reply: "", error: "" });
+const localToday = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
+
+function chatbotPanel() {
+  if (!panel.open) return "";
+  return `<div class="chatbot" aria-label="Ask a chatbot">
+        <h3>1. Copy this into Claude, ChatGPT or any chatbot</h3>
+        <p class="muted small">What you wrote goes to that chatbot, not to this app.</p>
+        <textarea id="chatbotPrompt" rows="6" readonly>${esc(panel.prompt)}</textarea>
+        <button type="button" class="outline" data-act="chatbot-copy">Copy</button>
+        <h3>2. Paste its whole reply here</h3>
+        <textarea id="chatbotReply" rows="5" placeholder="The chatbot's answer, with the JSON block">${esc(panel.reply)}</textarea>
+        ${panel.error ? `<p class="chatbot-error" role="alert">${esc(panel.error)}</p>` : ""}
+        <button type="button" data-act="chatbot-fill">Fill in my trip</button>
+        <button type="button" class="linklike" data-act="chatbot-close">Close</button>
+      </div>`;
+}
 
 export function render(ctx) {
   const trips = Object.values(ctx.store.trips).sort((a, b) => (b.updatedAt || "").localeCompare(a.updatedAt || ""));
@@ -25,8 +46,11 @@ export function render(ctx) {
     <div class="card describe">
       <h2>Describe your trip</h2>
       <p class="muted">In your own words: who is coming, when and for how long, the budget, where from, what you love and what someone can't do. The form fills itself in; you check it next.</p>
-      <textarea id="describeText" rows="4" placeholder="e.g. Five of us from Brussels, two weeks in July. Mom can't do heat or altitude. We love old towns and food, a bit of walking, no flights. About €15,000."></textarea>
-      <button type="button" data-act="describe-new">Start from my description</button>
+      <textarea id="describeText" rows="4" placeholder="e.g. Five of us from Brussels, two weeks in July. Mom can't do heat or altitude. We love old towns and food, a bit of walking, no flights. About €15,000.">${esc(panel.text)}</textarea>
+      <div class="describebtns"><button type="button" data-act="describe-new">Start from my description</button>
+      <button type="button" class="outline" data-act="describe-chatbot">Ask a chatbot to fill it in</button></div>
+      <p class="muted small">The chatbot way understands names and who has which limit; it takes two copy-and-pastes.</p>
+      ${chatbotPanel()}
     </div>
     <p class="muted">Or pick a kind of trip and fill the form yourself:</p>
     <div class="kinds">
@@ -51,6 +75,22 @@ export const actions = {
     if (!txt) { ctx.toast("Write a few words about the trip first."); return; }
     const t = ctx.createTrip(readDescription(txt).kind);
     describeTurn(t, txt, { countries: ctx.countries, suggest: suggestFor(ctx) }); ctx.open(t.id, "setup");
+  },
+  "describe-chatbot": (el, ctx) => {
+    const txt = document.getElementById("describeText").value.trim();
+    if (!txt) { ctx.toast("Write a few words about the trip first."); return; }
+    Object.assign(panel, { text: txt, open: true, prompt: buildPrompt(txt, { today: localToday() }), error: "" });
+    ctx.rerender();
+  },
+  "chatbot-copy": (el, ctx) => ctx.copy(panel.prompt, el),
+  "chatbot-close": (el, ctx) => { const txt = document.getElementById("describeText")?.value || ""; resetPanel(); panel.text = txt; ctx.rerender(); },
+  "chatbot-fill": (el, ctx) => {
+    panel.reply = document.getElementById("chatbotReply").value;
+    panel.text = document.getElementById("describeText").value.trim() || panel.text;
+    const read = readReply(panel.reply);
+    const r = read.error ? read : tripFromReply(read.obj, { text: panel.text, today: localToday() });
+    if (r.error) { panel.error = r.error; ctx.rerender(); return; }
+    const t = ctx.addTrip(r.trip); resetPanel(); ctx.open(t.id, "setup");
   },
   "new-trip": (el, ctx) => { const t = ctx.createTrip(el.dataset.kind); ctx.open(t.id, "setup"); },
   "open-trip": (el, ctx) => ctx.open(el.dataset.id, "setup"),

@@ -67,7 +67,7 @@ test("a good reply fills the trip, limits on the right person, interests on top 
   assert.ok(t.travellers.every(p => /^p_/.test(p.id)));
   assert.ok(t.notes.includes(text)); assert.ok(t.notes.includes("Mom prefers trains."));
   assert.deepEqual(t.brief.map(m => m.who), ["you", "app"]);
-  assert.match(t.brief[1].text, /Filled in by the chatbot/); assert.match(t.brief[1].text, /July means mid-July/);
+  assert.match(t.brief[1].text, /Filled in by the chatbot/); assert.match(t.brief[1].text, /July means mid-July/); assert.match(t.brief[1].text, /altitude ceiling 2000 m/);
   assert.deepEqual(r.assumptions, ["July means mid-July"]);
   assert.deepEqual(r.dropped, []);
   assert.deepEqual(migrate(structuredClone(t)), t);

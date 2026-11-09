@@ -2,8 +2,8 @@
 // Pure module: no DOM.
 import { strictestLimits, gradeRank, selectedBlocks, LODGING, countriesOutside, COUNTRY_ZONE_LABEL } from "./criteria.js";
 let regionNames = null; try { regionNames = new Intl.DisplayNames(["en"], { type: "region" }); } catch (e) { /* older browsers: show codes */ }
-const countryName = code => { try { return (regionNames && regionNames.of(code)) || code; } catch (e) { return code; } };
-const andList = xs => xs.length < 2 ? xs.join("") : xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1];
+export const countryName = code => { try { return (regionNames && regionNames.of(code)) || code; } catch (e) { return code; } };
+export const andList = xs => xs.length < 2 ? xs.join("") : xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1];
 
 export const CONTINGENCY = 0.08;
 const DAY = 86400000;

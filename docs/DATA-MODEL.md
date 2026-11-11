@@ -77,7 +77,7 @@ The 38 v1 destinations carry `"lastReviewed": "2026-11-08"` and `"sources": []`:
     // minDayHighC: warmth floor; the highest floor across travellers applies. countryZone: "any" | "europe" | "eu" | "schengen";
     // every traveller's country limit applies (lists in src/criteria.js COUNTRY_GROUPS). Both are flags, never exclusions.
     { "name": "Antoine", "limits": { "countryZone": "schengen" } },
-    { "name": "Antoine", "limits": { "maxHikeShare": 0.6 } }
+    { "name": "Antoine", "limits": { "maxHikeShare": 60 } }   // percent of planned days, 0–100
   ],
   "dates": { "start": "2027-07-12", "end": "2027-07-26" },      // or { "window": {...}, "lengthDays": 15 }
   "budget": { "total": 15000, "currency": "EUR", "perPerson": 3000 },   // perPerson only when the chat was given a per-person amount; the total follows the traveller count
@@ -97,6 +97,8 @@ The 38 v1 destinations carry `"lastReviewed": "2026-11-08"` and `"sources": []`:
 }
 ```
 Each message sent in the chat is also appended to `notes`, so nothing typed is lost if a field is later changed.
+
+A trip made with "Ask a chatbot to fill it in" (`src/chatbot.js`) starts with the same `brief`: the person's description, then the app's summary of what the chatbot's JSON reply filled, what was not used and why, and the chatbot's own guesses. The reply's fields (`kind`, `name`, `origin`, `travelMode`, `lodging`, `dates`, `budget`, `type`, `travellers[].limits`, `notes`, `assumptions`) are checked against `src/criteria.js` and the trip passes `state.migrate` before it is stored.
 
 ## Scoring (phase 1)
 

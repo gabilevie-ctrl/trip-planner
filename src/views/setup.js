@@ -1,12 +1,10 @@
 import { esc, field, sel, fmtMoney, scoreClass } from "../ui.js";
-import { KINDS, TRAVEL_MODES, LODGING, criteriaFor, strictestLimits } from "../criteria.js";
+import { KINDS, TRAVEL_MODES, LODGING, ORIGINS, TRIP_TYPES, criteriaFor, strictestLimits } from "../criteria.js";
 import { tripLength, computePlan, isVisited } from "../compute.js";
 import { score } from "../scoring.js";
 import { describeTurn } from "../describe.js";
 import { uid } from "../state.js";
 
-const ORIGINS = [["Brussels", "europe-west"], ["London", "uk"], ["Paris", "europe-west"], ["Amsterdam", "europe-west"], ["Geneva", "europe-west"], ["Other", "europe-west"]];
-const TYPE_TAGS = { cities: "Cities & museums", hike: "Mountains & walking", coast: "Coast & islands", wildlife: "Wildlife", history: "History", food: "Food & wine", festival: "A festival" };
 
 export function render(ctx) {
   const t = ctx.trip; const kind = KINDS[t.kind];
@@ -52,7 +50,7 @@ export function render(ctx) {
     <h2>What kind of trip</h2>
     <p class="muted">How much each of these matters. Used to score destinations; 0 means it does not count.</p>
     <div class="grid3">
-      ${Object.entries(TYPE_TAGS).map(([k, l]) => `<label>${esc(l)} <span class="num muted">${["off", "a little", "yes", "a lot"][t.type[k] || 0]}</span><input type="range" min="0" max="3" step="1" data-bind="type.${k}" data-type="number" value="${t.type[k] || 0}"></label>`).join("")}
+      ${Object.entries(TRIP_TYPES).map(([k, l]) => `<label>${esc(l)} <span class="num muted">${["off", "a little", "yes", "a lot"][t.type[k] || 0]}</span><input type="range" min="0" max="3" step="1" data-bind="type.${k}" data-type="number" value="${t.type[k] || 0}"></label>`).join("")}
     </div>
   </section>` : ""}
 

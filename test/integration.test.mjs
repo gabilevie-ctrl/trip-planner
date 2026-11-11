@@ -236,3 +236,34 @@ test("review: the typed message is saved before the answer arrives, busy is per 
   assert.match($(".thread").textContent, /no longer works/);
   assert.ok($("#livePass"), "the unlock card is back after a dead key");
 });
+
+test("describe with a chatbot: copy the prompt, a cut-off reply is refused, a good one opens Setup", async () => {
+  await import("../src/main.js"); await go("#home");
+  const count = () => Object.keys(JSON.parse(window.localStorage.getItem("tripplanner.v1") || '{"trips":{}}').trips).length;
+  $("#describeText").value = "";
+  click($('[data-act="describe-chatbot"]')); await tick(40);
+  assert.ok(!$("#chatbotPrompt"), "no panel without a description");
+  $("#describeText").value = "Mom and me from London in July, she can't do altitude";
+  click($('[data-act="describe-chatbot"]')); await tick(40);
+  assert.match($("#chatbotPrompt").value, /Mom and me from London/);
+  assert.equal($("#describeText").value, "Mom and me from London in July, she can't do altitude", "description kept after the panel opens");
+  const before = count();
+  $("#chatbotReply").value = '```json\n{"name": "Bro';
+  click($('[data-act="chatbot-fill"]')); await tick(60);
+  assert.equal(window.location.hash, "#home");
+  assert.match($(".chatbot-error").textContent, /cut off/);
+  assert.equal(count(), before, "no trip from a bad reply");
+  assert.equal($("#chatbotReply").value, '```json\n{"name": "Bro', "the pasted reply stays");
+  $("#chatbotReply").value = 'Here it is:\n```json\n' + JSON.stringify({ name: "July with Mom", origin: "London", dates: { start: "2027-07-10", end: "2027-07-20" }, travellers: [{ name: "Mom", limits: { maxAltitudeM: 2000 } }, { name: "Gabriel", limits: {} }], assumptions: ["mid-July"] }) + "\n```";
+  click($('[data-act="chatbot-fill"]')); await tick(200);
+  assert.equal(window.location.hash, "#setup");
+  assert.equal(count(), before + 1);
+  assert.equal($('[data-bind="name"]').value, "July with Mom");
+  assert.equal($('[data-bind="travellers.0.name"]').value, "Mom");
+  assert.equal($('[data-bind="travellers.0.limits.maxAltitudeM"]').value, "2000");
+  assert.equal($('[data-bind="travellers.1.limits.maxAltitudeM"]').value, "");
+  assert.equal($('[data-bind="dates.start"]').value, "2027-07-10");
+  assert.match($(".thread").textContent, /Filled in by the chatbot/);
+  assert.match($(".thread").textContent, /mid-July/);
+  await go("#home"); assert.ok(!$("#chatbotPrompt"), "panel closed after a trip was made");
+});

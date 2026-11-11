@@ -38,6 +38,7 @@ const ctx = {
   rerender: () => render(),
   nav: tab => { location.hash = "#" + tab; },
   open: (id, tab) => { store.current = id; state.save(store); if (location.hash === "#" + tab) render(); else location.hash = "#" + tab; },
+  addTrip: t => importTrip(t),
   createTrip: kind => { const t = state.newTrip(kind); store.trips[t.id] = t; store.current = t.id; state.save(store); return t; },
   importText: txt => { let t = null; const m = txt.match(/#(s-[A-Za-z0-9-]+)/); if (m) t = state.decodeShare(m[1], lz); else { try { t = JSON.parse(txt); } catch (e) { t = null; } } if (!t || !t.id) return null; return importTrip(t); },
   shareLink: () => { const url = new URL(location.href); url.hash = state.encodeShare(ctx.trip, lz); return url.toString(); },

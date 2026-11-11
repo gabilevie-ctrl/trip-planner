@@ -9,7 +9,7 @@ const HISTORY = 6, KEEP_SETS = 3;
 /* Earlier thread entries as alternating user/assistant messages that start with a user turn. */
 function historyMessages(brief) {
   const out = [];
-  for (const m of brief.slice(-HISTORY)) {
+  for (const m of brief.filter(m => !m.error).slice(-HISTORY)) {
     const role = m.who === "app" ? "assistant" : "user"; const text = String(m.text || "").trim(); if (!text) continue;
     if (out.length && out.at(-1).role === role) out.at(-1).content += "\n\n" + text; else out.push({ role, content: text });
   }

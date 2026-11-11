@@ -44,3 +44,14 @@ test("destination card shows sources and review date", () => {
   assert.match(html, /<a href="https:\/\/www\.visitnorway\.com\/" target="_blank" rel="noopener"[^>]*>Visit Norway<\/a>/);
   assert.ok(html.includes("No sources yet"), "destinations without sources say so");
 });
+test("minor: a double click on Unlock tries the password once", async () => {
+  document.getElementById("app").innerHTML = `<input id="livePass" value="pw"><input type="checkbox" id="liveRemember">`;
+  let calls = 0; const pending = []; const release = v => pending.splice(0).forEach(r => r(v));
+  const vault = { unlock: () => { calls++; return new Promise(r => pending.push(r)); } };
+  const ctx = Object.assign(ctxFor(familyTrip()), { vault, rerender() {} });
+  const a = views.setup.actions["live-unlock"](null, ctx), b = views.setup.actions["live-unlock"](null, ctx);
+  release({ ok: true }); await a; await b;
+  assert.equal(calls, 1);
+  const c = views.setup.actions["live-unlock"](null, ctx); release({ ok: true }); await c;
+  assert.equal(calls, 2, "it can be tried again once the first try is over");
+});

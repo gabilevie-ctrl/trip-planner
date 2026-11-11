@@ -158,6 +158,7 @@ function critInput(c, value, bind) {
 }
 function fmtLimit(c, v) { if (Array.isArray(v)) return v.map(x => fmtLimit(c, x)).join(" and "); if (c.type === "bool") return v ? "yes" : "no"; if (c.type === "select") { const o = c.options.find(([k]) => String(k) === String(v)); return o ? o[1] : v; } return `${Number(v).toLocaleString("en-GB")}${c.unit ? " " + c.unit : ""}`; }
 
+let unlocking = false;
 export const actions = {
   "chat-send": async (el, ctx) => {
     const box = document.getElementById("chatText"); const text = box.value.trim();
@@ -167,7 +168,9 @@ export const actions = {
     describeTurn(ctx.trip, text, { countries: ctx.countries, suggest: suggestFor(ctx) }); ctx.commit();
   },
   "live-unlock": async (el, ctx) => {
-    const r = await ctx.vault.unlock(document.getElementById("livePass").value, { remember: document.getElementById("liveRemember").checked });
+    if (unlocking) return; // a double click tries the password once
+    unlocking = true; let r;
+    try { r = await ctx.vault.unlock(document.getElementById("livePass").value, { remember: document.getElementById("liveRemember").checked }); } finally { unlocking = false; }
     if (!r.ok) { ctx.toast(r.reason === "no-lock" ? "Live search is not set up on this site." : "That password doesn't unlock live search."); return; }
     ctx.rerender();
   },

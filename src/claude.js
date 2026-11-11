@@ -12,7 +12,8 @@ export const MESSAGES = {
   server: "Claude's servers had a problem. Try again shortly.",
   network: "No connection to live search. Check the internet connection.",
   refusal: "Claude declined that request.",
-  "bad-response": "Live search sent back something unexpected."
+  "bad-response": "Live search sent back something unexpected.",
+  "cut-off": "Claude's answer was cut off before the end. Try again, or ask for fewer options."
 };
 const fail = error => ({ ok: false, error, message: MESSAGES[error] });
 
@@ -39,6 +40,7 @@ export async function ask({ apiKey, system, messages, tools = [], fetchImpl = (.
     try { data = JSON.parse(await res.text()); } catch (e) { return fail("bad-response"); }
     if (!res.ok || !data || !Array.isArray(data.content)) return fail("bad-response");
     if (data.stop_reason === "refusal") return fail("refusal");
+    if (data.stop_reason === "max_tokens") return fail("cut-off");
     content.push(...data.content); usage = data.usage || usage;
     if (data.stop_reason === "pause_turn") { convo.push({ role: "assistant", content: data.content }); continue; }
     // Claude waits for our tool result before writing its reply: acknowledge every app tool call once, then let it finish.

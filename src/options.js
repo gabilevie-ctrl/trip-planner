@@ -67,8 +67,9 @@ function cleanOption(o, today, keepIds) {
 /* Clean Claude's propose_options input; returns the options and the trip's rates with the new ones merged in. */
 export function normalizeOptions(input, trip, { today = new Date().toISOString().slice(0, 10), keepIds = false } = {}) {
   const options = list(isObj(input) ? input.options : null, o => cleanOption(o, today, keepIds)).slice(0, MAX_OPTIONS);
-  const first = options.findIndex(o => o.pick);
-  const pickAt = first >= 0 ? first : Math.max(0, options.findIndex(o => !o.mention));
+  const first = options.findIndex(o => o.pick && !o.mention);
+  // A mention is set aside, so it can never be the pick; with only mentions there is no pick.
+  const pickAt = first >= 0 && !options[first].mention ? first : options.findIndex(o => !o.mention);
   options.forEach((o, i) => { o.pick = i === pickAt; });
   const rates = Object.assign({}, trip.rates || {});
   for (const r of isObj(input) && Array.isArray(input.rates) ? input.rates : []) {
@@ -102,6 +103,7 @@ export function checkOption(option, trip) {
   const codes = option.countryCodes || [];
   const destZone = codes.length && codes.every(c => EUROPE.has(c)) ? "europe" : "other";
   let countryBreach = false;
+  if (!codes.length && (limits.countryZone || []).length) flags.push(`${option.name}: the country isn't known, so staying within ${andList(limits.countryZone.map(z => COUNTRY_ZONE_LABEL[z]))} can't be checked`);
   for (const zone of limits.countryZone || []) {
     const out = countriesOutside(codes, zone, destZone);
     if (out.length) { countryBreach = true; flags.push(`${andList(out.map(countryName))} ${out.length > 1 ? "are" : "is"} outside ${COUNTRY_ZONE_LABEL[zone]}`); }

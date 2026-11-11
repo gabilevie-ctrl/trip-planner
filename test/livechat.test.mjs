@@ -65,3 +65,11 @@ test("review I2: a failed turn reports its error code so the app can lock again 
   const { ask } = fakeAsk({ ok: false, error: "auth", message: "The saved key no longer works. Ask Gabriel for the new password." });
   const r = await liveTurn(t, "hello", opts(ask)); assert.equal(r.ok, false); assert.equal(r.error, "auth");
 });
+test("minor: earlier error replies are not sent to Claude as its own words", async () => {
+  const t = situTrip(); t.brief = [{ who: "you", text: "first try" }, { who: "app", text: "Live search is busy.", live: true, error: true }];
+  const { ask, calls } = fakeAsk({ ok: true, text: "ok", toolCalls: [], searches: 0 });
+  await liveTurn(t, "second try", opts(ask));
+  const msgs = calls[0].messages;
+  assert.ok(!/Live search is busy/.test(JSON.stringify(msgs)));
+  assert.equal(msgs.length, 1); assert.match(msgs[0].content, /first try[\s\S]*second try/);
+});

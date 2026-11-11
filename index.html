@@ -178,6 +178,14 @@ pre.summary{white-space:pre-wrap;font-size:.82rem;background:var(--bg);padding:1
 .msg.you{align-self:flex-end;background:var(--pico-primary);color:var(--pico-primary-inverse);border-bottom-right-radius:4px}
 .msg.app{align-self:flex-start;background:var(--surface-2);border-bottom-left-radius:4px}
 .chatin{display:flex;gap:8px;align-items:flex-end}.chatin textarea{flex:1;margin:0}
+.msg.err{background:var(--crit-bg);color:var(--crit)}.msg.busy{font-style:italic;opacity:.8}
+.livestatus{margin:-4px 0 10px;color:var(--good)}.livecard .chk{margin-top:8px}
+.optcards{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr))}
+.optcard{border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-width:0}.optcard.pick{border-color:var(--pico-primary);box-shadow:0 0 0 1px var(--pico-primary)}
+.optcard h3{margin:0;font-size:1.05rem}.optcard header{margin-bottom:6px}.optcard p{margin:6px 0}
+.pickbadge{font-size:.72rem;font-weight:600;background:var(--pico-primary);color:var(--pico-primary-inverse);border-radius:999px;padding:2px 8px;vertical-align:middle}
+.optfacts{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 10px;margin:8px 0;font-size:.9rem}.optfacts dt{font-weight:600;color:var(--ink-2)}.optfacts dd{margin:0;overflow-wrap:anywhere}
+.optmentions{margin:12px 0 0}
 .fitideas{list-style:none;padding:0;margin:0}.fitideas li{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px dashed var(--line)}
 /* phones */
 @media (max-width:600px){

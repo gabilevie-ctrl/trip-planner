@@ -1,4 +1,5 @@
-import { esc, field, sel, fmtMoney, scoreClass } from "../ui.js";
+import { esc, field, sel, fmtMoney, scoreClass, fmtDateY, chip } from "../ui.js";
+import { checkOption, toTripCurrency } from "../options.js";
 import { KINDS, TRAVEL_MODES, LODGING, ORIGINS, TRIP_TYPES, criteriaFor, strictestLimits } from "../criteria.js";
 import { tripLength, computePlan, isVisited } from "../compute.js";
 import { score } from "../scoring.js";
@@ -18,7 +19,7 @@ export function render(ctx) {
       <td><button type="button" class="outline secondary small" data-act="remove-traveller" data-pid="${p.id}" aria-label="Remove traveller" ${t.travellers.length <= 1 ? "disabled" : ""}>✕</button></td>
     </tr>`).join("");
   const limitSummary = crit.map(c => lim[c.key] !== undefined ? `${c.label}: <strong>${fmtLimit(c, lim[c.key])}</strong>` : null).filter(Boolean).join(" · ") || "No limits set yet: everything will be offered, nothing flagged.";
-  return `${chat(t)}${fitIdeas(ctx, t)}
+  return `${liveCard(ctx)}${chat(t, ctx)}${t.options?.length ? optionsCard(t) : fitIdeas(ctx, t)}
   <section class="card">
     <h2>Basics</h2>
     <div class="grid2">
@@ -67,12 +68,60 @@ export function render(ctx) {
   <p><a href="#destinations" role="button">Next: destinations →</a></p>`;
 }
 
-function chat(t) {
-  const msgs = t.brief || [];
+function chat(t, ctx) {
+  const msgs = t.brief || []; const live = ctx.liveStatus === "unlocked"; const busy = !!ctx.busyTrips?.has(t.id);
+  const status = live ? `<p class="livestatus small">Live search is on: Claude searches the web for options. <button type="button" class="linklike" data-act="live-forget">Forget on this device</button></p>`
+    : ctx.liveStatus === "locked" ? `<p class="muted small">Unlock live search above for real options from the web.</p>` : "";
   return `<section class="card chat">
-    <h2>Describe the trip</h2>
-    ${msgs.length ? `<ol class="thread">${msgs.map(m => `<li class="msg ${m.who === "app" ? "app" : "you"}">${esc(m.text)}</li>`).join("")}</ol>` : `<p class="muted">Tell the planner about the trip in your own words; it fills in the form below and asks about what is missing.</p>`}
-    <div class="chatin"><textarea id="chatText" rows="2" placeholder="${msgs.length ? "Add more: a limit for someone, a change of dates, what to skip…" : "e.g. Four of us, ten days in May, from London, about £1,500 each, love the coast"}"></textarea><button type="button" data-act="chat-send">Send</button></div>
+    <h2>Describe the trip</h2>${status}
+    ${msgs.length || busy ? `<ol class="thread">${msgs.map(m => `<li class="msg ${m.who === "app" ? "app" : "you"}${m.error ? " err" : ""}">${esc(m.text)}</li>`).join("")}${busy ? `<li class="msg app busy" aria-live="polite">Searching live… this can take a minute</li>` : ""}</ol>` : `<p class="muted">Tell the planner about the trip in your own words; it fills in the form below${live ? ", searches the web for options that fit," : ""} and asks about what is missing.</p>`}
+    <div class="chatin"><textarea id="chatText" rows="2" placeholder="${msgs.length ? "Add more: a limit for someone, a change of dates, what to skip…" : "e.g. Four of us, ten days in May, from London, about £1,500 each, love the coast"}"></textarea><button type="button" data-act="chat-send" ${busy ? "disabled aria-busy=\"true\"" : ""}>Send</button></div>
+  </section>`;
+}
+/* Shown only when a locked key is published and this device has not unlocked it. */
+function liveCard(ctx) {
+  if (ctx.liveStatus !== "locked") return "";
+  return `<section class="card livecard">
+    <h2>Live search</h2>
+    <p class="muted">Uses Gabriel's Claude account to search the web for options. Ask him for the family password.</p>
+    <div class="row"><input type="password" id="livePass" autocomplete="current-password" placeholder="Family password" aria-label="Family password" style="flex:1 1 220px;margin:0">
+    <button type="button" data-act="live-unlock">Unlock</button></div>
+    <label class="chk small"><input type="checkbox" id="liveRemember"> Remember on this device</label>
+  </section>`;
+}
+
+const LODGING_LABEL = { camping: "Camping", hut: "Huts", hostel: "Hostels", guesthouse: "Guesthouses", hotel: "Hotels", apartment: "Apartments", other: "Other" };
+const MODE_LABEL = { flight: "Flight", train: "Train", ferry: "Ferry", drive: "Drive", bus: "Bus" };
+const link = s => s && /^https:\/\//.test(s.url) ? `<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.name)}</a>` : "";
+const seen = d => d ? ` <span class="muted">(seen ${esc(fmtDateY(d))})</span>` : "";
+const range = (l, h, c) => l === null && h === null ? "" : l === h || h === null ? fmtMoney(l, c) : l === null ? `up to ${fmtMoney(h, c)}` : `${fmtMoney(l, c)}–${fmtMoney(h, c).replace(/^[^0-9]+/, "")}`;
+/* An amount in its own currency, plus the trip currency when it differs and a rate is known. */
+function money(n, c, t) { if (n === null || n === undefined) return ""; const tc = t.budget?.currency || "EUR"; const own = fmtMoney(n, c || tc); if (!c || c === tc) return own; const conv = toTripCurrency(n, c, t); return conv === null ? own : `${own} (≈ ${fmtMoney(conv, tc)})`; }
+
+/* Live options from Claude: the pick first, each checked against the trip's limits by the app. */
+function optionsCard(t) {
+  const main = t.options.filter(o => !o.mention).sort((a, b) => (b.pick ? 1 : 0) - (a.pick ? 1 : 0));
+  const mentions = t.options.filter(o => o.mention);
+  const card = o => { const c = checkOption(o, t); const a = o.access || {}; const e = o.estimate || {};
+    return `<article class="optcard${o.pick ? " pick" : ""}">
+      <header><h3>${esc(o.name)}${o.pick ? ` <span class="pickbadge">Claude's pick</span>` : ""}</h3>${o.region ? `<span class="muted small">${esc(o.region)}</span>` : ""}</header>
+      ${o.why ? `<p>${esc(o.why)}</p>` : ""}
+      ${c.flags.length ? `<p class="chips">${c.flags.map(f => chip("crit", esc(f))).join(" ")}</p>` : ""}
+      <dl class="optfacts">
+        ${o.weather?.text || o.weather?.highC !== null ? `<dt>Weather</dt><dd>${esc(o.weather.text)}${o.weather.highC !== null ? ` · highs ~${esc(o.weather.highC)}°C` : ""} ${link(o.weather.source)}</dd>` : ""}
+        ${o.activities?.length ? `<dt>Do</dt><dd>${o.activities.map(esc).join(" · ")}</dd>` : ""}
+        ${a.from || a.time ? `<dt>Getting there</dt><dd>${esc(MODE_LABEL[a.mode] || "")} from ${esc(a.from)}${a.time ? `, ${esc(a.time)}` : ""}${a.connections ? ` (${esc(a.connections)})` : ""}${a.pricePP !== null ? ` · ${money(a.pricePP, a.currency, t)} pp${seen(a.seenOn)}` : ""} ${link(a.source)}</dd>` : ""}
+        ${o.lodging?.length ? `<dt>Sleep</dt><dd>${o.lodging.map(l => `${esc(LODGING_LABEL[l.type] || l.type)}${range(l.low, l.high, l.currency || t.budget.currency) ? ` ${range(l.low, l.high, l.currency || t.budget.currency)}/night` : ""}`).join(" · ")}</dd>` : ""}
+        ${e.perPerson !== null || e.group !== null ? `<dt>Estimate</dt><dd>${e.perPerson !== null ? `${money(e.perPerson, e.currency, t)} pp` : ""}${e.group !== null ? ` · ${money(e.group, e.currency, t)} for the group` : ""}${e.breakdown?.length ? `<details><summary class="small">Breakdown</summary><ul class="small">${e.breakdown.map(b => `<li>${esc(b.what)}: ${money(b.amount, e.currency, t)}</li>`).join("")}</ul></details>` : ""}</dd>` : ""}
+        ${o.tradeOff ? `<dt>Trade-off</dt><dd>${esc(o.tradeOff)}</dd>` : ""}
+      </dl>
+      ${o.sources?.length ? `<p class="small muted">Sources: ${o.sources.map(s => link(s) + seen(s.seenOn)).join(" · ")}</p>` : ""}
+    </article>`; };
+  return `<section class="card">
+    <h2>Options</h2>
+    <p class="muted small">Found live by Claude with web search. Prices and weather are from the pages linked, on the date shown; the red flags are the app's own checks against everyone's limits.</p>
+    <div class="optcards">${main.map(card).join("")}</div>
+    ${mentions.length ? `<p class="optmentions small"><strong>Also considered:</strong> ${mentions.map(o => `${esc(o.name)}${o.mentionWhy ? ` — ${esc(o.mentionWhy)}` : ""}`).join("; ")}</p>` : ""}
   </section>`;
 }
 /* Step 1 brainstorm: the best three destinations for what is known so far. */
@@ -110,7 +159,19 @@ function critInput(c, value, bind) {
 function fmtLimit(c, v) { if (Array.isArray(v)) return v.map(x => fmtLimit(c, x)).join(" and "); if (c.type === "bool") return v ? "yes" : "no"; if (c.type === "select") { const o = c.options.find(([k]) => String(k) === String(v)); return o ? o[1] : v; } return `${Number(v).toLocaleString("en-GB")}${c.unit ? " " + c.unit : ""}`; }
 
 export const actions = {
-  "chat-send": (el, ctx) => { const box = document.getElementById("chatText"); const r = describeTurn(ctx.trip, box.value, { countries: ctx.countries, suggest: suggestFor(ctx) }); if (!r) { ctx.toast("Write something first."); return; } ctx.commit(); },
+  "chat-send": async (el, ctx) => {
+    const box = document.getElementById("chatText"); const text = box.value.trim();
+    if (!text) { ctx.toast("Write something first."); return; }
+    if (ctx.busyTrips?.has(ctx.trip.id)) return;
+    if (ctx.liveStatus === "unlocked") { await ctx.runLive(ctx.trip, text); return; }
+    describeTurn(ctx.trip, text, { countries: ctx.countries, suggest: suggestFor(ctx) }); ctx.commit();
+  },
+  "live-unlock": async (el, ctx) => {
+    const r = await ctx.vault.unlock(document.getElementById("livePass").value, { remember: document.getElementById("liveRemember").checked });
+    if (!r.ok) { ctx.toast(r.reason === "no-lock" ? "Live search is not set up on this site." : "That password doesn't unlock live search."); return; }
+    ctx.rerender();
+  },
+  "live-forget": async (el, ctx) => { await ctx.vault.forget(); ctx.toast("Live search is locked again on this device."); ctx.rerender(); },
   "see-dest": (el, ctx) => { const t = ctx.trip; t._ui = Object.assign(t._ui || {}, { q: el.dataset.name }); ctx.save(); ctx.nav("destinations"); },
   "add-traveller": (el, ctx) => { ctx.trip.travellers.push({ id: uid("p"), name: "", limits: {} }); ctx.commit(); },
   "remove-traveller": (el, ctx) => { ctx.trip.travellers = ctx.trip.travellers.filter(p => p.id !== el.dataset.pid); ctx.commit(); },

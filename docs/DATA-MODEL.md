@@ -104,3 +104,39 @@ A trip made with "Ask a chatbot to fill it in" (`src/chatbot.js`) starts with th
 
 `score(destination, trip)` returns 0–100 and a list of reasons. Criteria, each normalised to 0–100:
 cost (vs budget per head; capped low when over), altitude (vs the strictest traveller ceiling), heat, crowds, transit hours, history, season fit (from `fitByMonth` for the trip's months, adjusted by `events` inside the dates), type match (destination `tags` vs trip `type` weights). Hard limits produce flags, not silent exclusion.
+
+## Live options and plan (trip fields)
+
+Written by the live chat (Claude with web search, see `docs/LIVE-SETUP.md`). Every id is a string from `uid(prefix)`. Every price carries `currency` and `seenOn` (YYYY-MM-DD); every source is `{ name, url, seenOn }` with an `https://` url. Totals are computed by the app in `budget.currency` from `rates`; a price whose currency has no rate is flagged and left out.
+
+```jsonc
+{
+  "options": [                     // the current live shortlist; [] when unused
+    { "id": "o_…", "name": "La Palma", "region": "Canary Islands", "countryCodes": ["ES"], "lat": 28.7, "lon": -17.9,
+      "why": "…",
+      "weather": { "text": "20–22 °C by day on the coast", "highC": 21, "lowC": 14, "source": { "name": "…", "url": "https://…", "seenOn": "2026-11-09" } },
+      "maxAltitudeM": 2426,
+      "activities": ["GR131 Ruta de los Volcanes", "Caldera de Taburiente"],
+      "access": { "from": "London", "mode": "flight", "time": "4h30 + ferry", "connections": "Tenerife South, then ferry",
+                  "pricePP": 36, "currency": "GBP", "seenOn": "2026-11-08", "source": { … } },  // mode: flight | train | ferry | drive | bus
+      "lodging": [ { "type": "camping", "low": 0, "high": 0, "currency": "EUR" } ],          // camping | hut | hostel | guesthouse | hotel | apartment | other
+      "estimate": { "perPerson": 600, "group": 1200, "currency": "GBP", "breakdown": [ { "what": "Flights", "amount": 154 } ] },
+      "tradeOff": "…", "pick": true, "mention": false, "mentionWhy": null,
+      "sources": [ { "name": "…", "url": "https://…", "seenOn": "2026-11-09" } ] }
+  ],
+  "rates": { "EUR": { "toTrip": 0.86, "seenOn": "2026-11-09", "source": { … } } },   // trip-currency units for 1 unit of that currency
+  "livePlan": null,                // filled once a live option is chosen (stage 3); shape fixed now:
+  // { "optionId", "days": [ { "id": "d_…", "date", "move", "km", "ascentM", "descentM", "hours",
+  //     "night": { "name", "type", "bookingId" }, "fallback",
+  //     "legs": [ { "id": "l_…", "mode", "from", "to", "time", "bookingId", "note" } ],
+  //     "points": [ { "name", "lat", "lon", "kind" } ] } ],
+  //   "bookings": [ { "id": "b_…", "what", "pick", "alternative", "price", "currency", "seenOn",
+  //     "status": "idea" | "decided" | "booked" | "not-needed", "confirmation", "link", "bookBy", "details" } ],
+  //   "permits": [ { "id", "what", "who", "how", "leadTime", "bookBy", "note" } ],
+  //   "admin": { "<travellerId>": [ { "id", "what", "status", "note" } ] },
+  //   "gear": [ { "id", "name", "note", "per": { "<travellerId>": "…" } } ],
+  //   "food": "…", "todo": [ { "id", "date", "what", "done" } ], "sources": [ … ] }
+  "_local": { "optionHistory": [ { "at": "<ISO time>", "options": [ … ] } ], "lastSynced": null }
+  // device only: the last 3 replaced option sets; stripped from share links
+}
+```

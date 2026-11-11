@@ -5,6 +5,10 @@ import * as compute from "./compute.js";
 import { KINDS } from "./criteria.js";
 import { esc, fmtDateY, labelCells } from "./ui.js";
 import { feedbackMailto } from "./links.js";
+import { browserVault } from "./vault.js";
+import { ask } from "./claude.js";
+import { liveTurn } from "./livechat.js";
+import { cleanImported } from "./options.js";
 import * as home from "./views/home.js";
 import * as setup from "./views/setup.js";
 import * as destinations from "./views/destinations.js";
@@ -39,11 +43,26 @@ const ctx = {
   importText: txt => { let t = null; const m = txt.match(/#(s-[A-Za-z0-9-]+)/); if (m) t = state.decodeShare(m[1], lz); else { try { t = JSON.parse(txt); } catch (e) { t = null; } } if (!t || !t.id) return null; return importTrip(t); },
   shareLink: () => { const url = new URL(location.href); url.hash = state.encodeShare(ctx.trip, lz); return url.toString(); },
   copy: (text, el) => { const done = () => { if (el) { const old = el.textContent; el.textContent = "Copied"; setTimeout(() => el.textContent = old, 1500); } }; if (navigator.clipboard) navigator.clipboard.writeText(text).then(done).catch(() => toast("Copy failed; select the text and copy it yourself.")); else toast("Copy is not available here; select the text and copy it yourself."); },
-  toast, confirm: msg => window.confirm ? window.confirm(msg) : true
+  toast, confirm: msg => window.confirm ? window.confirm(msg) : true,
+  /* Live search: the vault holds the unlocked key; liveStatus is refreshed before Home and Setup render. */
+  vault: browserVault(), liveStatus: "none", busyTrips: new Set(),
+  /* A live turn: the form fill and the typed message are saved and shown at once with "Searching live…" on that trip,
+     then the answer. A key that no longer works locks live search again so the password card comes back. */
+  runLive: async (trip, text) => {
+    if (ctx.busyTrips.has(trip.id)) return;
+    const apiKey = await ctx.vault.apiKey();
+    const pending = liveTurn(trip, text, { ask, apiKey, countries }); // its synchronous part fills the form and the thread now
+    const saveTrip = () => { state.touch(trip); state.save(store); savedFlash(); };
+    ctx.busyTrips.add(trip.id); saveTrip(); render();
+    let r = null;
+    try { r = await pending; } finally { ctx.busyTrips.delete(trip.id); saveTrip(); }
+    if (r && r.error === "auth") await ctx.vault.forget();
+    render();
+  }
 };
 
 function importTrip(t) {
-  state.migrate(t);
+  state.migrate(t); cleanImported(t);
   if (store.trips[t.id] && JSON.stringify(store.trips[t.id]) !== JSON.stringify(t)) { t.id = state.uid(); t.name = (t.name || "Trip") + " (imported)"; }
   store.trips[t.id] = t; store.current = t.id; state.save(store); return t;
 }
@@ -66,6 +85,7 @@ async function render() {
   if (view === "new") view = "home";
   try {
     if (trip) await ensureDests(trip.kind);
+    if (view === "home" || view === "setup" || !VIEWS[view]) ctx.liveStatus = await ctx.vault.status();
     let html;
     if (view === "home") html = home.render(ctx);
     else {

@@ -46,7 +46,7 @@ CLAUDE.md            working notes for Claude Code sessions
 
 ## Hosting
 
-GitHub Pages: Settings → Pages → deploy from `main`, folder `/`. The app then lives at `https://<user>.github.io/trip-planner/`. It also runs as a Claude artifact (published from these files).
+GitHub Pages: Settings → Pages → deploy from `main`, folder `/`. The app then lives at `https://<user>.github.io/trip-planner/`. 
 
 ## Principles
 
@@ -54,3 +54,7 @@ GitHub Pages: Settings → Pages → deploy from `main`, folder `/`. The app the
 - Honest budgets: per-day rates are built from lodging style, meals, local transport and guides, with the assumption written next to the number. Figures are ±25% planning numbers.
 - Data over opinion: destination files carry the facts; the app computes fit for the trip in hand and says in words why something ranks where it does.
 - The app books nothing. It opens the right page with the right fields filled.
+
+## Live search
+
+With the family password, the trip chat asks Claude (with web search) for real destination options, shown as cards and checked against everyone's limits. Without it the app works as before. One-time setup for the key owner: [docs/LIVE-SETUP.md](docs/LIVE-SETUP.md).

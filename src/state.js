@@ -18,7 +18,8 @@ export function newTrip(kind = "explore") {
     type: kind === "explore" ? { cities: 2, hike: 2, coast: 0, wildlife: 0, history: 1 } : {},
     pace: "normal", visited: [], visitedCountries: [], weights: {},
     plans: {}, chosen: null, ideas: [],
-    steps: {}, expenses: [], decisions: [], dayNotes: {}, log: [], notes: "", brief: []
+    steps: {}, expenses: [], decisions: [], dayNotes: {}, log: [], notes: "", brief: [],
+    options: [], livePlan: null, rates: {}
   };
 }
 
@@ -42,9 +43,9 @@ export function decodeShare(hash, lz) {
   try { const json = lz.decompressFromEncodedURIComponent(body); const t = JSON.parse(json); return t && t.id ? t : null; } catch (e) { return null; }
 }
 export function stripForShare(trip) {
-  // Everything but transient UI state; photos are never in the trip.
+  // Everything but transient UI state and device-only history; photos are never in the trip.
   const copy = JSON.parse(JSON.stringify(trip));
-  delete copy._ui;
+  delete copy._ui; delete copy._local;
   return copy;
 }
 

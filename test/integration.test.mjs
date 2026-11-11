@@ -5,7 +5,11 @@ const { window } = dom;
 for (const k of ["document", "window", "location", "localStorage", "HTMLElement", "FormData", "Event", "CustomEvent"]) { try { Object.defineProperty(globalThis, k, { value: window[k], configurable: true, writable: true }); } catch (e) {} }
 Object.defineProperty(globalThis, "navigator", { value: window.navigator, configurable: true });
 import { fileURLToPath } from "node:url";
-globalThis.fetch = async (u) => { const url = new URL(String(u)); const file = url.protocol === "file:" ? fileURLToPath(url) : fileURLToPath(new URL("../" + url.pathname.replace(/^\//, ""), import.meta.url)); return { ok: fs.existsSync(file), json: async () => JSON.parse(fs.readFileSync(file, "utf8")) }; };
+const fakeFiles = new Map(); let fakeApi = null; // in-memory files (checked before disk) and the Claude API stand-in
+globalThis.fetch = async (u, init) => { const url = new URL(String(u));
+  if (url.hostname === "api.anthropic.com") { if (!fakeApi) return { ok: false, status: 503, text: async () => "" }; const r = await fakeApi(url, init); const st = r.__status || 200; return { ok: st < 400, status: st, text: async () => JSON.stringify(r) }; }
+  for (const [k, v] of fakeFiles) if (url.pathname.endsWith(k)) return { ok: true, status: 200, json: async () => JSON.parse(JSON.stringify(v)) };
+  if (url.pathname.endsWith("/data/claude-key.json")) return { ok: false, status: 404, json: async () => null }; const file = url.protocol === "file:" ? fileURLToPath(url) : fileURLToPath(new URL("../" + url.pathname.replace(/^\//, ""), import.meta.url)); return { ok: fs.existsSync(file), json: async () => JSON.parse(fs.readFileSync(file, "utf8")) }; };
 const sb = { module: { exports: {} } }; sb.exports = sb.module.exports; vm.runInNewContext(fs.readFileSync(new URL("../vendor/lz-string.min.js", import.meta.url), "utf8"), sb); window.LZString = sb.module.exports;
 window.confirm = () => true;
 const tick = (ms = 30) => new Promise(r => setTimeout(r, ms));
@@ -171,6 +175,66 @@ test("scenario: a friend sets up a ski touring week from a sentence and reaches 
   await go("#destinations"); click($('[data-act="choose"]')); await tick(60);
   await go("#decisions"); assert.equal(hrefOfNext(), "#conditions");
   await go("#conditions"); assert.ok($("table.log"), "a conditions log row per day"); assert.equal(hrefOfNext(), "#share");
+});
+
+test("live search: unlock with the family password, ask, see flagged options, and share them", async () => {
+  const { lockKey } = await import("../src/keylock.js");
+  const { encodeShare, decodeShare } = await import("../src/state.js");
+  fakeFiles.set("/data/claude-key.json", await lockKey("sk-ant-test", "correct horse battery staple long", { iterations: 1000 }));
+  const seen = [];
+  const opt = (name, over = {}) => Object.assign({ name, region: "", countryCodes: ["ES"], lat: null, lon: null, why: "Warm and walkable", weather: { text: "20–22 °C by day", highC: 21, lowC: 14, source: { name: "AEMET", url: "https://www.aemet.es/x", seenOn: "2026-11-09" } }, maxAltitudeM: null, activities: ["GR131"], access: { from: "London", mode: "flight", time: "4h30", connections: "Tenerife South + ferry", pricePP: 36, currency: "GBP", seenOn: "2026-11-08", source: null }, lodging: [{ type: "camping", low: 0, high: 10, currency: "EUR" }], estimate: { perPerson: 600, group: 1200, currency: "GBP", breakdown: [{ what: "Flights", amount: 154 }] }, tradeOff: "Permits by email", pick: false, mention: false, mentionWhy: null, sources: [{ name: "Cabildo", url: "https://www.cabildodelapalma.es/", seenOn: "2026-11-09" }] }, over);
+  fakeApi = async (url, init) => { seen.push(init.headers["x-api-key"]); return { stop_reason: "end_turn", usage: {}, content: [
+    { type: "text", text: "Here are three ideas." },
+    { type: "tool_use", id: "t1", name: "propose_options", input: { rates: [{ currency: "EUR", toTrip: 0.86, seenOn: "2026-11-09", source: null }], options: [
+      opt("La Palma", { pick: true }), opt("Southern Morocco", { countryCodes: ["MA"] }), opt("Odd place", { why: "<script>x</script>" }),
+      opt("Cape Verde", { countryCodes: ["CV"], mention: true, mentionWhy: "6h+ flights, over budget" }) ] } }] }; };
+  await go("#home"); click($('[data-act="new-trip"][data-kind="explore"]')); await tick(120);
+  click($('[data-act="add-traveller"]')); await tick(60);
+  change($('[data-bind="travellers.1.name"]'), "Situ"); await tick(40);
+  change($('[data-bind="travellers.1.limits.countryZone"]'), "schengen"); await tick(80);
+  assert.ok($("#livePass"), "the unlock card shows when a locked key exists");
+  $("#livePass").value = "not the family password"; click($('[data-act="live-unlock"]')); await tick(150);
+  assert.match($("#toast").textContent, /doesn't unlock live search/);
+  $("#livePass").value = "correct horse battery staple long"; click($('[data-act="live-unlock"]')); await tick(150);
+  assert.match($(".livestatus").textContent, /Live search is on/); assert.equal($("#livePass"), null);
+  $("#chatText").value = "warm hiking in January"; click($('[data-act="chat-send"]')); await tick(250);
+  assert.deepEqual(seen, ["sk-ant-test"]);
+  const cards = [...window.document.querySelectorAll(".optcard")];
+  assert.equal(cards.length, 3, "pick + two options; the mention is listed apart");
+  assert.match(cards[0].textContent, /Claude's pick/); assert.match(cards[0].textContent, /La Palma/);
+  const morocco = cards.find(c => /Southern Morocco/.test(c.textContent)); assert.match(morocco.textContent, /outside the Schengen area/);
+  assert.equal($(".optcards script"), null); assert.ok($(".optcards").textContent.includes("<script>x</script>"), "Claude's text is shown as text");
+  assert.match($(".optmentions").textContent, /Cape Verde/);
+  assert.equal($(".fitideas"), null, "library ideas give way to live options");
+  const store = JSON.parse(window.localStorage.getItem("tripplanner.v1")); const t = store.trips[store.current];
+  t._local = { optionHistory: [{ at: "x", options: [] }], lastSynced: null };
+  const back = decodeShare(encodeShare(t, window.LZString), window.LZString);
+  assert.equal(back.options.length, 4); assert.equal(back.rates.EUR.toTrip, 0.86); assert.equal(back._local, undefined);
+});
+
+test("review: a crafted share link can't inject HTML through option fields", async () => {
+  const { newTrip, encodeShare } = await import("../src/state.js");
+  const t = newTrip("explore"); t.name = "Crafted";
+  t.options = [{ id: "o_x1", name: "Trap", weather: { text: "", highC: "<img id=pwn src=x>", lowC: null, source: null }, access: { from: "", currency: "<img id=pwn2 src=x>", pricePP: 5 }, estimate: { perPerson: 5, group: 10, currency: "<img id=pwn3 src=x>", breakdown: [] } }, { id: "o_x2", name: "No weather at all" }];
+  t.budget = { total: 100, currency: "<img id=pwn4 src=x>" };
+  window.location.hash = "#" + encodeShare(t, window.LZString).replace(/^#/, ""); await tick(250);
+  await go("#setup"); await tick(100);
+  assert.ok(window.document.querySelectorAll(".optcard").length >= 2, "imported options render without crashing");
+  for (const id of ["pwn", "pwn2", "pwn3", "pwn4"]) assert.equal(window.document.getElementById(id), null, id + " must not be an element");
+  await go("#home"); assert.equal(window.document.getElementById("pwn4"), null);
+});
+test("review: the typed message is saved before the answer arrives, busy is per trip, and a dead key locks again", async () => {
+  let release; fakeApi = () => new Promise(r => { release = r; });
+  await go("#home"); click($('[data-act="new-trip"][data-kind="explore"]')); await tick(150);
+  if ($("#livePass")) { $("#livePass").value = "correct horse battery staple long"; click($('[data-act="live-unlock"]')); await tick(150); }
+  $("#chatText").value = "tents only please"; click($('[data-act="chat-send"]')); await tick(120);
+  const store = JSON.parse(window.localStorage.getItem("tripplanner.v1")); const t = store.trips[store.current];
+  assert.ok(t.brief.some(m => m.text === "tents only please"), "saved before the answer");
+  assert.ok($(".msg.busy"), "shows Searching live");
+  release({ __status: 401, type: "error", error: { message: "invalid x-api-key" } }); await tick(250);
+  assert.equal($(".msg.busy"), null);
+  assert.match($(".thread").textContent, /no longer works/);
+  assert.ok($("#livePass"), "the unlock card is back after a dead key");
 });
 
 test("describe with a chatbot: copy the prompt, a cut-off reply is refused, a good one opens Setup", async () => {

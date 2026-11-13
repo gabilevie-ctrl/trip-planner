@@ -308,7 +308,6 @@ test("6. Plan chat: swap the El Pilar camping night for a hut and add a rest day
 });
 
 test.todo("a booked booking Claude keeps listing but no night or leg uses any more is flagged too, and a dropped booking's price is shown apart from the plan total");
-test.todo("when an update leaves out an item someone ticked or added (a done to-do, their own gear row), the app keeps it or asks, instead of dropping it");
 
 test("7. Money: plan total vs budget, real expenses, and the split", async () => {
   await go("#money");

@@ -73,7 +73,7 @@ export function gearCard(t) {
 export function bookingsCard(t) {
   const p = currentPlan(t); if (!p) return "";
   const rows = (p.bookings || []).map((b, i) => `<tr class="${b.status === "not-needed" ? "muted" : ""}">
-    <td><strong>${esc(b.what)}</strong> <span class="muted small">${esc(CATEGORY_LABEL[b.category] || "")}</span>${b.dropped ? `<br><span class="pill warn">No longer in Claude's plan: keep it, or set it to Not needed (and cancel if booked)</span>` : ""}${b.pick ? `<br><span class="small">${esc(b.pick)}</span>` : ""}${b.alternative ? `<br><span class="muted small">Or: ${esc(b.alternative)}</span>` : ""}${b.details ? `<br><span class="muted small">Enter: ${esc(b.details)}</span>` : ""}</td>
+    <td><strong>${esc(b.what)}</strong> <span class="muted small">${esc(CATEGORY_LABEL[b.category] || "")}</span>${b.dropped && b.status !== "not-needed" ? `<br><span class="pill warn">No longer in Claude's plan: keep it, or set it to Not needed (and cancel if booked)</span>` : ""}${b.pick ? `<br><span class="small">${esc(b.pick)}</span>` : ""}${b.alternative ? `<br><span class="muted small">Or: ${esc(b.alternative)}</span>` : ""}${b.details ? `<br><span class="muted small">Enter: ${esc(b.details)}</span>` : ""}</td>
     <td class="num">${n(b.price) !== null ? money(b.price, b.currency, t) : `<span class="muted">no price</span>`}${b.seenOn && n(b.price) !== null ? `<br><span class="muted small">seen ${esc(fmtDate(b.seenOn))}</span>` : ""}${b.source ? `<br><span class="small">${link(b.source.url, b.source.name)}</span>` : ""}</td>
     <td class="small">${b.bookBy ? esc(fmtDate(b.bookBy)) : ""}</td>
     <td>${link(b.link, "Book →")}</td>
@@ -119,6 +119,7 @@ export function totalsFacts(t) {
   const r = planTotals(p, t);
   const notes = `${Object.keys(r.byCategory).length ? `<p class="small">${Object.entries(r.byCategory).map(([k, v]) => `${esc(k)} ${fmtMoney(v, cur)}`).join(" · ")}</p>` : ""}
     ${r.travellersChanged ? `<p class="small alert">The plan was priced for ${r.travellersChanged.was} travellers; the trip now has ${r.travellersChanged.now}. The total and per-person figures are for ${r.travellersChanged.was}. Ask in the plan chat on Build to update it.</p>` : ""}
+    ${r.setAside.length ? `<p class="small alert">No longer in Claude's plan, so left out of the total until you book or drop them: ${r.setAside.map(x => esc(x.what)).join(", ")}.</p>` : ""}
     ${r.missing.length ? `<p class="small alert">No exchange rate yet, so left out of the plan total: ${r.missing.map(m => `${esc(m.what)} (${esc(m.currency || "no currency")})`).join(", ")}.</p>` : ""}`;
   return { fact: `<div class="fact"><span class="k">Plan total (${esc(liveChoice(t)?.name || "")}, ${fmtMoney(r.perPerson, cur)} pp)</span><span class="v num ${r.overBudget ? "crit" : ""}">${fmtMoney(r.total, cur)}</span></div>`, notes, total: r.total };
 }
@@ -130,10 +131,11 @@ export function summaryLines(t) {
   const lines = ["", `Destination: ${o.name}${o.region ? " (" + o.region + ")" : ""}`];
   if (!p) return lines.concat("No plan yet.");
   const r = planTotals(p, t);
-  lines.push(`Plan total ${fmtMoney(r.total, cur)}, ${fmtMoney(r.perPerson, cur)} pp${t.budget?.total ? (r.overBudget ? " (over budget)" : " (within budget)") : ""}${r.missing.length ? `; not counted (no rate): ${r.missing.map(m => m.what).join(", ")}` : ""}`);
+  lines.push(`Plan total ${fmtMoney(r.total, cur)}, ${fmtMoney(r.perPerson, cur)} pp${t.budget?.total ? (r.overBudget ? " (over budget)" : " (within budget)") : ""}${r.missing.length ? `; not counted (no rate): ${r.missing.map(m => m.what).join(", ")}` : ""}${r.setAside.length ? `; not counted (no longer in Claude's plan): ${r.setAside.map(x => x.what).join(", ")}` : ""}`);
+  if (r.travellersChanged) lines.push(`The plan was priced for ${r.travellersChanged.was} travellers; the trip now has ${r.travellersChanged.now}.`);
   lines.push("", "Day by day:");
   (p.days || []).forEach((d, i) => lines.push(`  ${i + 1}. ${d.date || ""}  ${d.move}${d.night?.name ? " — " + d.night.name : ""}`));
-  if ((p.bookings || []).length) { lines.push("", "Bookings:"); for (const b of p.bookings) lines.push(`  [${STATUS_LABEL[b.status] || b.status}] ${b.what}${n(b.price) !== null ? " — " + fmtMoney(b.price, b.currency || cur) : ""}${b.confirmation ? " · " + b.confirmation : ""}`); }
+  if ((p.bookings || []).length) { lines.push("", "Bookings:"); for (const b of p.bookings) lines.push(`  [${STATUS_LABEL[b.status] || b.status}] ${b.what}${n(b.price) !== null ? " — " + fmtMoney(b.price, b.currency || cur) : ""}${b.confirmation ? " · " + b.confirmation : ""}${b.dropped && b.status !== "not-needed" ? " (no longer in Claude's plan)" : ""}`); }
   const open = planTodo(p).filter(x => !x.done);
   if (open.length) { lines.push("", "To do:"); for (const x of open.slice(0, 12)) lines.push(`  [ ] ${x.what}${x.date ? " (by " + x.date + ")" : ""}`); }
   return lines;

@@ -39,9 +39,10 @@ const PROPS = {
   todo: arr(obj({ id: { type: "string", description: "t_ prefix" }, date: SN, what: S })),
   otherCosts: arr(obj({ id: { type: "string", description: "c_ prefix" }, what: S, amount: N, currency: S, seenOn: S })),
   sources: arr(SOURCE),
-  rates: arr(obj({ currency: S, toTrip: N, seenOn: S, source: MAYBE_SOURCE }))
+  rates: arr(obj({ currency: S, toTrip: N, seenOn: S, source: MAYBE_SOURCE })),
+  pricedFor: { type: "number", description: "how many travellers the booking prices and other costs are for" }
 };
-const MONEY_NOTE = "A booking price is for the whole group, in its own currency; give a rate to the trip currency for every other currency used. Never write totals: the app computes them.";
+const MONEY_NOTE = "Set pricedFor to the number of travellers the prices are for. A booking price is for the whole group, in its own currency; give a rate to the trip currency for every other currency used. Never write totals: the app computes them.";
 export const WRITE_PLAN_TOOL = {
   name: "write_plan",
   description: "Save the whole plan for the chosen option: days, bookings, permits, admin per traveller, gear, food, to-dos, other costs (food and local costs that aren't booked) and sources. The app shows it in its tabs and keeps what people marked. " + MONEY_NOTE + " Ids use a fixed prefix per collection: d_ day, l_ leg, b_ booking, p_ permit, a_ admin, g_ gear, t_ to-do, c_ other cost.",
@@ -92,7 +93,9 @@ export function normalizePlan(input, trip, { today = new Date().toISOString().sl
   // Bookings Claude left out of its latest plan but people had worked on (set by mergePlan, kept on import).
   if (own) (Array.isArray(i.bookings) ? i.bookings : []).forEach((b, n) => { if (isObj(b) && b.dropped === true) { const c = plan.bookings.find(x => x.id === str(b.id)); if (c) c.dropped = true; } });
   // How many travellers the prices were for, so a change of group size shows instead of silently re-dividing.
-  plan.forTravellers = own ? (Number.isInteger(num(i.forTravellers)) && num(i.forTravellers) > 0 ? num(i.forTravellers) : null) : people.length || null;
+  // From Claude it is pricedFor; stored or shared plans carry forTravellers. Missing means the group as it is now.
+  const count = v => Number.isInteger(num(v)) && num(v) > 0 ? num(v) : null;
+  plan.forTravellers = (own ? count(i.forTravellers) : count(i.pricedFor)) || people.length || null;
   // Admin comes from Claude as a list keyed by traveller name, and from storage as { travellerId: [...] }.
   plan.admin = {};
   const adminItem = (a, key) => {
@@ -145,7 +148,8 @@ export function mergePlan(existing, input, trip, { today = new Date().toISOStrin
   const plan = { optionId: fresh.optionId };
   const old = (k, fallback) => JSON.parse(JSON.stringify(existing[k] ?? fallback));
   for (const k of COLLECTIONS) plan[k] = sent(k) ? fresh[k] : old(k, k === "admin" ? {} : k === "food" ? "" : []);
-  plan.forTravellers = sent("bookings") || sent("otherCosts") ? fresh.forTravellers : existing.forTravellers ?? null;
+  // An update that doesn't say what its prices are for keeps the old count, so a change of group size stays visible.
+  plan.forTravellers = partial && !(Number.isInteger(num(i.pricedFor)) && num(i.pricedFor) > 0) ? existing.forTravellers ?? fresh.forTravellers : fresh.forTravellers;
   const copy = x => JSON.parse(JSON.stringify(x));
   if (sent("bookings")) {
     const m = pair(plan.bookings, existing.bookings, b => b.category + "|" + b.what);
@@ -207,20 +211,22 @@ export const CATEGORY_LABEL = { transport: "Transport", lodging: "Lodging", perm
 /* Bookings that aren't "not needed" plus other costs, each converted to the trip currency. A price with no rate
    is named in `missing` and left out; `counted` is how many prices went into the total. */
 export function planTotals(plan, trip) {
-  const byCategory = {}; const missing = []; let total = 0, counted = 0;
+  const byCategory = {}; const missing = []; const setAside = []; let total = 0, counted = 0;
   const add = (what, amount, currency, label) => {
     if (amount === null || amount === undefined || !Number.isFinite(amount)) return;
     const v = toTripCurrency(amount, currency, trip);
     if (v === null) { missing.push({ what, currency }); return; }
     total += v; counted++; byCategory[label] = (byCategory[label] || 0) + v;
   };
-  for (const b of plan?.bookings || []) if (b.status !== "not-needed") add(b.what, b.price, b.currency, CATEGORY_LABEL[b.category] || CATEGORY_LABEL.other);
+  // A booking Claude left out of its plan counts only once booked (paid); otherwise it is named apart, not added.
+  for (const b of plan?.bookings || []) if (b.dropped && b.status !== "booked" && b.status !== "not-needed") setAside.push({ what: b.what });
+  else if (b.status !== "not-needed") add(b.what, b.price, b.currency, CATEGORY_LABEL[b.category] || CATEGORY_LABEL.other);
   for (const c of plan?.otherCosts || []) add(c.what, c.amount, c.currency, CATEGORY_LABEL.local);
   const people = Array.isArray(trip.travellers) ? trip.travellers.length : 0;
   const priced = plan?.forTravellers || people || 1;
   const budget = trip.budget?.total || 0;
   const travellersChanged = plan?.forTravellers && people && plan.forTravellers !== people ? { was: plan.forTravellers, now: people } : null;
-  return { total, perPerson: Math.round(total / priced), byCategory, missing, overBudget: budget > 0 && total > budget, counted, travellersChanged };
+  return { total, perPerson: Math.round(total / priced), byCategory, missing, setAside, overBudget: budget > 0 && total > budget, counted, travellersChanged };
 }
 
 /* The plan's own to-dos, plus "Book …" for each booking with a book-by date and "Apply: …" for each permit,

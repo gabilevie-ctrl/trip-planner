@@ -118,3 +118,15 @@ test("bug 8: Money says the plan was priced for fewer people", async () => {
   t.livePlan = Object.assign(normalizePlan(planInput(), t, { optionId: "o_lp" }), { forTravellers: 2 });
   assert.match(views.money.render(ctxFor(t)), /priced for 2 travellers; the trip now has 3/);
 });
+
+test("review 4 + 5: Share names a changed group and dropped bookings; the dropped note goes once it's Not needed", async () => {
+  const lp = await import("../src/views/liveplan.js"); const { normalizePlan } = await import("../src/liveplan.js");
+  const { planInput } = await import("./plan-fixtures.mjs");
+  const t = familyTrip({ id: "t_share", kind: "hike", options: [{ id: "o_lp", name: "La Palma" }], chosen: "o_lp", travellers: [{ id: "g", name: "G", limits: {} }, { id: "s", name: "S", limits: {} }, { id: "x", name: "X", limits: {} }], rates: { EUR: { toTrip: 1, seenOn: "2026-11-09", source: null } } });
+  t.livePlan = normalizePlan(planInput(), t, { optionId: "o_lp" }); t.livePlan.forTravellers = 2;
+  const camp = t.livePlan.bookings.find(b => b.id === "b_camp"); camp.dropped = true; camp.status = "decided";
+  const text = lp.summaryLines(t).join("\n");
+  assert.match(text, /priced for 2 travellers; the trip now has 3/); assert.match(text, /Caldera campsite.*no longer in Claude's plan/);
+  assert.match(lp.bookingsCard(t), /No longer in Claude's plan/);
+  camp.status = "not-needed"; assert.doesNotMatch(lp.bookingsCard(t), /No longer in Claude's plan/);
+});

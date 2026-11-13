@@ -58,6 +58,8 @@ export function migrate(trip) {
   // Device-only history (stripped from share links): replaced option sets and replaced plans.
   trip._local = trip._local && typeof trip._local === "object" ? trip._local : { optionHistory: [], lastSynced: null };
   if (!Array.isArray(trip._local.planHistory)) trip._local.planHistory = [];
+  // Plans written before the head count was kept: take them as priced for the group as it is now.
+  if (trip.livePlan && typeof trip.livePlan === "object" && !(Number.isInteger(trip.livePlan.forTravellers) && trip.livePlan.forTravellers > 0)) trip.livePlan.forTravellers = trip.travellers.length || null;
   trip.schema = SCHEMA;
   return trip;
 }

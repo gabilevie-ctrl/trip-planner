@@ -127,7 +127,7 @@ Written by the live chat (Claude with web search, see `docs/LIVE-SETUP.md`). Eve
   "rates": { "EUR": { "toTrip": 0.86, "seenOn": "2026-11-09", "source": { … } } },   // trip-currency units for 1 unit of that currency
   "livePlan": null,                // null until Claude writes the plan for the chosen live option (src/liveplan.js)
   // { "optionId": "o_…",           // the plan shows only while trip.chosen === optionId
-  //   "forTravellers": 2,          // how many travellers the prices were for; Money says so when the group size changes
+  //   "forTravellers": 2,          // how many travellers the prices were for (Claude's pricedFor); Money, Build and Share say so when the group size changes
   //   "days": [ { "id": "d_…", "date", "move", "km", "ascentM", "descentM", "hours",
   //     "night": { "name", "type", "bookingId" }, "fallback",          // type: a lodging type or "none"; bookingId null when unknown
   //     "legs": [ { "id": "l_…", "mode", "from", "to", "time", "bookingId", "note" } ],   // mode: flight | train | ferry | drive | bus | walk

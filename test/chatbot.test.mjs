@@ -141,3 +141,10 @@ test("inherited names like toString or __proto__ are not valid values or keys", 
 test("a hiking share sent as a fraction means a percentage", () => {
   assert.equal(fill({ travellers: [{ name: "A", limits: { maxHikeShare: 0.6 } }] }).trip.travellers[0].limits.maxHikeShare, 60);
 });
+
+test("review: places to avoid come back as a list, from a list or a single value; unknown regions are dropped", () => {
+  const r = fill({ kind: "explore", travellers: [{ name: "Mom", limits: { avoidRegions: ["centralAsia", "balkans", "mars"] } }, { name: "Dad", limits: { avoidRegions: "baltics" } }] });
+  assert.deepEqual(r.trip.travellers[0].limits.avoidRegions, ["centralAsia", "balkans"]);
+  assert.deepEqual(r.trip.travellers[1].limits.avoidRegions, ["baltics"]);
+  assert.match(buildPrompt(text, { today }), /avoidRegions[^\n]*a list of any of "balkans"/);
+});

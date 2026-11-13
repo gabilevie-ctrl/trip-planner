@@ -115,3 +115,16 @@ test("Setup offers the places to avoid as tick boxes, and ticking one saves it",
   assert.deepEqual(t.travellers[0].limits.avoidRegions, []);
   assert.equal(commits.length, 2);
 });
+
+test("review: a single stored region shows and is kept when another is ticked; the open list stays open", () => {
+  const t = familyTrip(); t.travellers[0].limits.avoidRegions = "centralAsia";
+  const ctx = { trip: t, dests: [], countries: [], commit: () => {}, liveStatus: "none", busyTrips: new Set(), templates: [], names: {} };
+  assert.match(setupView.render(ctx), /<summary class="small">Central Asia<\/summary>/);
+  setupView.actions["toggle-avoid"]({ dataset: { i: "0", v: "baltics" }, checked: true }, ctx);
+  assert.deepEqual(t.travellers[0].limits.avoidRegions, ["centralAsia", "baltics"]);
+  assert.match(setupView.render(ctx), /<details class="multi" open>/, "the list just ticked stays open after the redraw");
+});
+test("review: a limit the whole group shares reads (everyone's limit)", () => {
+  const t = familyTrip(); t.travellers.forEach(p => { p.limits = { maxDayHighC: 33 }; });
+  assert.ok(computePlan(dest("caucasus"), t).flags.some(f => /above the 33°C ceiling \(everyone's limit\)$/.test(f)));
+});

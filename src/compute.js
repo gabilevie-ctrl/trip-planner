@@ -211,7 +211,8 @@ export function climateFor(dest, trip) {
 /* " (Mom's limit)" or " (limit of Mom and Dad)" after a flag; nothing when nobody with that limit has a name. */
 export function whose(trip, key, value) {
   const names = limitOwners(trip, key, value);
-  return !names.length ? "" : names.length === 1 ? ` (${names[0]}'s limit)` : ` (limit of ${andList(names)})`;
+  const named = (trip.travellers || []).filter(p => String(p.name || "").trim()).length;
+  return !names.length ? "" : names.length > 1 && names.length === named ? " (everyone's limit)" : names.length === 1 ? ` (${names[0]}'s limit)` : ` (limit of ${andList(names)})`;
 }
 /* "Kyrgyzstan and Uzbekistan are in Central Asia, a place to avoid (Mom's limit)", one flag per region. */
 export function avoidFlags(codes, trip, limits = strictestLimits(trip)) {

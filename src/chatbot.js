@@ -17,7 +17,7 @@ const ERR = {
 /* ---------- The prompt ---------- */
 function limitLine(c) {
   const kinds = c.kinds.join(", ");
-  const what = c.type === "number" ? `number${c.unit ? " in " + c.unit : ""}` : c.type === "bool" ? "true or false" : "one of " + c.options.map(o => `"${o[0]}"`).join(", ");
+  const what = c.type === "number" ? `number${c.unit ? " in " + c.unit : ""}` : c.type === "bool" ? "true or false" : c.type === "multi" ? "a list of any of " + c.options.map(o => `"${o[0]}"`).join(", ") : "one of " + c.options.map(o => `"${o[0]}"`).join(", ");
   return `  - ${c.key} (${kinds}): ${c.label}, ${what}.${c.help ? " " + c.help : ""}`;
 }
 
@@ -103,6 +103,12 @@ function checkLimits(raw, kind, who, dropped) {
       if (Number.isFinite(n) && n >= lo && n <= hi) out[k] = n; else dropped.push(`${who}: ${k} ${JSON.stringify(v)} (needs a number from ${lo} to ${hi}${c.unit ? " " + c.unit : ""})`);
     } else if (c.type === "bool") {
       if (typeof v === "boolean") out[k] = v; else dropped.push(`${who}: ${k} ${JSON.stringify(v)} (needs true or false)`);
+    } else if (c.type === "multi") {
+      // A list (or a single value) of known options; anything else is named as not used.
+      const vals = (Array.isArray(v) ? v : [v]).map(String);
+      const ok = vals.filter(x => c.options.some(o => o[0] === x)), bad = vals.filter(x => !ok.includes(x));
+      if (ok.length) out[k] = [...new Set(ok)];
+      if (bad.length) dropped.push(`${who}: ${k} ${JSON.stringify(bad)} (not among ${c.options.map(o => o[0]).join(", ")})`);
     } else {
       const sv = String(v);
       if (c.options.some(o => o[0] === sv)) out[k] = sv; else dropped.push(`${who}: ${k} ${JSON.stringify(v)} (not one of ${c.options.map(o => o[0]).join(", ")})`);

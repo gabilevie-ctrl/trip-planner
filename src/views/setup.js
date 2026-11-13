@@ -72,7 +72,8 @@ export function render(ctx) {
 /* The one thread with the planner. On Build it is the plan chat (plan: true): same thread, its own wording. */
 export function chat(t, ctx, title = "Describe the trip", { plan = false } = {}) {
   const msgs = t.brief || []; const live = ctx.liveStatus === "unlocked"; const busy = !!ctx.busyTrips?.has(t.id);
-  const status = live ? `<p class="livestatus small">Live search is on: Claude searches the web for options. <button type="button" class="linklike" data-act="live-forget">Forget on this device</button></p>`
+  const status = live && ctx.liveVia === "helper" ? `<p class="livestatus small">Live search is on, through Claude Code on this Mac (your Claude plan): Claude searches the web for options.</p>`
+    : live ? `<p class="livestatus small">Live search is on: Claude searches the web for options. <button type="button" class="linklike" data-act="live-forget">Forget on this device</button></p>`
     : ctx.liveStatus === "locked" ? `<p class="muted small">Unlock live search above for real options from the web.</p>` : "";
   return `<section class="card chat">
     <h2>${esc(title)}</h2>${status}

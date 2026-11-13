@@ -9,7 +9,8 @@
     "seed": "node scripts/seed-routes.cjs",
     "serve": "python3 -m http.server 8000",
     "validate:strict": "node scripts/validate.cjs --strict",
-    "lock-key": "node scripts/lock-key.mjs"
+    "lock-key": "node scripts/lock-key.mjs",
+    "family": "node scripts/family-server.mjs"
   },
   "devDependencies": {
     "jsdom": "^25.0.1"

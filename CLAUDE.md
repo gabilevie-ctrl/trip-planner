@@ -10,7 +10,7 @@ A static, no-build web app for planning group trips (README.md). Vanilla JS ES m
 
 ## Ground rules
 - No framework, no bundler. A library only when it does substantial work; vendor a pinned build under `vendor/`.
-- Live fetches only to this allow-list: `api.anthropic.com` (live search, through `src/claude.js` with the family-password key, see `docs/LIVE-SETUP.md`), `*.open-meteo.com`, `en.wikivoyage.org`, OSM tile servers. Everything must still work without them: no lock file or no password means the rule-based chat and the library, as before.
+- Live fetches only to this allow-list: `api.anthropic.com` (live search, through `src/claude.js` with the family-password key, see `docs/LIVE-SETUP.md`), `*.open-meteo.com`, `en.wikivoyage.org`, OSM tile servers; and, when the app is served by `npm run family` on Gabriel's Mac, its own `/api/claude/*` (Claude Code signed in with his Claude subscription, `scripts/lib/helper.mjs`; web search and web fetch only, own-page requests only). Everything must still work without them: no lock file or no password means the rule-based chat and the library, as before.
 - The Anthropic key is never in the repo in clear, in localStorage, in a trip or in a share link; only `data/claude-key.json` (locked) is committed.
 - Every number shown has a source: a destination field, a trip input, or a formula in `src/compute.js` / `src/scoring.js`. No magic constants in views.
 - Traveller limits are flags, never silent exclusion.

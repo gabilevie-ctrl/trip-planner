@@ -14,9 +14,26 @@ export const MESSAGES = {
   refusal: "Claude declined that request.",
   "bad-response": "Live search sent back something unexpected.",
   "cut-off": "Claude's answer was cut off before the end. Try again, or ask for fewer options.",
+  "helper-down": "Live search on this Mac has stopped. Start it again with npm run family, then try again.",
+  "helper-auth": "Claude Code on this Mac isn't signed in. In a terminal, run claude, type /login, sign in with your Claude account, then try again.",
   timeout: "Claude took too long to answer, or the connection dropped. Keep this tab open while it works, then try again."
 };
 const fail = error => ({ ok: false, error, message: MESSAGES[error] });
+
+/* On Gabriel's Mac (npm run family): the same request, answered by Claude Code signed in with his Claude account.
+   Same result shape as ask(); never throws. */
+export async function askHelper({ system, messages, tools = [], maxTokens = 16000, timeoutMs = TIMEOUT_MS, fetchImpl = (...a) => fetch(...a) }) {
+  const ctl = new AbortController(); const timer = setTimeout(() => ctl.abort(), timeoutMs);
+  try {
+    let res;
+    try { res = await fetchImpl("/api/claude/ask", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ system, messages, tools, maxTokens }), signal: ctl.signal }); }
+    catch (e) { return fail(ctl.signal.aborted ? "timeout" : "helper-down"); }
+    let data; try { data = JSON.parse(await res.text()); } catch (e) { return fail(ctl.signal.aborted ? "timeout" : "bad-response"); }
+    if (!data || typeof data !== "object") return fail("bad-response");
+    if (!data.ok) return { ok: false, error: data.error || "server", message: data.message || MESSAGES[data.error] || MESSAGES.server };
+    return { ok: true, text: String(data.text || ""), toolCalls: Array.isArray(data.toolCalls) ? data.toolCalls : [], searches: data.searches || 0, usage: data.usage || {} };
+  } finally { clearTimeout(timer); }
+}
 
 // A plan can take minutes; past this the call is given up with a clear message instead of "busy" forever.
 export const TIMEOUT_MS = 8 * 60 * 1000;

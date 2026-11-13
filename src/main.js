@@ -6,7 +6,7 @@ import { KINDS } from "./criteria.js";
 import { esc, fmtDateY, labelCells } from "./ui.js";
 import { feedbackMailto } from "./links.js";
 import { browserVault } from "./vault.js";
-import { ask } from "./claude.js";
+import { ask, askHelper } from "./claude.js";
 import { liveTurn } from "./livechat.js";
 import { cleanImported } from "./options.js";
 import { chosenName } from "./liveplan.js";
@@ -46,24 +46,34 @@ const ctx = {
   copy: (text, el) => { const done = () => { if (el) { const old = el.textContent; el.textContent = "Copied"; setTimeout(() => el.textContent = old, 1500); } }; if (navigator.clipboard) navigator.clipboard.writeText(text).then(done).catch(() => toast("Copy failed; select the text and copy it yourself.")); else toast("Copy is not available here; select the text and copy it yourself."); },
   toast, confirm: msg => window.confirm ? window.confirm(msg) : true,
   /* Live search: the vault holds the unlocked key; liveStatus is refreshed before Home and Setup render. */
-  vault: browserVault(), liveStatus: "none", busyTrips: new Set(),
+  vault: browserVault(), liveStatus: "none", liveVia: null, busyTrips: new Set(),
   /* A live turn: the form fill and the typed message are saved and shown at once with "Searching live…" on that trip,
      then the answer. A key that no longer works locks live search again so the password card comes back. */
   runLive: async (trip, text, { fromApp = false } = {}) => {
     if (ctx.busyTrips.has(trip.id)) return;
-    const apiKey = await ctx.vault.apiKey();
-    const pending = liveTurn(trip, text, { ask, apiKey, countries, fromApp }); // its synchronous part fills the form and the thread now
+    // On Gabriel's Mac the family server answers through Claude Code (his subscription); elsewhere the locked key and the API.
+    const helper = ctx.liveVia === "helper";
+    const apiKey = helper ? null : await ctx.vault.apiKey();
+    const pending = liveTurn(trip, text, { ask: helper ? askHelper : ask, apiKey, countries, fromApp }); // its synchronous part fills the form and the thread now
     const saveTrip = () => { state.touch(trip); state.save(store); savedFlash(); };
     ctx.busyTrips.add(trip.id); saveTrip(); render();
     let r = null;
     try { r = await pending; } finally { ctx.busyTrips.delete(trip.id); saveTrip(); }
-    if (r && r.error === "auth") await ctx.vault.forget();
+    if (r && r.error === "auth" && !helper) await ctx.vault.forget();
     // Someone may be typing in the plan while Claude worked: redraw once they leave the field, not under their fingers.
     const f = document.activeElement;
     if (f && f.matches && f.matches("#app [data-bind]")) f.addEventListener("blur", () => setTimeout(render, 0), { once: true });
     else render();
   }
 };
+
+/* Is the family server (npm run family) serving this page? Asked once, only on this computer's own addresses. */
+let helperP = null;
+function helperHere() {
+  if (!["localhost", "127.0.0.1"].includes(location.hostname)) return Promise.resolve(null);
+  helperP = helperP || fetch("/api/claude/status").then(r => r.ok ? r.json() : null).then(b => b && b.ok ? "helper" : null).catch(() => null);
+  return helperP;
+}
 
 function importTrip(t) {
   state.migrate(t); cleanImported(t);
@@ -89,7 +99,8 @@ async function render() {
   if (view === "new") view = "home";
   try {
     if (trip) await ensureDests(trip.kind);
-    ctx.liveStatus = await ctx.vault.status(); // every tab may offer a live action (the plan cards ask for the plan)
+    ctx.liveVia = await helperHere();
+    ctx.liveStatus = ctx.liveVia === "helper" ? "unlocked" : await ctx.vault.status(); // every tab may offer a live action
     let html;
     if (view === "home") html = home.render(ctx);
     else {

@@ -71,3 +71,8 @@ test("minor: an answer cut off by max_tokens becomes error cut-off, not a half a
   const { fetchImpl } = recorder([reply(200, { stop_reason: "max_tokens", usage: {}, content: [{ type: "text", text: "Here are" }] })]);
   const r = await ask({ ...base, fetchImpl }); assert.equal(r.ok, false); assert.equal(r.error, "cut-off"); assert.match(r.message, /cut off/);
 });
+test("maxTokens is sent when given", async () => {
+  const { calls, fetchImpl } = recorder([reply(200, { stop_reason: "end_turn", content: [{ type: "text", text: "Hi" }], usage: {} })]);
+  await ask({ ...base, maxTokens: 32000, fetchImpl });
+  assert.equal(calls[0].body.max_tokens, 32000);
+});

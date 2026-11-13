@@ -4,7 +4,7 @@ export const API_URL = "https://api.anthropic.com/v1/messages";
 export const MODEL = "claude-opus-5-5";
 export const WEB_SEARCH = { type: "web_search_20260209", name: "web_search", max_uses: 5 };
 const MAX_CONTINUES = 3;
-const TOOL_ACK = "Saved. The app now shows these as cards and checks them against every traveller's limits. Now reply to the traveller in text only, as the instructions say.";
+const TOOL_ACK = "Saved. The app now shows it and checks it against every traveller's limits. Now reply to the traveller in text only, as the instructions say.";
 
 export const MESSAGES = {
   auth: "The saved key no longer works. Ask Gabriel for the new password.",
@@ -17,12 +17,12 @@ export const MESSAGES = {
 };
 const fail = error => ({ ok: false, error, message: MESSAGES[error] });
 
-export async function ask({ apiKey, system, messages, tools = [], fetchImpl = (...a) => fetch(...a) }) {
+export async function ask({ apiKey, system, messages, tools = [], maxTokens = 16000, fetchImpl = (...a) => fetch(...a) }) {
   const convo = messages.slice();
   const content = []; let usage = {};
   for (let i = 0; i <= MAX_CONTINUES; i++) {
     const body = {
-      model: MODEL, max_tokens: 16000, thinking: { type: "adaptive" }, output_config: { effort: "medium" }, fallbacks: "default",
+      model: MODEL, max_tokens: maxTokens, thinking: { type: "adaptive" }, output_config: { effort: "medium" }, fallbacks: "default",
       system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }],
       tools: [WEB_SEARCH, ...tools], messages: convo
     };

@@ -73,3 +73,61 @@ test("minor: earlier error replies are not sent to Claude as its own words", asy
   assert.ok(!/Live search is busy/.test(JSON.stringify(msgs)));
   assert.equal(msgs.length, 1); assert.match(msgs[0].content, /first try[\s\S]*second try/);
 });
+
+/* ---------- The live plan ---------- */
+import { planInput } from "./plan-fixtures.mjs";
+import { normalizePlan } from "../src/liveplan.js";
+function chosenTrip() {
+  const t = situTrip();
+  t.options = [Object.assign(option("La Palma"), { id: "o_lp" }), Object.assign(option("Southern Morocco"), { id: "o_ma" })];
+  t.chosen = "o_lp"; t.dates = { start: "2027-01-02", end: "2027-01-03" };
+  return t;
+}
+const planCall = (name, input) => ({ ok: true, text: "", toolCalls: [{ name, input }], searches: 2 });
+const nullsBut = over => Object.assign(Object.fromEntries(Object.keys(planInput()).map(k => [k, null])), over);
+
+test("with a chosen option, write_plan sets livePlan for it and keeps the old plan on this device", async () => {
+  const t = chosenTrip(); t.livePlan = normalizePlan(planInput({ food: "old" }), t, { today: TODAY, optionId: "o_lp" });
+  const bad = planInput(); bad.bookings[0].link = "javascript:alert(1)";
+  const { ask, calls } = fakeAsk(planCall("write_plan", bad));
+  const r = await liveTurn(t, "Write the full plan for La Palma.", opts(ask));
+  assert.equal(r.ok, true); assert.equal(r.planChanged, true);
+  assert.equal(t.livePlan.optionId, "o_lp"); assert.equal(t.livePlan.bookings[0].link, null);
+  assert.equal(t._local.planHistory.length, 1); assert.equal(t._local.planHistory[0].plan.food, "old");
+  assert.ok(t.brief.at(-1).planRev); assert.equal(t.brief.at(-1).text, "Here is the plan.");
+  assert.deepEqual(calls[0].tools.map(x => x.name), ["propose_options", "write_plan", "update_plan"]);
+  assert.equal(calls[0].maxTokens, 32000);
+  assert.equal(t.rates.EUR.toTrip, 0.86);
+});
+test("update_plan merges into the current plan", async () => {
+  const t = chosenTrip(); t.livePlan = normalizePlan(planInput(), t, { today: TODAY, optionId: "o_lp" });
+  const days = JSON.stringify(t.livePlan.days);
+  const { ask } = fakeAsk(planCall("update_plan", nullsBut({ bookings: planInput().bookings.map(b => b.id === "b_camp" ? Object.assign({}, b, { price: 40 }) : b) })));
+  const r = await liveTurn(t, "the campsite is 40 now", opts(ask));
+  assert.equal(r.planChanged, true); assert.equal(t.brief.at(-1).text, "The plan is updated.");
+  assert.equal(t.livePlan.bookings.find(b => b.id === "b_camp").price, 40); assert.equal(JSON.stringify(t.livePlan.days), days);
+});
+test("update_plan with no plan yet is taken as the whole plan", async () => {
+  const t = chosenTrip();
+  const { ask } = fakeAsk(planCall("update_plan", nullsBut({ bookings: planInput().bookings })));
+  const r = await liveTurn(t, "plan please", opts(ask));
+  assert.equal(r.planChanged, true); assert.equal(t.livePlan.optionId, "o_lp"); assert.equal(t.livePlan.bookings.length, 3); assert.deepEqual(t.livePlan.days, []);
+});
+test("Claude sees the chosen option and the plan, with booking statuses", async () => {
+  const t = chosenTrip(); t.livePlan = normalizePlan(planInput(), t, { today: TODAY, optionId: "o_lp" }); t.livePlan.bookings[0].status = "booked";
+  const { ask, calls } = fakeAsk({ ok: true, text: "ok", toolCalls: [], searches: 0 });
+  await liveTurn(t, "anything to change?", opts(ask));
+  const final = calls[0].messages.at(-1).content;
+  assert.match(final, /"chosenOption":\{"id":"o_lp"/); assert.match(final, /"status":"booked"/);
+});
+test("without a chosen option, maxTokens stays 16000 and no plan is written", async () => {
+  const t = situTrip();
+  const { ask, calls } = fakeAsk(planCall("write_plan", planInput()));
+  const r = await liveTurn(t, "ideas", opts(ask));
+  assert.equal(calls[0].maxTokens, 16000); assert.equal(r.planChanged, false); assert.equal(t.livePlan, null);
+});
+test("only the last three replaced plans are kept", async () => {
+  const t = chosenTrip();
+  for (let i = 0; i < 5; i++) { const { ask } = fakeAsk(planCall("write_plan", planInput({ food: "round " + i }))); await liveTurn(t, "again", opts(ask)); }
+  assert.equal(t._local.planHistory.length, 3); assert.equal(t.livePlan.food, "round 4"); assert.equal(t._local.planHistory.at(-1).plan.food, "round 3");
+});

@@ -16,7 +16,7 @@ export function render(ctx) {
   const travellerRows = t.travellers.map((p, i) => `
     <tr data-pid="${p.id}">
       <td><input type="text" data-bind="travellers.${i}.name" value="${esc(p.name)}" placeholder="Name" aria-label="Traveller ${i + 1} name"></td>
-      ${crit.map(c => `<td>${critInput(c, p.limits?.[c.key], `travellers.${i}.limits.${c.key}`)}</td>`).join("")}
+      ${crit.map(c => `<td>${critInput(c, p.limits?.[c.key], `travellers.${i}.limits.${c.key}`, i)}</td>`).join("")}
       <td><button type="button" class="outline secondary small" data-act="remove-traveller" data-pid="${p.id}" aria-label="Remove traveller" ${t.travellers.length <= 1 ? "disabled" : ""}>✕</button></td>
     </tr>`).join("");
   const limitSummary = crit.map(c => lim[c.key] !== undefined ? `${c.label}: <strong>${fmtLimit(c, lim[c.key])}</strong>` : null).filter(Boolean).join(" · ") || "No limits set yet: everything will be offered, nothing flagged.";
@@ -159,12 +159,14 @@ function countryPicker(ctx, t) {
     ${picked.length ? `<p class="chips" style="margin:8px 0">${picked.map(c => `<button type="button" class="chip good" data-act="toggle-country" data-code="${c.code}" title="Remove">${esc(c.name)} ✕</button>`).join("")}</p>` : `<p class="muted small" style="margin:8px 0">None ticked yet.</p>`}
     <div class="countries">${list.map(c => `<label class="chk"><input type="checkbox" data-act="toggle-country" data-code="${c.code}" ${vc.includes(c.code) ? "checked" : ""}> ${esc(c.name)}</label>`).join("")}</div>`;
 }
-function critInput(c, value, bind) {
+function critInput(c, value, bind, i) {
+  // Several choices per person: tick boxes, saved through the toggle-avoid action.
+  if (c.type === "multi") { const on = Array.isArray(value) ? value : []; return `<details class="multi"><summary class="small">${on.length ? esc(c.options.filter(([v]) => on.includes(v)).map(([, l]) => l).join(", ")) : "none"}</summary>${c.options.map(([v, l]) => `<label class="chk small"><input type="checkbox" data-act="toggle-avoid" data-i="${i}" data-v="${esc(v)}" ${on.includes(v) ? "checked" : ""}> ${esc(l)}</label>`).join("")}</details>`; }
   if (c.type === "number") return `<input type="number" data-bind="${bind}" data-type="number" value="${value ?? ""}" placeholder="${esc(c.placeholder || "")}" style="min-width:90px">`;
   if (c.type === "bool") return `<input type="checkbox" data-bind="${bind}" data-type="bool" ${value ? "checked" : ""}>`;
   return `<select data-bind="${bind}"><option value="">—</option>${c.options.map(([v, l]) => `<option value="${esc(v)}" ${String(value) === String(v) ? "selected" : ""}>${esc(l)}</option>`).join("")}</select>`;
 }
-function fmtLimit(c, v) { if (Array.isArray(v)) return v.map(x => fmtLimit(c, x)).join(" and "); if (c.type === "bool") return v ? "yes" : "no"; if (c.type === "select") { const o = c.options.find(([k]) => String(k) === String(v)); return o ? o[1] : v; } return `${Number(v).toLocaleString("en-GB")}${c.unit ? " " + c.unit : ""}`; }
+function fmtLimit(c, v) { if (Array.isArray(v)) return v.map(x => fmtLimit(c, x)).join(" and "); if (c.type === "bool") return v ? "yes" : "no"; if (c.type === "select" || c.type === "multi") { const o = c.options.find(([k]) => String(k) === String(v)); return o ? o[1] : v; } return `${Number(v).toLocaleString("en-GB")}${c.unit ? " " + c.unit : ""}`; }
 
 let unlocking = false;
 export const actions = {
@@ -204,6 +206,11 @@ export const actions = {
     if (ctx.liveStatus === "unlocked" && !t.livePlan) await ctx.runLive(t, `Write the full plan for ${o.name}.`, { fromApp: true });
   },
   "see-dest": (el, ctx) => { const t = ctx.trip; t._ui = Object.assign(t._ui || {}, { q: el.dataset.name }); ctx.save(); ctx.nav("destinations"); },
+  "toggle-avoid": (el, ctx) => {
+    const p = ctx.trip.travellers[Number(el.dataset.i)]; if (!p) return;
+    const lim = p.limits = p.limits || {}; const list = Array.isArray(lim.avoidRegions) ? lim.avoidRegions.filter(v => v !== el.dataset.v) : [];
+    lim.avoidRegions = el.checked ? list.concat(el.dataset.v) : list; ctx.commit();
+  },
   "add-traveller": (el, ctx) => { ctx.trip.travellers.push({ id: uid("p"), name: "", limits: {} }); ctx.commit(); },
   "remove-traveller": (el, ctx) => { ctx.trip.travellers = ctx.trip.travellers.filter(p => p.id !== el.dataset.pid); ctx.commit(); },
   "toggle-country": (el, ctx) => { const code = el.dataset.code; const v = ctx.trip.visitedCountries = ctx.trip.visitedCountries || []; const i = v.indexOf(code); const on = el.tagName === "INPUT" ? el.checked : false; if (on && i < 0) v.push(code); if (!on && i >= 0) v.splice(i, 1); ctx.commit(true); }

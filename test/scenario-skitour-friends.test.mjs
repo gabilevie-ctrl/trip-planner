@@ -96,8 +96,8 @@ test("scenario: four friends with different limits plan a ski-touring week, from
   click(ecrins().querySelector('[data-act="preset"][data-i="0"]')); await tick(60);
   const ecrinsFlags = ecrins().querySelector(".alert.crit").textContent;
   assert.match(ecrinsFlags, /ZS\+, above the ZS limit/, "Tom's grade cap flags the ZS+ stage");
-  // The flag sentence names the stage but not the person whose limit it breaks.
-  assert.doesNotMatch(ecrinsFlags, /Tom|Marc|Léa/);
+  // Fixed: the flag names the person whose limit it breaks.
+  assert.match(ecrinsFlags, /\(Tom's limit\)/);
   // The danger limit plays no part before the trip (it's a day-of thing) — fine — but nothing tells Léa that either.
   assert.doesNotMatch(ecrinsFlags, /danger/i);
   // The compare table has a flags column per destination.
@@ -231,7 +231,7 @@ test("scenario: four friends with different limits plan a ski-touring week, from
   assert.equal($$("tr.nogo").length, 1, "level 3 flags the day");
   const nogo = text("tr.nogo");
   assert.match(nogo, /above the group limit/);
-  assert.doesNotMatch(nogo, /Léa/);
+  assert.match(nogo, /Léa.s limit/, "the no-go names whose limit it is");
   change($$('select[data-k="decision"]')[2], "modified"); await tick(60);
   const note = $$('input[data-k="note"]')[2]; note.value = "Léa rested at the hut; three of us did the Pic du Glacier d'Arias under 30°"; note.dispatchEvent(new window.Event("change", { bubbles: true })); await tick(60);
   const logged = storedTrip().log.find(l => l.danger === "3");
@@ -269,7 +269,7 @@ test("scenario: four friends with different limits plan a ski-touring week, from
   assert.equal(store.trips[mine].expenses.length, 3, "Gabriel's trip still has 3 expenses: links copy, they never merge");
 });
 
-test.todo("Flags name the person whose limit is broken (\"Dôme des Écrins is ZS+, above Tom's ZS\"), and the compare table shows per destination who it is fine for");
+test.todo("The compare table shows per destination who it is fine for (flags now name the person)");
 test.todo("Hold two candidate date ranges (13–19 or 20–26 March) and compare season fit, events and price for both side by side, then pick one");
 test.todo("A vote on a decision: each friend picks an option, the app tallies, and deciding on a destination option chooses it");
 test.todo("Live options sit next to library destinations in Destinations and the compare table, so Gudauri and the Écrins can be compared on the same rows");
@@ -277,7 +277,7 @@ test.todo("Live options and live plan days are checked against ski grade, daily 
 test.todo("Conditions for a live choice lists Gudauri's bulletin pages (it now shows its days, with no bulletin links)");
 test.todo("Hut lead times become book-by dates from the trip start (2 months before 13 March = by 13 January) and land in a dated to-do list");
 test.todo("A booking reference entered for a hut ticks off (or counts toward) the 'Book hut nights' step");
-test.todo("Danger limit means the same in Setup and in the log (Setup: no-go above 2; log: no-go at 2), and the log says whose limit it is, allowing 'go for three, Léa rests'");
+test.todo("Danger limit means the same in Setup and in the log (Setup: no-go above 2; log: no-go at 2), allowing 'go for three, Léa rests' (the log now names whose limit it is)");
 test.todo("A stage can be skipped by one person (Tom waits at the hut on the ZS+ day) without dropping it for the group");
 test.todo("The itinerary stays inside the trip dates (13–19 March, not to the 20th), or Build warns and offers 'Fit to my dates' when travel days are squeezed to 0; day 1 shows the drive, not the train, for a 'we drive' trip");
 test.todo("Expenses in another currency (GEL) with the trip's rate, and per-car fuel splits");

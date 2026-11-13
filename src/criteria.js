@@ -33,6 +33,7 @@ export const CRITERIA = [
   { key: "maxDayHighC", label: "Heat ceiling", unit: "°C", type: "number", kinds: ["explore", "hike"], combine: "min", placeholder: "e.g. 33", help: "Afternoon high above which a stop is flagged." },
   { key: "minDayHighC", label: "Warmth floor", unit: "°C", type: "number", kinds: ["explore", "hike"], combine: "max", placeholder: "e.g. 18", help: "Afternoon high below which a stop is flagged as too cold." },
   { key: "countryZone", label: "Countries", type: "select", kinds: ["explore", "hike", "skitour"], combine: "all", options: [["any", "Anywhere"], ["europe", "Europe only"], ["eu", "EU only"], ["schengen", "Schengen area only"]], help: "For a passport, visa or residence permit that limits where someone can go. A destination outside it is flagged, not hidden." },
+  { key: "avoidRegions", label: "Places to avoid", type: "multi", kinds: ["explore", "hike", "skitour"], combine: "union", options: [["balkans", "Balkans"], ["baltics", "Baltics"], ["caucasus", "Caucasus"], ["centralAsia", "Central Asia"]], help: "Regions someone doesn't want to go to. Balkans: Albania, Bosnia, Bulgaria, Croatia, Kosovo, Montenegro, North Macedonia, Serbia. Baltics: Estonia, Latvia, Lithuania. Caucasus: Georgia, Armenia, Azerbaijan. Central Asia: Kazakhstan, Kyrgyzstan, Tajikistan, Turkmenistan, Uzbekistan. A destination there is flagged, not hidden." },
   { key: "crowds", label: "Crowds", type: "select", kinds: ["explore", "hike", "skitour"], combine: "rank", options: [["any", "Don't mind"], ["prefer", "Prefer quiet"], ["avoid", "Avoid crowded places"]], help: "Affects scoring; crowded stops are flagged when 'avoid'." },
   { key: "maxHikeShare", label: "Max share of hiking days", unit: "%", type: "number", kinds: ["explore"], combine: "min", placeholder: "e.g. 60", help: "For someone who does not want a full-hike trip." },
   { key: "maxDailyAscentM", label: "Max ascent per day", unit: "m", type: "number", kinds: ["hike", "skitour"], combine: "min", placeholder: "e.g. 1200" },
@@ -52,11 +53,27 @@ export const COUNTRY_GROUPS = {
   eu: ["AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "GR", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL", "PL", "PT", "RO", "SK", "SI", "ES", "SE"],
   schengen: ["AT", "BE", "BG", "HR", "CZ", "DK", "EE", "FI", "FR", "DE", "GR", "HU", "IS", "IT", "LV", "LI", "LT", "LU", "MT", "NL", "NO", "PL", "PT", "RO", "SK", "SI", "ES", "SE", "CH"]
 };
+/* Regions for the "Places to avoid" limit (ISO 3166-1 alpha-2; XK is Kosovo's common user-assigned code). */
+export const REGION_GROUPS = {
+  balkans: ["AL", "BA", "BG", "HR", "XK", "ME", "MK", "RS"],
+  baltics: ["EE", "LV", "LT"],
+  caucasus: ["GE", "AM", "AZ"],
+  centralAsia: ["KZ", "KG", "TJ", "TM", "UZ"]
+};
+export const REGION_LABEL = { balkans: "the Balkans", baltics: "the Baltics", caucasus: "the Caucasus", centralAsia: "Central Asia" };
 export const COUNTRY_ZONE_LABEL = { europe: "Europe", eu: "the EU", schengen: "the Schengen area" };
 /* The destination's countries that break a country limit. "europe" uses the destination's zone. */
 export function countriesOutside(codes, zone, destZone) {
   if (zone === "europe") return destZone === "europe" ? [] : codes.slice();
   const ok = COUNTRY_GROUPS[zone]; return ok ? codes.filter(c => !ok.includes(c)) : [];
+}
+
+/* The named travellers whose own limit is this value (the one being applied), so a flag can say whose it is. */
+export function limitOwners(trip, key, value) {
+  return (trip.travellers || []).filter(p => {
+    const v = (p.limits || {})[key]; if (v === undefined || v === null || v === "") return false;
+    return Array.isArray(v) ? v.map(String).includes(String(value)) : String(v) === String(value);
+  }).map(p => String(p.name || "").trim()).filter(Boolean);
 }
 
 export function criteriaFor(kind) { return CRITERIA.filter(c => c.kinds.includes(kind)); }
@@ -71,6 +88,7 @@ export function strictestLimits(trip) {
     else if (c.combine === "max") out[c.key] = Math.max(...vals.map(Number));
     else if (c.combine === "all") { const set = [...new Set(vals.map(String))].filter(v => v !== "any"); if (set.length) out[c.key] = set; }
     else if (c.combine === "or") out[c.key] = vals.some(Boolean);
+    else if (c.combine === "union") { const set = [...new Set(vals.flatMap(v => Array.isArray(v) ? v : [v]).map(String))].filter(v => REGION_GROUPS[v]); if (set.length) out[c.key] = set; }
     else if (c.combine === "rank") { const order = RANK[c.key]; out[c.key] = vals.slice().sort((a, b) => order.indexOf(String(b)) - order.indexOf(String(a)))[0]; }
   }
   return out;

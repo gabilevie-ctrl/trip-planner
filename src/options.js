@@ -1,7 +1,7 @@
 // Live options from Claude: the tool Claude fills, cleaning its input, and checking each option against the
 // trip's limits with the library's wording. Pure module: no DOM, no network.
 import { strictestLimits, countriesOutside, COUNTRY_ZONE_LABEL, COUNTRY_GROUPS } from "./criteria.js";
-import { andList, countryName } from "./compute.js";
+import { andList, countryName, whose, avoidFlags } from "./compute.js";
 import { fmtMoney } from "./ui.js";
 import { uid } from "./state.js";
 import { MODES, LODGING_TYPES, obj, S, N, NN, B, SOURCE, MAYBE_SOURCE, isObj, str, num, day, cur, source, list } from "./clean.js";
@@ -92,17 +92,18 @@ export function checkOption(option, trip) {
   const codes = option.countryCodes || [];
   const destZone = codes.length && codes.every(c => EUROPE.has(c)) ? "europe" : "other";
   let countryBreach = false;
-  if (!codes.length && (limits.countryZone || []).length) flags.push(`${option.name}: the country isn't known, so staying within ${andList(limits.countryZone.map(z => COUNTRY_ZONE_LABEL[z]))} can't be checked`);
+  if (!codes.length && (limits.countryZone || []).length) flags.push(`${option.name}: the country isn't known, so staying within ${andList(limits.countryZone.map(z => COUNTRY_ZONE_LABEL[z]))} can't be checked${whose(trip, "countryZone", limits.countryZone[0])}`);
   for (const zone of limits.countryZone || []) {
     const out = countriesOutside(codes, zone, destZone);
-    if (out.length) { countryBreach = true; flags.push(`${andList(out.map(countryName))} ${out.length > 1 ? "are" : "is"} outside ${COUNTRY_ZONE_LABEL[zone]}`); }
+    if (out.length) { countryBreach = true; flags.push(`${andList(out.map(countryName))} ${out.length > 1 ? "are" : "is"} outside ${COUNTRY_ZONE_LABEL[zone]}${whose(trip, "countryZone", zone)}`); }
   }
+  flags.push(...avoidFlags(codes, trip, limits));
   const high = option.weather?.highC;
   if (typeof high === "number") {
-    if (limits.minDayHighC !== undefined && high < limits.minDayHighC) flags.push(`${option.name}: ~${high}°C in those months, below the ${limits.minDayHighC}°C floor`);
-    if (limits.maxDayHighC && high > limits.maxDayHighC) flags.push(`${option.name}: ~${high}°C is above the ${limits.maxDayHighC}°C ceiling`);
+    if (limits.minDayHighC !== undefined && high < limits.minDayHighC) flags.push(`${option.name}: ~${high}°C in those months, below the ${limits.minDayHighC}°C floor${whose(trip, "minDayHighC", limits.minDayHighC)}`);
+    if (limits.maxDayHighC && high > limits.maxDayHighC) flags.push(`${option.name}: ~${high}°C is above the ${limits.maxDayHighC}°C ceiling${whose(trip, "maxDayHighC", limits.maxDayHighC)}`);
   }
-  if (limits.maxAltitudeM && option.maxAltitudeM > limits.maxAltitudeM) flags.push(`${option.name}: ${option.maxAltitudeM.toLocaleString("en-GB")} m is above the ${limits.maxAltitudeM.toLocaleString("en-GB")} m ceiling`);
+  if (limits.maxAltitudeM && option.maxAltitudeM > limits.maxAltitudeM) flags.push(`${option.name}: ${option.maxAltitudeM.toLocaleString("en-GB")} m is above the ${limits.maxAltitudeM.toLocaleString("en-GB")} m ceiling${whose(trip, "maxAltitudeM", limits.maxAltitudeM)}`);
   if (trip.travel?.mode === "train" && option.access?.mode === "flight") flags.push("Reaching this destination needs a flight; the trip is set to trains only");
   const est = option.estimate || {}; const tc = trip.budget?.currency || "EUR";
   const groupTotal = toTripCurrency(est.group, est.currency, trip);

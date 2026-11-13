@@ -61,8 +61,8 @@ test("family: Gabriel opens the template, the family brainstorms and compares, M
   const geo = card("Georgia + Armenia"); assert.ok(geo, "Georgia + Armenia is still listed");
   assert.match(geo.querySelector(".alert.crit").textContent, /Yerevan: ~36°C is above the 33°C ceiling/);
   assert.match(card("Peru, acclimatised").querySelector(".alert.crit").textContent, /4,215 m is above the 4,200 m ceiling/);
-  // FINDING: the flag never says whose limit it is; the person reading it has to know it's Mom's
-  assert.doesNotMatch(geo.querySelector(".alert.crit").textContent, /Mom/);
+  // Fixed: the flag says whose limit it is
+  assert.match(geo.querySelector(".alert.crit").textContent, /\(Mom's limit\)/);
   // FINDING: Mom's "no Balkans/Baltics/Central Asia" lives only in the notes; Kyrgyzstan is offered with no flag
   assert.equal(card("Kyrgyzstan").querySelector(".alert.crit"), null);
   // FINDING: winter trips are offered for a July trip
@@ -75,7 +75,6 @@ test("family: Gabriel opens the template, the family brainstorms and compares, M
   change($('input[data-ui="compare"]'), false); await tick(60);
 });
 test.todo("family: say which traveller each flag is for (\"Mom: Yerevan ~36°C is above her 33°C ceiling\")");
-test.todo("family: a 'places to avoid' limit (Mom: no Balkans, Baltics, Central Asia) that flags Kyrgyzstan instead of living in the notes");
 test.todo("family: hide or flag library destinations whose season doesn't match the dates (winter trips offered for July)");
 
 test("family: record the destination decision with options, settle it, and choose Norway", async () => {
@@ -112,7 +111,7 @@ test("family: build days that suit Mom's limits and Antoine's hiking share, then
     const plus = $('button[data-act="days-group"][data-g="outdoor"][data-d="1"]'); if (!plus || plus.disabled) break; click(plus); await tick(60);
   }
   assert.match(txt(".view-build"), /\d+% of planned days are outdoors; the limit set is 60%/, "Antoine's limit shows as a warning");
-  assert.doesNotMatch(all(".view-build .alert").map(a => a.textContent).join(" "), /Antoine/, "FINDING: the warning doesn't name Antoine");
+  assert.match(all(".view-build .alert").map(a => a.textContent).join(" "), /\(Antoine's limit\)/, "the warning names Antoine");
   while (/of planned days are outdoors/.test(txt(".view-build"))) { click($('button[data-act="days-group"][data-g="outdoor"][data-d="-1"]')); await tick(60); }
 
   await go("#itinerary");

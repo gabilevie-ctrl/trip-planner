@@ -1,6 +1,6 @@
 // Plan computation: days, costs, flags and the day-by-day itinerary for one destination in one trip.
 // Pure module: no DOM.
-import { strictestLimits, gradeRank, selectedBlocks, LODGING, countriesOutside, COUNTRY_ZONE_LABEL } from "./criteria.js";
+import { strictestLimits, gradeRank, selectedBlocks, LODGING, countriesOutside, COUNTRY_ZONE_LABEL, limitOwners, REGION_GROUPS, REGION_LABEL } from "./criteria.js";
 let regionNames = null; try { regionNames = new Intl.DisplayNames(["en"], { type: "region" }); } catch (e) { /* older browsers: show codes */ }
 export const countryName = code => { try { return (regionNames && regionNames.of(code)) || code; } catch (e) { return code; } };
 export const andList = xs => xs.length < 2 ? xs.join("") : xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1];
@@ -101,24 +101,25 @@ export function computePlan(dest, trip) {
     if (rank[b.crowd] > rank[worstCrowd]) worstCrowd = b.crowd;
     if (b.type === "stage") { totalAscent += b.ascentM || 0; maxAscent = Math.max(maxAscent, b.ascentM || 0); maxHours = Math.max(maxHours, b.hours || 0); const g = gradeRank(b.difficulty, dest.kind); if (g > maxGrade) { maxGrade = g; maxGradeLabel = b.difficulty; } }
     // flags against the strictest limits
-    if (limits.maxAltitudeM && b.maxAltitudeM > limits.maxAltitudeM) flags.push(`${b.name}: ${b.maxAltitudeM.toLocaleString("en-GB")} m is above the ${limits.maxAltitudeM.toLocaleString("en-GB")} m ceiling`);
-    if (limits.maxDayHighC && typeof b.dayHighC === "number" && b.dayHighC > limits.maxDayHighC) flags.push(`${b.name}: ~${b.dayHighC}°C is above the ${limits.maxDayHighC}°C ceiling`);
-    if (limits.minDayHighC !== undefined && !climate && typeof b.dayHighC === "number" && b.dayHighC < limits.minDayHighC) flags.push(`${b.name}: ~${b.dayHighC}°C is below the ${limits.minDayHighC}°C floor`);
-    if (limits.crowds === "avoid" && b.crowd === "high") flags.push(`${b.name} is crowded in season`);
-    if (limits.maxDailyAscentM && b.ascentM > limits.maxDailyAscentM) flags.push(`${b.name}: ${b.ascentM} m of ascent is above the ${limits.maxDailyAscentM} m daily limit`);
-    if (limits.maxDailyHours && b.hours > limits.maxDailyHours) flags.push(`${b.name}: ${b.hours} h is above the ${limits.maxDailyHours} h daily limit`);
+    if (limits.maxAltitudeM && b.maxAltitudeM > limits.maxAltitudeM) flags.push(`${b.name}: ${b.maxAltitudeM.toLocaleString("en-GB")} m is above the ${limits.maxAltitudeM.toLocaleString("en-GB")} m ceiling${whose(trip, "maxAltitudeM", limits.maxAltitudeM)}`);
+    if (limits.maxDayHighC && typeof b.dayHighC === "number" && b.dayHighC > limits.maxDayHighC) flags.push(`${b.name}: ~${b.dayHighC}°C is above the ${limits.maxDayHighC}°C ceiling${whose(trip, "maxDayHighC", limits.maxDayHighC)}`);
+    if (limits.minDayHighC !== undefined && !climate && typeof b.dayHighC === "number" && b.dayHighC < limits.minDayHighC) flags.push(`${b.name}: ~${b.dayHighC}°C is below the ${limits.minDayHighC}°C floor${whose(trip, "minDayHighC", limits.minDayHighC)}`);
+    if (limits.crowds === "avoid" && b.crowd === "high") flags.push(`${b.name} is crowded in season${whose(trip, "crowds", "avoid")}`);
+    if (limits.maxDailyAscentM && b.ascentM > limits.maxDailyAscentM) flags.push(`${b.name}: ${b.ascentM} m of ascent is above the ${limits.maxDailyAscentM} m daily limit${whose(trip, "maxDailyAscentM", limits.maxDailyAscentM)}`);
+    if (limits.maxDailyHours && b.hours > limits.maxDailyHours) flags.push(`${b.name}: ${b.hours} h is above the ${limits.maxDailyHours} h daily limit${whose(trip, "maxDailyHours", limits.maxDailyHours)}`);
     const gl = dest.kind === "skitour" ? limits.maxGradeSki : limits.maxGradeHike;
-    if (gl && b.difficulty && gradeRank(b.difficulty, dest.kind) > gradeRank(gl, dest.kind)) flags.push(`${b.name} is ${b.difficulty}, above the ${gl} limit`);
+    if (gl && b.difficulty && gradeRank(b.difficulty, dest.kind) > gradeRank(gl, dest.kind)) flags.push(`${b.name} is ${b.difficulty}, above the ${gl} limit${whose(trip, dest.kind === "skitour" ? "maxGradeSki" : "maxGradeHike", gl)}`);
   }
   if (minTemp === 99) { minTemp = 0; maxTemp = 0; }
   const coldTemp = climate ? climate.high : minTemp;
-  if (limits.minDayHighC !== undefined && climate && climate.high < limits.minDayHighC) flags.push(`${climate.place.split(";")[0]}: ~${climate.high}°C on average in those months, below the ${limits.minDayHighC}°C floor`);
+  if (limits.minDayHighC !== undefined && climate && climate.high < limits.minDayHighC) flags.push(`${climate.place.split(";")[0]}: ~${climate.high}°C on average in those months, below the ${limits.minDayHighC}°C floor${whose(trip, "minDayHighC", limits.minDayHighC)}`);
   let countryBreach = false;
   for (const zone of limits.countryZone || []) {
     const out = countriesOutside(dest.countries || [], zone, dest.zone);
     if (out.length) countryBreach = true;
-    if (out.length) flags.push(`${andList(out.map(countryName))} ${out.length > 1 ? "are" : "is"} outside ${COUNTRY_ZONE_LABEL[zone]}`);
+    if (out.length) flags.push(`${andList(out.map(countryName))} ${out.length > 1 ? "are" : "is"} outside ${COUNTRY_ZONE_LABEL[zone]}${whose(trip, "countryZone", zone)}`);
   }
+  flags.push(...avoidFlags(dest.countries || [], trip, limits));
   const rest = plan.rest || 0;
   const alloc = city + outdoor + rest;
   const noDates = !len;
@@ -135,7 +136,7 @@ export function computePlan(dest, trip) {
   const budget = trip.budget?.total || 0;
   const fits = budget ? total <= budget : true;
   const hikeShare = (city + outdoor) ? outdoor / (city + outdoor) : 0;
-  if (limits.maxHikeShare && hikeShare * 100 > limits.maxHikeShare) warnings.push(`${Math.round(hikeShare * 100)}% of planned days are outdoors; the limit set is ${limits.maxHikeShare}%.`);
+  if (limits.maxHikeShare && hikeShare * 100 > limits.maxHikeShare) warnings.push(`${Math.round(hikeShare * 100)}% of planned days are outdoors; the limit set is ${limits.maxHikeShare}%${whose(trip, "maxHikeShare", limits.maxHikeShare)}.`);
   const mode = trip.travel?.mode || "any";
   if (mode === "train" && access.mode === "flight") flags.push("Reaching this destination needs a flight; the trip is set to trains only");
   if (mode === "drive" && access.mode === "flight") flags.push("Not reachable by car from home");
@@ -205,4 +206,19 @@ export function climateFor(dest, trip) {
   const avg = arr => Math.round(ms.reduce((a, m) => a + (arr[m] || 0), 0) / ms.length);
   const snow = ms.some(m => (cl.snowMonths || []).includes(m + 1));
   return { place: cl.representative, high: avg(cl.dayHighC), low: avg(cl.nightLowC), rainDays: avg(cl.rainDays), snow, months: ms.map(m => m + 1) };
+}
+
+/* " (Mom's limit)" or " (limit of Mom and Dad)" after a flag; nothing when nobody with that limit has a name. */
+export function whose(trip, key, value) {
+  const names = limitOwners(trip, key, value);
+  return !names.length ? "" : names.length === 1 ? ` (${names[0]}'s limit)` : ` (limit of ${andList(names)})`;
+}
+/* "Kyrgyzstan and Uzbekistan are in Central Asia, a place to avoid (Mom's limit)", one flag per region. */
+export function avoidFlags(codes, trip, limits = strictestLimits(trip)) {
+  const out = [];
+  for (const region of limits.avoidRegions || []) {
+    const hit = (codes || []).filter(c => (REGION_GROUPS[region] || []).includes(c));
+    if (hit.length) out.push(`${andList(hit.map(countryName))} ${hit.length > 1 ? "are" : "is"} in ${REGION_LABEL[region]}, a place to avoid${whose(trip, "avoidRegions", region)}`);
+  }
+  return out;
 }

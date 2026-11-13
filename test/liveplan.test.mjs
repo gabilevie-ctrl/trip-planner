@@ -135,3 +135,45 @@ test("migrate adds an empty plan history on this device", () => {
   const old = { kind: "explore", _local: { optionHistory: [] } }; migrate(old);
   assert.deepEqual(old._local.planHistory, []);
 });
+
+/* ---------- Task 2: totals and the to-do list ---------- */
+import { planTotals, planTodo, CATEGORY_LABEL } from "../src/liveplan.js";
+function pricedPlan(t) {
+  t.rates = { EUR: { toTrip: 0.86, seenOn: TODAY, source: null } };
+  const p = normalizePlan(planInput(), t, { today: TODAY, optionId: "o_lp" });
+  p.bookings.find(b => b.id === "b_camp").status = "not-needed";
+  return p;
+}
+test("totals: bookings that aren't 'not needed', plus other costs, converted to the trip currency", () => {
+  const t = situTrip(); const p = pricedPlan(t);
+  const r = planTotals(p, t);
+  assert.equal(r.total, Math.round(72 * 0.86) + Math.round(100 * 0.86));
+  assert.equal(r.byCategory.Transport, 62); assert.equal(r.byCategory["Food & local"], 86);
+  assert.equal(r.byCategory.Lodging, undefined);
+  assert.equal(r.perPerson, Math.round(r.total / 2)); assert.equal(r.counted, 2);
+  assert.deepEqual(r.missing, []); assert.equal(r.overBudget, false);
+  assert.equal(CATEGORY_LABEL.local, "Food & local");
+});
+test("a price with no rate is named in missing and left out", () => {
+  const t = situTrip(); const p = pricedPlan(t); const before = planTotals(p, t).total;
+  p.bookings.push({ id: "b_whale", what: "Whale trip", category: "activity", price: 90, currency: "USD", status: "decided" });
+  const r = planTotals(p, t);
+  assert.deepEqual(r.missing, [{ what: "Whale trip", currency: "USD" }]); assert.equal(r.total, before);
+});
+test("overBudget only when a budget is set", () => {
+  const t = situTrip(); const p = pricedPlan(t);
+  t.budget.total = 100; assert.equal(planTotals(p, t).overBudget, true);
+  t.budget.total = 0; assert.equal(planTotals(p, t).overBudget, false);
+});
+test("to-do: own items, 'Book …' for unbooked bookings with a book-by date, 'Apply: …' for permits, ordered by date, undated last", () => {
+  const t = situTrip(); const p = pricedPlan(t);
+  p.todo = [{ id: "t_stove", date: null, what: "Pack the stove", done: false }];
+  p.bookings.push({ id: "b_flight", what: "Flight to Tenerife", category: "transport", price: null, currency: "GBP", status: "booked", bookBy: "2026-11-20" });
+  const items = planTodo(p); const whats = items.map(x => x.what);
+  assert.ok(whats.indexOf("Book Ferry Los Cristianos → Santa Cruz") < whats.indexOf("Apply: Caldera camping permit"), whats.join(" | "));
+  assert.equal(whats.at(-1), "Pack the stove");
+  assert.equal(items.find(x => x.what === "Book Flight to Tenerife").done, true);
+  assert.ok(!whats.some(w => /Caldera campsite/.test(w)), "a not-needed booking gives no item");
+  assert.equal(items.find(x => x.what.startsWith("Book Ferry")).from, "booking");
+  assert.equal(items.find(x => x.what.startsWith("Book Ferry")).date, "2026-12-01");
+});

@@ -3,6 +3,7 @@
 // Pure module: no DOM, no network.
 import { uid } from "./state.js";
 import { MODES, LODGING_TYPES, obj, S, N, NN, B, SN, SOURCE, MAYBE_SOURCE, isObj, str, num, day, cur, https, source, list } from "./clean.js";
+import { toTripCurrency } from "./options.js";
 
 export const BOOKING_STATUSES = ["idea", "decided", "booked", "not-needed"];
 export const BOOKING_CATEGORIES = ["transport", "lodging", "permit", "activity", "gear", "other"];
@@ -163,4 +164,34 @@ export function liveChoice(trip) {
 export function currentPlan(trip) {
   const p = trip && trip.livePlan;
   return isObj(p) && liveChoice(trip) && p.optionId === trip.chosen ? p : null;
+}
+
+/* ---------- Totals and the to-do list (computed here, never written by Claude) ---------- */
+export const CATEGORY_LABEL = { transport: "Transport", lodging: "Lodging", permit: "Permits", activity: "Activities", gear: "Gear", other: "Other", local: "Food & local" };
+
+/* Bookings that aren't "not needed" plus other costs, each converted to the trip currency. A price with no rate
+   is named in `missing` and left out; `counted` is how many prices went into the total. */
+export function planTotals(plan, trip) {
+  const byCategory = {}; const missing = []; let total = 0, counted = 0;
+  const add = (what, amount, currency, label) => {
+    if (amount === null || amount === undefined || !Number.isFinite(amount)) return;
+    const v = toTripCurrency(amount, currency, trip);
+    if (v === null) { missing.push({ what, currency }); return; }
+    total += v; counted++; byCategory[label] = (byCategory[label] || 0) + v;
+  };
+  for (const b of plan?.bookings || []) if (b.status !== "not-needed") add(b.what, b.price, b.currency, CATEGORY_LABEL[b.category] || CATEGORY_LABEL.other);
+  for (const c of plan?.otherCosts || []) add(c.what, c.amount, c.currency, CATEGORY_LABEL.local);
+  const people = Array.isArray(trip.travellers) ? trip.travellers.length : 0;
+  const budget = trip.budget?.total || 0;
+  return { total, perPerson: Math.round(total / (people || 1)), byCategory, missing, overBudget: budget > 0 && total > budget, counted };
+}
+
+/* The plan's own to-dos, plus "Book …" for each booking with a book-by date and "Apply: …" for each permit,
+   ordered by date with undated items last. */
+export function planTodo(plan) {
+  const items = [];
+  for (const x of plan?.todo || []) items.push({ key: "todo:" + x.id, date: x.date || null, what: x.what, done: x.done === true, from: "todo", id: x.id });
+  for (const b of plan?.bookings || []) if (b.bookBy && b.status !== "not-needed") items.push({ key: "booking:" + b.id, date: b.bookBy, what: "Book " + b.what, done: b.status === "booked", from: "booking", id: b.id });
+  for (const p of plan?.permits || []) items.push({ key: "permit:" + p.id, date: p.bookBy || null, what: "Apply: " + p.what, done: false, from: "permit", id: p.id });
+  return items.map((x, i) => [x, i]).sort(([a, i], [b, j]) => (a.date ? 0 : 1) - (b.date ? 0 : 1) || (a.date && b.date ? a.date.localeCompare(b.date) : 0) || i - j).map(([x]) => x);
 }

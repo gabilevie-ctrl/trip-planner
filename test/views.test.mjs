@@ -44,3 +44,29 @@ test("destination card shows sources and review date", () => {
   assert.match(html, /<a href="https:\/\/www\.visitnorway\.com\/" target="_blank" rel="noopener"[^>]*>Visit Norway<\/a>/);
   assert.ok(html.includes("No sources yet"), "destinations without sources say so");
 });
+test("minor: a double click on Unlock tries the password once", async () => {
+  document.getElementById("app").innerHTML = `<input id="livePass" value="pw"><input type="checkbox" id="liveRemember">`;
+  let calls = 0; const pending = []; const release = v => pending.splice(0).forEach(r => r(v));
+  const vault = { unlock: () => { calls++; return new Promise(r => pending.push(r)); } };
+  const ctx = Object.assign(ctxFor(familyTrip()), { vault, rerender() {} });
+  const a = views.setup.actions["live-unlock"](null, ctx), b = views.setup.actions["live-unlock"](null, ctx);
+  release({ ok: true }); await a; await b;
+  assert.equal(calls, 1);
+  const c = views.setup.actions["live-unlock"](null, ctx); release({ ok: true }); await c;
+  assert.equal(calls, 2, "it can be tried again once the first try is over");
+});
+
+test("live plan views render without a plan and without a trip budget", async () => {
+  const lp = await import("../src/views/liveplan.js");
+  const { normalizePlan } = await import("../src/liveplan.js");
+  const t = familyTrip({ id: "t_live", kind: "hike", budget: { total: 0, currency: "EUR" }, options: [{ id: "o_lp", name: "La Palma" }], chosen: "o_lp", livePlan: null, brief: [], rates: {} });
+  const ctx = Object.assign(ctxFor(t), { liveStatus: "none", busyTrips: new Set() });
+  for (const f of ["planChat", "daysCard", "gearCard", "bookingsCard", "permitsCard", "todoCard", "sourcesCard", "waitingCard"]) assert.equal(typeof lp[f](t, ctx), "string", f);
+  assert.match(lp.waitingCard(t, ctx), /Unlock live search in Setup/);
+  assert.match(lp.waitingCard(t, Object.assign({}, ctx, { liveStatus: "unlocked" })), /data-act="ask-plan"/);
+  assert.match(lp.waitingCard(t, Object.assign({}, ctx, { busyTrips: new Set([t.id]) })), /Writing the plan/);
+  for (const v of ["build", "itinerary", "plan", "money", "share"]) assert.equal(typeof views[v].render(ctx), "string", v);
+  t.livePlan = normalizePlan({ bookings: [] }, t, { optionId: "o_lp" });
+  for (const f of ["daysCard", "gearCard", "bookingsCard", "permitsCard", "todoCard", "sourcesCard"]) assert.equal(typeof lp[f](t, ctx), "string", f);
+  for (const v of ["build", "itinerary", "plan", "money", "share"]) assert.equal(typeof views[v].render(ctx), "string", v);
+});

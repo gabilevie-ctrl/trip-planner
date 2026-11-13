@@ -1,6 +1,8 @@
 import { esc, fmtMoney, fmtDateY } from "../ui.js";
 import { computePlan, itinerary, tripLength } from "../compute.js";
 import { planningSteps } from "../criteria.js";
+import { liveChoice } from "../liveplan.js";
+import { summaryLines } from "./liveplan.js";
 
 export function render(ctx) {
   const t = ctx.trip; const link = ctx.shareLink();
@@ -28,7 +30,8 @@ export function summary(t, d) {
   lines.push(`${who} · from ${t.origin.city} · ${t.travel.mode}`);
   if (t.dates.start) lines.push(`${fmtDateY(t.dates.start)} → ${fmtDateY(t.dates.end)} (${tripLength(t)} days)`);
   if (t.budget.total) lines.push(`Budget ${fmtMoney(t.budget.total, t.budget.currency)} for the group`);
-  if (d) {
+  if (liveChoice(t)) lines.push(...summaryLines(t));
+  else if (d) {
     const c = computePlan(d, t);
     lines.push("", `Destination: ${d.name} — ${fmtMoney(c.pp, t.budget.currency)} pp, ${fmtMoney(c.total, t.budget.currency)} total${t.budget.total ? (c.fits ? " (within budget)" : " (over budget)") : ""}`);
     lines.push(`${c.city} city/town days · ${c.outdoor} outdoor/stage days · ${c.rest} rest · ${Math.max(c.free, 0)} travel · highest ${c.maxAlt} m · ${hrsTxt(c.hrs)} in transit`);

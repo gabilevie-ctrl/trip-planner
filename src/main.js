@@ -9,6 +9,7 @@ import { browserVault } from "./vault.js";
 import { ask } from "./claude.js";
 import { liveTurn } from "./livechat.js";
 import { cleanImported } from "./options.js";
+import { chosenName } from "./liveplan.js";
 import * as home from "./views/home.js";
 import * as setup from "./views/setup.js";
 import * as destinations from "./views/destinations.js";
@@ -57,7 +58,10 @@ const ctx = {
     let r = null;
     try { r = await pending; } finally { ctx.busyTrips.delete(trip.id); saveTrip(); }
     if (r && r.error === "auth") await ctx.vault.forget();
-    render();
+    // Someone may be typing in the plan while Claude worked: redraw once they leave the field, not under their fingers.
+    const f = document.activeElement;
+    if (f && f.matches && f.matches("#app [data-bind]")) f.addEventListener("blur", () => setTimeout(render, 0), { once: true });
+    else render();
   }
 };
 
@@ -85,7 +89,7 @@ async function render() {
   if (view === "new") view = "home";
   try {
     if (trip) await ensureDests(trip.kind);
-    if (view === "home" || view === "setup" || !VIEWS[view]) ctx.liveStatus = await ctx.vault.status();
+    ctx.liveStatus = await ctx.vault.status(); // every tab may offer a live action (the plan cards ask for the plan)
     let html;
     if (view === "home") html = home.render(ctx);
     else {
@@ -93,7 +97,7 @@ async function render() {
       const tabs = TABS.filter(([k]) => k !== "conditions" || trip.kind !== "explore");
       const head = `<header class="triphead">
         <div><a href="#home" class="back">← All trips</a><h1>${esc(trip.name || "Untitled trip")} <span class="kind">${esc(KINDS[trip.kind].label)}</span></h1>
-        <p class="muted">${trip.dates.start ? `${fmtDateY(trip.dates.start)} → ${fmtDateY(trip.dates.end)} · ${compute.tripLength(trip)} days` : "Dates not set"} · ${trip.travellers.length} traveller${trip.travellers.length === 1 ? "" : "s"} · from ${esc(trip.origin.city)}${trip.chosen ? ` · <strong>${esc(ctx.names[trip.chosen] || trip.chosen)}</strong>` : ""}</p></div>
+        <p class="muted">${trip.dates.start ? `${fmtDateY(trip.dates.start)} → ${fmtDateY(trip.dates.end)} · ${compute.tripLength(trip)} days` : "Dates not set"} · ${trip.travellers.length} traveller${trip.travellers.length === 1 ? "" : "s"} · from ${esc(trip.origin.city)}${trip.chosen ? ` · <strong>${esc(chosenName(trip, ctx.names))}</strong>` : ""}</p></div>
       </header>
       <nav class="tabs" aria-label="Trip steps" title="Every step is optional; go in any order">${tabs.map(([k, l], i) => `<a href="#${k}" aria-current="${k === view ? "page" : "false"}"><span class="n">${i + 1}</span> ${l}</a>`).join("")}</nav>`;
       html = head + `<main class="view view-${view}">${v.render(ctx)}</main>`;
@@ -106,7 +110,20 @@ async function render() {
 }
 
 /* ---------- Event delegation ---------- */
-function setPath(obj, path, value) { const parts = path.split("."); let o = obj; for (let i = 0; i < parts.length - 1; i++) { const k = parts[i]; if (o[k] === undefined || o[k] === null) o[k] = /^\d+$/.test(parts[i + 1]) ? [] : {}; o = o[k]; } o[parts[parts.length - 1]] = value; }
+/* data-bind paths: dotted keys, array indexes, and "#id" for the array item with that id (the plan's rows, so an
+   edit lands on the right item even if the plan changed since the page was drawn). Prototype keys are refused. */
+const UNSAFE = new Set(["__proto__", "constructor", "prototype"]);
+function setPath(obj, path, value) {
+  const parts = path.split("."); if (parts.some(p => UNSAFE.has(p))) return;
+  let o = obj;
+  for (let i = 0; i < parts.length - 1; i++) {
+    const k = parts[i];
+    if (k.startsWith("#")) { if (!Array.isArray(o)) return; o = o.find(x => x && x.id === k.slice(1)); if (!o) return; continue; }
+    if (o[k] === undefined || o[k] === null) o[k] = /^(\d+|#.*)$/.test(parts[i + 1]) ? [] : {};
+    o = o[k];
+  }
+  const last = parts[parts.length - 1]; if (!last.startsWith("#")) o[last] = value;
+}
 function bound(el) { const t = ctx.trip; if (!t) return; let v = el.value; if (el.dataset.type === "number") v = el.value === "" ? undefined : +el.value; if (el.dataset.type === "bool") v = el.checked; setPath(t, el.dataset.bind, v); }
 
 document.addEventListener("click", e => {

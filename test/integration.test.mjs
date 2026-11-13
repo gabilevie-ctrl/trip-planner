@@ -267,3 +267,158 @@ test("describe with a chatbot: copy the prompt, a cut-off reply is refused, a go
   assert.match($(".thread").textContent, /mid-July/);
   await go("#home"); assert.ok(!$("#chatbotPrompt"), "panel closed after a trip was made");
 });
+
+/* ---------- The live plan ---------- */
+const liveOpt = (name, over = {}) => Object.assign({ name, region: "", countryCodes: ["ES"], lat: null, lon: null, why: "Warm and walkable", weather: { text: "20–22 °C", highC: 21, lowC: 14, source: null }, maxAltitudeM: null, activities: [], access: { from: "London", mode: "flight", time: "4h30", connections: "", pricePP: 36, currency: "GBP", seenOn: "2026-11-08", source: null }, lodging: [], estimate: { perPerson: 600, group: 1200, currency: "GBP", breakdown: [] }, tradeOff: "", pick: false, mention: false, mentionWhy: null, sources: [] }, over);
+const toolReply = (name, input, text = "") => ({ stop_reason: "end_turn", usage: {}, content: [...(text ? [{ type: "text", text }] : []), { type: "tool_use", id: "tu1", name, input }] });
+async function liveTripWithOptions() {
+  const { lockKey } = await import("../src/keylock.js");
+  fakeFiles.set("/data/claude-key.json", await lockKey("sk-ant-test", "correct horse battery staple long", { iterations: 1000 }));
+  fakeApi = async () => toolReply("propose_options", { rates: [{ currency: "EUR", toTrip: 0.86, seenOn: "2026-11-09", source: null }], options: [liveOpt("La Palma", { pick: true }), liveOpt("Southern Morocco", { countryCodes: ["MA"] }), liveOpt("Cape Verde", { mention: true, mentionWhy: "far" })] }, "Three ideas.");
+  await go("#home"); click($('[data-act="new-trip"][data-kind="hike"]')); await tick(150);
+  change($('[data-bind="travellers.0.name"]'), "Gabriel"); await tick(40);
+  click($('[data-act="add-traveller"]')); await tick(60); change($('[data-bind="travellers.1.name"]'), "Situ"); await tick(40);
+  change($('[data-bind="dates.start"]'), "2027-01-02"); change($('[data-bind="dates.end"]'), "2027-01-03"); await tick(40);
+  change($('[data-bind="budget.total"]'), "1500"); change($('[data-bind="budget.currency"]'), "GBP"); await tick(60);
+  if ($("#livePass")) { $("#livePass").value = "correct horse battery staple long"; click($('[data-act="live-unlock"]')); await tick(150); }
+  $("#chatText").value = "warm hiking in January"; click($('[data-act="chat-send"]')); await tick(250);
+}
+const chooseBtn = name => [...window.document.querySelectorAll(".optcard")].find(c => c.textContent.includes(name)).querySelector('[data-act="choose-option"]');
+const storedTrip = () => { const s = JSON.parse(window.localStorage.getItem("tripplanner.v1")); return s.trips[s.current]; };
+
+test("choose a live option: Claude writes the plan, the header names it, another choice hides it", async () => {
+  await import("../src/main.js");
+  const { planInput } = await import("./plan-fixtures.mjs");
+  await liveTripWithOptions();
+  assert.equal(window.document.querySelectorAll('.optcard [data-act="choose-option"]').length, 2, "a Choose button on each card, none for mentions");
+  let sent = null; fakeApi = async (url, init) => { sent = JSON.parse(init.body); return toolReply("write_plan", planInput(), "Here is your plan."); };
+  click(chooseBtn("La Palma")); await tick(300);
+  assert.equal(window.location.hash, "#build");
+  assert.match($(".triphead").textContent, /La Palma/);
+  assert.equal(sent.max_tokens, 32000); assert.match(JSON.stringify(sent.messages), /Write the full plan for La Palma\./);
+  assert.ok(storedTrip().brief.some(m => m.text === "Write the full plan for La Palma."));
+  assert.equal(storedTrip().livePlan.bookings.length, 3);
+  assert.ok($(".daytable"), "the days show on Build");
+  await go("#setup"); assert.match([...window.document.querySelectorAll(".optcard")].find(c => c.textContent.includes("La Palma")).textContent, /Chosen ✓/);
+  let release; fakeApi = () => new Promise(r => { release = r; });
+  click(chooseBtn("Southern Morocco")); await tick(200);
+  assert.equal(window.location.hash, "#build");
+  assert.equal($(".daytable"), null, "the first option's plan is hidden");
+  assert.match($(".view-build").textContent, /Writing the plan/);
+  assert.equal(storedTrip().livePlan, null); assert.equal(storedTrip()._local.planHistory.at(-1).plan.optionId.length > 0, true);
+  release({ stop_reason: "end_turn", usage: {}, content: [{ type: "text", text: "Morocco needs more thought." }] }); await tick(200);
+  await go("#home"); assert.match($('.tripcard[data-act="open-trip"]').textContent, /Southern Morocco/);
+});
+
+test("the live plan in the tabs: edit a status, a gear cell, a to-do; Money totals follow; a plan chat change updates them", async () => {
+  await import("../src/main.js");
+  const { planInput } = await import("./plan-fixtures.mjs");
+  const { planTotals } = await import("../src/liveplan.js"); const { fmtMoney } = await import("../src/ui.js");
+  await liveTripWithOptions();
+  const input = planInput(); input.bookings.push({ id: "b_whale", what: "Whale trip", category: "activity", pick: "", alternative: "", price: 90, currency: "USD", seenOn: "2026-11-09", status: "idea", link: null, bookBy: null, details: "", source: null });
+  fakeApi = async () => toolReply("write_plan", input, "Here is your plan.");
+  click(chooseBtn("La Palma")); await tick(300);
+  // Build: the days and the gear, one column per traveller
+  assert.equal(window.document.querySelectorAll(".daytable tbody tr").length, 2);
+  const heads = [...window.document.querySelectorAll(".geartable thead th")].map(th => th.textContent);
+  assert.ok(heads.includes("Gabriel") && heads.includes("Situ"), heads.join("|"));
+  const situ = storedTrip().travellers.find(p => p.name === "Situ").id;
+  change($(`.geartable input[data-bind="livePlan.gear.#g_tent.per.${situ}"]`), "has one"); await tick(60);
+  assert.equal(storedTrip().livePlan.gear[0].per[situ], "has one");
+  assert.match($(".view-build").textContent, /Supermarket in Los Llanos/, "the food note shows under the gear");
+  // Plan & book: mark the ferry booked; its to-do shows done
+  await go("#plan");
+  change($('select[data-bind="livePlan.bookings.#b_ferry.status"]'), "booked"); await tick(60);
+  change($('input[data-bind="livePlan.bookings.#b_ferry.confirmation"]'), "ABC123"); await tick(60);
+  const todo = [...window.document.querySelectorAll(".todolist li")].find(li => /Book Ferry/.test(li.textContent));
+  assert.ok(todo && todo.classList.contains("done"), "the ferry to-do is done");
+  assert.ok(/Caldera camping permit/.test($(".view-plan").textContent), "permits show");
+  assert.ok(/Travel insurance/.test($(".view-plan").textContent), "Situ's admin shows");
+  // Money: the plan total, and the USD booking named as missing
+  await go("#money");
+  const before = planTotals(storedTrip().livePlan, storedTrip()).total;
+  assert.match($(".view-money").textContent, /Plan total/);
+  assert.ok($(".view-money").textContent.includes(fmtMoney(before, "GBP")), "the plan total shows");
+  assert.match($(".view-money").textContent, /No exchange rate[^]*Whale trip/);
+  // Plan chat on Build: the campsite goes up to 40 EUR
+  await go("#build");
+  const nulls = Object.fromEntries(Object.keys(planInput()).map(k => [k, null]));
+  fakeApi = async () => toolReply("update_plan", Object.assign(nulls, { bookings: input.bookings.map(b => b.id === "b_camp" ? Object.assign({}, b, { price: 40 }) : b.id === "b_ferry" ? Object.assign({}, b, { status: "idea" }) : b) }), "Updated.");
+  $("#chatText").value = "the campsite is 40 now"; click($('[data-act="chat-send"]')); await tick(300);
+  const after = storedTrip();
+  assert.equal(planTotals(after.livePlan, after).total, before + Math.round(40 * 0.86) - Math.round(20 * 0.86));
+  const ferry = after.livePlan.bookings.find(b => b.id === "b_ferry"); assert.equal(ferry.status, "booked"); assert.equal(ferry.confirmation, "ABC123");
+  await go("#money"); assert.ok($(".view-money").textContent.includes(fmtMoney(planTotals(after.livePlan, after).total, "GBP")));
+  // A library trip still shows the library picker
+  await go("#home"); click($('[data-act="new-trip"][data-kind="hike"]')); await tick(150);
+  await go("#build"); assert.ok($('select[data-act-change="pick-dest"]'), "library Build is unchanged"); assert.equal($(".daytable"), null);
+});
+
+test("review: a crafted share link with a hostile livePlan injects nothing", async () => {
+  const { newTrip, encodeShare } = await import("../src/state.js");
+  const { planInput } = await import("./plan-fixtures.mjs");
+  const { normalizePlan } = await import("../src/liveplan.js");
+  const t = newTrip("hike"); t.name = "Crafted plan";
+  t.options = [{ id: "o_x", name: "<img id=pwn0 src=x>" }]; t.chosen = "o_x";
+  const p = normalizePlan(planInput(), t, { optionId: "o_x" });
+  p.bookings[0].what = "<img id=pwn1 src=x>"; p.days[0].move = "<img id=pwn2 src=x>"; p.days[0].night.name = "<img id=pwn3 src=x>";
+  p.gear[0].name = "<img id=pwn4 src=x>"; p.food = "<img id=pwn5 src=x>"; p.bookings[1].link = "javascript:alert(1)";
+  p.permits[0].what = "<img id=pwn6 src=x>"; p.todo[0].what = "<img id=pwn7 src=x>"; p.days[0].km = "<img id=pwn8 src=x>";
+  t.livePlan = p;
+  window.location.hash = "#" + encodeShare(t, window.LZString).replace(/^#/, ""); await tick(250);
+  for (const h of ["#build", "#itinerary", "#plan", "#money", "#share", "#home"]) {
+    await go(h); await tick(40);
+    for (let n = 0; n <= 8; n++) assert.equal(window.document.getElementById("pwn" + n), null, `pwn${n} must not be an element on ${h}`);
+    assert.equal(window.document.querySelector('a[href^="javascript"]'), null, h);
+  }
+  await go("#build"); assert.ok($(".daytable"), "the crafted plan still renders");
+});
+
+test("final I2: choosing another option asks first when the plan has bookings, and choosing back restores the plan", async () => {
+  await import("../src/main.js");
+  const { planInput } = await import("./plan-fixtures.mjs");
+  await liveTripWithOptions();
+  fakeApi = async () => toolReply("write_plan", planInput(), "Plan.");
+  click(chooseBtn("La Palma")); await tick(300);
+  await go("#plan"); change($('select[data-bind="livePlan.bookings.#b_ferry.status"]'), "booked"); await tick(60);
+  const asked = []; window.confirm = msg => { asked.push(msg); return false; };
+  await go("#setup"); click(chooseBtn("Southern Morocco")); await tick(200);
+  assert.equal(asked.length, 1); assert.match(asked[0], /booked/);
+  assert.equal(storedTrip().livePlan.bookings.find(b => b.id === "b_ferry").status, "booked", "kept when the person says no");
+  window.confirm = () => true;
+  fakeApi = async () => ({ stop_reason: "end_turn", usage: {}, content: [{ type: "text", text: "Morocco later." }] });
+  click(chooseBtn("Southern Morocco")); await tick(300);
+  let calls = 0; fakeApi = async () => { calls++; return { stop_reason: "end_turn", usage: {}, content: [{ type: "text", text: "x" }] }; };
+  await go("#setup"); click(chooseBtn("La Palma")); await tick(300);
+  assert.equal(calls, 0, "no new plan is asked for");
+  assert.equal(storedTrip().livePlan.bookings.find(b => b.id === "b_ferry").status, "booked", "the La Palma plan is back");
+  assert.ok($(".daytable"));
+});
+
+test("final I4 + M1: an edit in progress survives a finished turn and lands on the right row; a crafted id can't reach Object.prototype", async () => {
+  await import("../src/main.js");
+  const { planInput } = await import("./plan-fixtures.mjs");
+  await liveTripWithOptions();
+  fakeApi = async () => toolReply("write_plan", planInput(), "Plan.");
+  click(chooseBtn("La Palma")); await tick(300);
+  let release; fakeApi = () => new Promise(r => { release = r; });
+  $("#chatText").value = "add a stove"; click($('[data-act="chat-send"]')); await tick(150);
+  const situ = storedTrip().travellers.find(p => p.name === "Situ").id;
+  const cell = $(`.geartable input[data-bind="livePlan.gear.#g_tent.per.${situ}"]`); cell.focus(); cell.value = "borrowing one";
+  const nulls = Object.fromEntries(Object.keys(planInput()).map(k => [k, null]));
+  release(toolReply("update_plan", Object.assign(nulls, { gear: [{ id: "g_stove", name: "Stove", note: "" }, { id: "g_tent", name: "Tent", note: "" }] })));
+  await tick(300);
+  assert.equal(window.document.activeElement, cell, "the page did not re-render under the person typing"); assert.equal(cell.value, "borrowing one");
+  cell.dispatchEvent(new window.Event("change", { bubbles: true })); cell.blur(); await tick(200);
+  const gear = storedTrip().livePlan.gear;
+  assert.equal(gear.find(g => g.id === "g_tent").per[situ], "borrowing one"); assert.equal(gear.find(g => g.id === "g_stove").per[situ], undefined);
+  assert.ok($(".geartable").textContent.includes("Stove"), "the page re-rendered once the edit was done");
+  // a crafted traveller id
+  const { newTrip, encodeShare } = await import("../src/state.js"); const { normalizePlan } = await import("../src/liveplan.js");
+  const t = newTrip("hike"); t.travellers = [{ id: "__proto__.polluted", name: "Trap", limits: {} }]; t.options = [{ id: "o_x", name: "X" }]; t.chosen = "o_x";
+  t.livePlan = normalizePlan(planInput({ admin: [] }), t, { optionId: "o_x" });
+  window.location.hash = "#" + encodeShare(t, window.LZString).replace(/^#/, ""); await tick(250);
+  await go("#build"); const trap = $(".geartable input"); assert.ok(trap);
+  change(trap, "yes"); await tick(100);
+  assert.equal(({}).polluted, undefined, "Object.prototype is untouched");
+});

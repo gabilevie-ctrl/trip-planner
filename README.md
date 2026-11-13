@@ -57,4 +57,11 @@ GitHub Pages: Settings → Pages → deploy from `main`, folder `/`. The app the
 
 ## Live search
 
-With the family password, the trip chat asks Claude (with web search) for real destination options, shown as cards and checked against everyone's limits. Without it the app works as before. One-time setup for the key owner: [docs/LIVE-SETUP.md](docs/LIVE-SETUP.md).
+With the family password, the trip chat asks Claude (with web search) for real destination options, shown as cards and checked against everyone's limits. Without it the app works as before.
+
+**Choose → plan.** "Choose" on an option card asks Claude for the full plan, which the app shows in its tabs:
+- **Build:** the days, and a gear table with one column per traveller (who has, brings or buys what), with a plan chat at the top for changes.
+- **Plan & book:** bookings with prefilled links, a status and a confirmation number, permits, admin per traveller, and a dated to-do list.
+- **Money:** the plan total, computed by the app in the trip currency; a price with no exchange rate is named and left out.
+
+What people mark (a booking booked, its confirmation, gear cells, done to-dos) is kept when Claude changes the plan. Only the current plan goes into a share link. One-time setup for the key owner: [docs/LIVE-SETUP.md](docs/LIVE-SETUP.md).

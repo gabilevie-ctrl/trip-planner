@@ -5,6 +5,7 @@ import { tripLength, computePlan, isVisited } from "../compute.js";
 import { score } from "../scoring.js";
 import { describeTurn } from "../describe.js";
 import { uid } from "../state.js";
+import { liveChoice } from "../liveplan.js";
 
 
 export function render(ctx) {
@@ -68,16 +69,21 @@ export function render(ctx) {
   <p><a href="#destinations" role="button">Next: destinations →</a></p>`;
 }
 
-function chat(t, ctx) {
+/* The one thread with the planner. On Build it is the plan chat (plan: true): same thread, its own wording. */
+export function chat(t, ctx, title = "Describe the trip", { plan = false } = {}) {
   const msgs = t.brief || []; const live = ctx.liveStatus === "unlocked"; const busy = !!ctx.busyTrips?.has(t.id);
   const status = live ? `<p class="livestatus small">Live search is on: Claude searches the web for options. <button type="button" class="linklike" data-act="live-forget">Forget on this device</button></p>`
     : ctx.liveStatus === "locked" ? `<p class="muted small">Unlock live search above for real options from the web.</p>` : "";
   return `<section class="card chat">
-    <h2>Describe the trip</h2>${status}
-    ${msgs.length || busy ? `<ol class="thread">${msgs.map(m => `<li class="msg ${m.who === "app" ? "app" : "you"}${m.error ? " err" : ""}">${esc(m.text)}</li>`).join("")}${busy ? `<li class="msg app busy" aria-live="polite">Searching live… this can take a minute</li>` : ""}</ol>` : `<p class="muted">Tell the planner about the trip in your own words; it fills in the form below${live ? ", searches the web for options that fit," : ""} and asks about what is missing.</p>`}
-    <div class="chatin"><textarea id="chatText" rows="2" placeholder="${msgs.length ? "Add more: a limit for someone, a change of dates, what to skip…" : "e.g. Four of us, ten days in May, from London, about £1,500 each, love the coast"}"></textarea><button type="button" data-act="chat-send" ${busy ? "disabled aria-busy=\"true\"" : ""}>Send</button></div>
+    <h2>${esc(title)}</h2>${status}
+    ${msgs.length || busy ? `<ol class="thread">${msgs.map(m => `<li class="msg ${m.who === "app" ? "app" : "you"}${m.error ? " err" : ""}">${esc(m.text)}</li>`).join("")}${busy ? `<li class="msg app busy" aria-live="polite">${busyText(t)}</li>` : ""}</ol>` : plan ? `<p class="muted">Ask for changes in your own words: another campsite, one more rest day, cheaper ferries. Claude updates the plan below and keeps what you marked booked.</p>` : `<p class="muted">Tell the planner about the trip in your own words; it fills in the form below${live ? ", searches the web for options that fit," : ""} and asks about what is missing.</p>`}
+    <div class="chatin"><textarea id="chatText" rows="2" placeholder="${plan ? "e.g. Swap the second night for a hut" : msgs.length ? "Add more: a limit for someone, a change of dates, what to skip…" : "e.g. Four of us, ten days in May, from London, about £1,500 each, love the coast"}"></textarea><button type="button" data-act="chat-send" ${busy ? "disabled aria-busy=\"true\"" : ""}>Send</button></div>
   </section>`;
 }
+/* A plan someone has worked on: a booking past "idea", a confirmation number, or a done to-do. */
+const hasPeoplesWork = p => (p.bookings || []).some(b => b.status !== "idea" || b.confirmation) || (p.todo || []).some(x => x.done);
+/* What a running live turn is doing: a plan takes much longer than a shortlist. */
+export const busyText = t => liveChoice(t) ? "Writing the plan… this can take a few minutes. Keep this tab open." : "Searching live… this can take a minute";
 /* Shown only when a locked key is published and this device has not unlocked it. */
 function liveCard(ctx) {
   if (ctx.liveStatus !== "locked") return "";
@@ -116,6 +122,7 @@ function optionsCard(t) {
         ${o.tradeOff ? `<dt>Trade-off</dt><dd>${esc(o.tradeOff)}</dd>` : ""}
       </dl>
       ${o.sources?.length ? `<p class="small muted">Sources: ${o.sources.map(s => link(s) + seen(s.seenOn)).join(" · ")}</p>` : ""}
+      <footer class="row">${t.chosen === o.id ? `<span class="pill good">Chosen ✓</span> <a href="#build">See the plan →</a>` : `<button type="button" class="outline" data-act="choose-option" data-id="${esc(o.id)}">Choose</button>`}</footer>
     </article>`; };
   return `<section class="card">
     <h2>Options</h2>
@@ -158,6 +165,7 @@ function critInput(c, value, bind) {
 }
 function fmtLimit(c, v) { if (Array.isArray(v)) return v.map(x => fmtLimit(c, x)).join(" and "); if (c.type === "bool") return v ? "yes" : "no"; if (c.type === "select") { const o = c.options.find(([k]) => String(k) === String(v)); return o ? o[1] : v; } return `${Number(v).toLocaleString("en-GB")}${c.unit ? " " + c.unit : ""}`; }
 
+let unlocking = false;
 export const actions = {
   "chat-send": async (el, ctx) => {
     const box = document.getElementById("chatText"); const text = box.value.trim();
@@ -167,11 +175,33 @@ export const actions = {
     describeTurn(ctx.trip, text, { countries: ctx.countries, suggest: suggestFor(ctx) }); ctx.commit();
   },
   "live-unlock": async (el, ctx) => {
-    const r = await ctx.vault.unlock(document.getElementById("livePass").value, { remember: document.getElementById("liveRemember").checked });
+    if (unlocking) return; // a double click tries the password once
+    unlocking = true; let r;
+    try { r = await ctx.vault.unlock(document.getElementById("livePass").value, { remember: document.getElementById("liveRemember").checked }); } finally { unlocking = false; }
     if (!r.ok) { ctx.toast(r.reason === "no-lock" ? "Live search is not set up on this site." : "That password doesn't unlock live search."); return; }
     ctx.rerender();
   },
   "live-forget": async (el, ctx) => { await ctx.vault.forget(); ctx.toast("Live search is locked again on this device."); ctx.rerender(); },
+  /* Choosing a live option asks Claude for its plan; a plan written for another option goes to this device's history. */
+  "choose-option": async (el, ctx) => {
+    const t = ctx.trip; const o = (t.options || []).find(x => x.id === el.dataset.id && !x.mention); if (!o) return;
+    if (ctx.busyTrips?.has(t.id)) { ctx.toast("Wait for the current answer first."); return; }
+    const old = t.livePlan && t.livePlan.optionId !== o.id ? t.livePlan : null;
+    if (old && hasPeoplesWork(old)) {
+      const was = (t.options || []).find(x => x.id === old.optionId)?.name || "the current choice";
+      if (!ctx.confirm(`The plan for ${was} has bookings marked booked or decided, confirmation numbers or done to-dos. Choosing ${o.name} puts that plan aside on this device: it comes back if you choose ${was} again, but it isn't in share links. Continue?`)) return;
+    }
+    t.chosen = o.id;
+    t._local = t._local || { optionHistory: [], lastSynced: null };
+    const hist = t._local.planHistory = (t._local.planHistory || []);
+    if (old) { hist.push({ at: new Date().toISOString(), plan: old }); t.livePlan = null; }
+    // Choosing an option again brings back its last plan instead of asking Claude for a new one.
+    const back = old || !t.livePlan ? hist.map(h => h.plan).filter(p => p && p.optionId === o.id).at(-1) : null;
+    if (back) { hist.splice(hist.findIndex(h => h.plan === back), 1); t.livePlan = back; }
+    t._local.planHistory = hist.slice(-3);
+    ctx.commit(false); ctx.nav("build");
+    if (ctx.liveStatus === "unlocked" && !t.livePlan) await ctx.runLive(t, `Write the full plan for ${o.name}.`);
+  },
   "see-dest": (el, ctx) => { const t = ctx.trip; t._ui = Object.assign(t._ui || {}, { q: el.dataset.name }); ctx.save(); ctx.nav("destinations"); },
   "add-traveller": (el, ctx) => { ctx.trip.travellers.push({ id: uid("p"), name: "", limits: {} }); ctx.commit(); },
   "remove-traveller": (el, ctx) => { ctx.trip.travellers = ctx.trip.travellers.filter(p => p.id !== el.dataset.pid); ctx.commit(); },

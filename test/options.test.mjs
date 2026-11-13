@@ -84,3 +84,16 @@ test("review C1: options and rates from an imported link are cleaned, ids kept, 
   assert.deepEqual(Object.keys(t.rates), ["USD"]);
   assert.ok(!fmtMoney(5, "<b>").includes("<b>"), "fmtMoney escapes an odd currency code");
 });
+test("minor: an option with no country codes is flagged when someone has a country limit", () => {
+  const t = situTrip(); const o = normalizeOptions({ options: [opt({ name: "Somewhere", countryCodes: [] })], rates: [] }, t, { today: TODAY }).options[0];
+  const r = checkOption(o, t);
+  assert.ok(r.flags.some(f => /country isn't known/.test(f)), r.flags.join(" | ")); assert.equal(r.countryBreach, false);
+  const free = newTrip("explore"); free.travellers = [{ id: "g", name: "G", limits: {} }];
+  assert.ok(!checkOption(o, free).flags.some(f => /country/.test(f)), "no flag without a country limit");
+});
+test("minor: when every option is a mention, none is marked as the pick", () => {
+  const { options } = normalizeOptions({ options: [opt({ name: "A", mention: true }), opt({ name: "B", mention: true })], rates: [] }, situTrip(), { today: TODAY });
+  assert.deepEqual(options.map(o => o.pick), [false, false]);
+  const marked = normalizeOptions({ options: [opt({ name: "A", mention: true, pick: true }), opt({ name: "B" })], rates: [] }, situTrip(), { today: TODAY }).options;
+  assert.deepEqual(marked.map(o => o.pick), [false, true], "a mention can't be the pick");
+});

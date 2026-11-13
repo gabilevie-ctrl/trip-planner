@@ -1,4 +1,5 @@
 import { esc, fmtDateY, fmtMoney, empty } from "../ui.js";
+import { chosenName } from "../liveplan.js";
 import { KINDS } from "../criteria.js";
 import { tripLength } from "../compute.js";
 import { readDescription, describeTurn } from "../describe.js";
@@ -30,7 +31,7 @@ export function render(ctx) {
   const cards = trips.map(t => {
     const n = (t.travellers || []).length;
     const when = t.dates?.start ? `${fmtDateY(t.dates.start)} → ${fmtDateY(t.dates.end)} · ${tripLength(t)} days` : "Dates not set";
-    const chosen = t.chosen ? (ctx.names[t.chosen] || t.chosen) : "No destination chosen yet";
+    const chosen = chosenName(t, ctx.names) || "No destination chosen yet";
     return `<article class="tripcard" data-act="open-trip" data-id="${t.id}" tabindex="0" role="button">
       <header><span class="kind">${esc(KINDS[t.kind]?.label || t.kind)}</span><h3>${esc(t.name || "Untitled trip")}</h3></header>
       <p>${esc(when)}</p>

@@ -3,9 +3,14 @@ import { planningSteps } from "../criteria.js";
 import { computePlan, stays } from "../compute.js";
 import { currentDest } from "./build.js";
 import * as L from "../links.js";
+import { liveChoice, currentPlan } from "../liveplan.js";
+import * as live from "./liveplan.js";
 
 export function render(ctx) {
-  const t = ctx.trip; const d = ctx.dests.find(x => x.id === t.chosen) || null;
+  const t = ctx.trip;
+  if (liveChoice(t)) return `${currentPlan(t) ? live.bookingsCard(t) + live.permitsCard(t) + live.todoCard(t) + live.sourcesCard(t) : live.waitingCard(t, ctx)}
+  <p class="row"><a href="#money" role="button">Next: money →</a></p>`;
+  const d = ctx.dests.find(x => x.id === t.chosen) || null;
   const plan = d ? computePlan(d, t).plan : null;
   const steps = planningSteps(t, d, plan);
   const phases = [...new Set(steps.map(s => s.phase))];
@@ -46,5 +51,6 @@ function travel(d, t, n) {
 }
 
 export const actions = {
+  ...live.actions,
   "step": (el, ctx) => { ctx.trip.steps[el.dataset.key] = el.checked; ctx.commit(); }
 };

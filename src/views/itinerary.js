@@ -2,11 +2,15 @@ import { esc, fmtDate, empty } from "../ui.js";
 import { itinerary, stays } from "../compute.js";
 import { currentDest } from "./build.js";
 import * as L from "../links.js";
+import { liveChoice, currentPlan } from "../liveplan.js";
+import * as live from "./liveplan.js";
 
 const KIND_LABEL = { travel: "Travel", city: "City", hike: "Outdoors", beach: "Coast", wildlife: "Wildlife", stage: "Stage", rest: "Rest", spare: "Spare" };
 
 export function render(ctx) {
-  const t = ctx.trip; const d = currentDest(ctx);
+  const t = ctx.trip;
+  if (liveChoice(t)) return `${currentPlan(t) ? live.daysCard(t) : live.waitingCard(t, ctx)}<p class="row"><a href="#plan" role="button">Next: plan & book →</a></p>`;
+  const d = currentDest(ctx);
   if (!d) return `<section class="card">${empty("Nothing to show yet", "Build a destination first.", `<a href="#build" role="button">Go to build</a>`)}</section>`;
   const noDates = !t.dates.start;
   const days = itinerary(d, t); const st = stays(d, t); const n = t.travellers.length || 1;
@@ -27,4 +31,4 @@ export function render(ctx) {
   </section>
   <p class="row"><a href="#plan" role="button">Next: plan & book →</a></p>`;
 }
-export const actions = {};
+export const actions = { ...live.actions };

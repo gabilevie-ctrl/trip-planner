@@ -12,6 +12,9 @@ Live search lets the trip chat ask Claude, which searches the web for real optio
 4. **Publish it.** Commit `data/claude-key.json` and push. Once GitHub Pages has updated, the Setup page shows a "Live search" box.
 5. **Tell the family the password,** in person or by message. Don't put it in the repo or a share link.
 
+## What it costs
+Each message is one call to Claude with web search. Asking for options is the cheaper kind of turn. Writing or changing a plan (after someone presses "Choose") costs more: the answer is much longer, up to 32,000 output tokens, and it can take a few minutes. The spend limit from step 2 caps it either way; the Console's usage page shows what each day cost.
+
 ## What the password protects, and what it doesn't
 - **What's public:** the locked file is public on GitHub. Without the password it is useless, but a short password could be guessed by a computer trying many times. That's why the minimum is 20 characters.
 - **What a password holder can do:** anyone who has the password could, with some effort, dig the real key out of their browser. Only give the password to people you'd trust with the key.

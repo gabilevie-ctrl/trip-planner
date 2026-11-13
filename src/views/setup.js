@@ -80,8 +80,10 @@ export function chat(t, ctx, title = "Describe the trip", { plan = false } = {})
     <div class="chatin"><textarea id="chatText" rows="2" placeholder="${plan ? "e.g. Swap the second night for a hut" : msgs.length ? "Add more: a limit for someone, a change of dates, what to skip…" : "e.g. Four of us, ten days in May, from London, about £1,500 each, love the coast"}"></textarea><button type="button" data-act="chat-send" ${busy ? "disabled aria-busy=\"true\"" : ""}>Send</button></div>
   </section>`;
 }
+/* A plan someone has worked on: a booking past "idea", a confirmation number, or a done to-do. */
+const hasPeoplesWork = p => (p.bookings || []).some(b => b.status !== "idea" || b.confirmation) || (p.todo || []).some(x => x.done);
 /* What a running live turn is doing: a plan takes much longer than a shortlist. */
-export const busyText = t => liveChoice(t) ? "Writing the plan… this can take a few minutes" : "Searching live… this can take a minute";
+export const busyText = t => liveChoice(t) ? "Writing the plan… this can take a few minutes. Keep this tab open." : "Searching live… this can take a minute";
 /* Shown only when a locked key is published and this device has not unlocked it. */
 function liveCard(ctx) {
   if (ctx.liveStatus !== "locked") return "";
@@ -184,12 +186,19 @@ export const actions = {
   "choose-option": async (el, ctx) => {
     const t = ctx.trip; const o = (t.options || []).find(x => x.id === el.dataset.id && !x.mention); if (!o) return;
     if (ctx.busyTrips?.has(t.id)) { ctx.toast("Wait for the current answer first."); return; }
-    t.chosen = o.id;
-    if (t.livePlan && t.livePlan.optionId !== o.id) {
-      t._local = t._local || { optionHistory: [], lastSynced: null };
-      t._local.planHistory = (t._local.planHistory || []).concat([{ at: new Date().toISOString(), plan: t.livePlan }]).slice(-3);
-      t.livePlan = null;
+    const old = t.livePlan && t.livePlan.optionId !== o.id ? t.livePlan : null;
+    if (old && hasPeoplesWork(old)) {
+      const was = (t.options || []).find(x => x.id === old.optionId)?.name || "the current choice";
+      if (!ctx.confirm(`The plan for ${was} has bookings marked booked or decided, confirmation numbers or done to-dos. Choosing ${o.name} puts that plan aside on this device: it comes back if you choose ${was} again, but it isn't in share links. Continue?`)) return;
     }
+    t.chosen = o.id;
+    t._local = t._local || { optionHistory: [], lastSynced: null };
+    const hist = t._local.planHistory = (t._local.planHistory || []);
+    if (old) { hist.push({ at: new Date().toISOString(), plan: old }); t.livePlan = null; }
+    // Choosing an option again brings back its last plan instead of asking Claude for a new one.
+    const back = old || !t.livePlan ? hist.map(h => h.plan).filter(p => p && p.optionId === o.id).at(-1) : null;
+    if (back) { hist.splice(hist.findIndex(h => h.plan === back), 1); t.livePlan = back; }
+    t._local.planHistory = hist.slice(-3);
     ctx.commit(false); ctx.nav("build");
     if (ctx.liveStatus === "unlocked" && !t.livePlan) await ctx.runLive(t, `Write the full plan for ${o.name}.`);
   },

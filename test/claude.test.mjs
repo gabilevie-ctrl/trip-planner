@@ -76,3 +76,8 @@ test("maxTokens is sent when given", async () => {
   await ask({ ...base, maxTokens: 32000, fetchImpl });
   assert.equal(calls[0].body.max_tokens, 32000);
 });
+test("final I5: a call that hangs past the timeout ends with a clear message", async () => {
+  const fetchImpl = (u, init) => new Promise((_, rej) => init.signal.addEventListener("abort", () => rej(new Error("aborted"))));
+  const r = await ask({ ...base, fetchImpl, timeoutMs: 20 });
+  assert.equal(r.ok, false); assert.equal(r.error, "timeout"); assert.match(r.message, /Keep this tab open/);
+});

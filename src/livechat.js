@@ -40,6 +40,12 @@ export async function liveTurn(trip, text, { ask, apiKey, today = new Date().toI
   if (call) {
     const { options, rates } = normalizeOptions(call.input, trip, { today });
     if (options.length) {
+      // The chosen option survives a new shortlist (same name keeps its id; otherwise it stays in the list), so its plan stays.
+      const chosen = liveChoice(trip);
+      if (chosen) {
+        const same = options.find(o => o.name.trim().toLowerCase() === String(chosen.name || "").trim().toLowerCase());
+        if (same) same.id = chosen.id; else options.push(Object.assign({}, chosen, { pick: false }));
+      }
       trip._local = trip._local || { optionHistory: [], lastSynced: null };
       trip._local.optionHistory = (trip._local.optionHistory || []).concat(trip.options?.length ? [{ at: new Date().toISOString(), options: trip.options }] : []).slice(-KEEP_SETS);
       trip.options = options; trip.rates = rates; optionsChanged = true;

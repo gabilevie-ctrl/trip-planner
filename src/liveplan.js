@@ -83,7 +83,9 @@ export function normalizePlan(input, trip, { today = new Date().toISOString().sl
   });
   plan.bookings = list(i.bookings, b => isObj(b) && str(b.what) ? {
     id: ids.b(b.id), what: str(b.what), category: oneOf(b.category, BOOKING_CATEGORIES, "other"), pick: str(b.pick), alternative: str(b.alternative),
-    price: num(b.price), currency: cur(b.currency), seenOn: day(b.seenOn, today), status: oneOf(b.status, BOOKING_STATUSES, "idea"),
+    price: num(b.price), currency: cur(b.currency), seenOn: day(b.seenOn, today),
+    // Only people mark a booking booked; from Claude, "booked" means it thinks it's settled, so it reads "decided".
+    status: own ? oneOf(b.status, BOOKING_STATUSES, "idea") : b.status === "booked" ? "decided" : oneOf(b.status, ["idea", "decided", "not-needed"], "idea"),
     confirmation: own ? str(b.confirmation) : "", link: https(b.link), bookBy: date(b.bookBy), details: str(b.details), source: source(b.source, today)
   } : null);
   plan.permits = list(i.permits, p => isObj(p) && str(p.what) ? { id: ids.p(p.id), what: str(p.what), who: list(p.who, str), how: str(p.how), leadTime: str(p.leadTime), bookBy: date(p.bookBy), note: str(p.note) } : null);
@@ -138,21 +140,31 @@ export function mergePlan(existing, input, trip, { today = new Date().toISOStrin
   if (!isObj(existing)) return { plan: fresh, changed, rates: planRates(i, trip, { today }) };
   const plan = { optionId: fresh.optionId };
   const old = (k, fallback) => JSON.parse(JSON.stringify(existing[k] ?? fallback));
-  const byId = arr => new Map((Array.isArray(arr) ? arr : []).map(x => [x.id, x]));
   for (const k of COLLECTIONS) plan[k] = sent(k) ? fresh[k] : old(k, k === "admin" ? {} : k === "food" ? "" : []);
   if (sent("bookings")) {
-    const was = byId(existing.bookings);
-    for (const b of plan.bookings) { const e = was.get(b.id); if (!e) continue; b.confirmation = e.confirmation || ""; if (e.status !== "idea") b.status = e.status; }
-    const now = new Set(plan.bookings.map(b => b.id));
-    for (const e of existing.bookings || []) if (e.status === "booked" && !now.has(e.id)) plan.bookings.push(JSON.parse(JSON.stringify(e)));
+    const m = pair(plan.bookings, existing.bookings, b => b.category + "|" + b.what);
+    for (const [b, e] of m) { b.confirmation = e.confirmation || ""; if (e.status !== "idea") b.status = e.status; }
+    const matched = new Set(m.values());
+    for (const e of existing.bookings || []) if (e.status === "booked" && !matched.has(e)) plan.bookings.push(JSON.parse(JSON.stringify(e)));
   }
-  if (sent("gear")) { const was = byId(existing.gear); for (const g of plan.gear) { const e = was.get(g.id); if (e) g.per = Object.assign({}, e.per); } }
-  if (sent("todo")) { const was = byId(existing.todo); for (const x of plan.todo) { const e = was.get(x.id); if (e) x.done = e.done === true; } }
+  if (sent("gear")) for (const [g, e] of pair(plan.gear, existing.gear, g => g.name)) g.per = Object.assign({}, e.per);
+  if (sent("todo")) for (const [x, e] of pair(plan.todo, existing.todo, x => x.what)) x.done = e.done === true;
   if (sent("admin")) {
-    const was = byId(Object.values(existing.admin || {}).flat());
-    for (const items of Object.values(plan.admin)) for (const a of items) { const e = was.get(a.id); if (e) a.status = e.status; }
+    const flat = admin => Object.entries(isObj(admin) ? admin : {}).flatMap(([k, items]) => (Array.isArray(items) ? items : []).map(a => Object.assign(Object.create(null), { a, k })));
+    for (const [n, e] of pair(flat(plan.admin), flat(existing.admin), x => x.k + "|" + x.a.what, x => x.a.id)) n.a.status = e.a.status;
   }
   return { plan: fixRefs(plan), changed, rates: planRates(i, trip, { today }) };
+}
+
+/* Match each new item to an existing one: by id first, then by name for items Claude gave a new id
+   (a rewrite often renames ids). Each existing item matches at most once. Returns Map(newItem -> existingItem). */
+const norm = s => String(s || "").toLowerCase().replace(/\s+/g, " ").trim();
+function pair(fresh, existing, keyOf, idOf = x => x.id) {
+  const out = new Map(); const left = new Set(Array.isArray(existing) ? existing : []);
+  const byId = new Map([...left].map(e => [idOf(e), e]));
+  for (const f of fresh) { const e = byId.get(idOf(f)); if (e && left.has(e)) { out.set(f, e); left.delete(e); } }
+  for (const f of fresh) { if (out.has(f)) continue; const e = [...left].find(x => norm(keyOf(x)) === norm(keyOf(f))); if (e) { out.set(f, e); left.delete(e); } }
+  return out;
 }
 
 /* ---------- The chosen live option and its plan ---------- */

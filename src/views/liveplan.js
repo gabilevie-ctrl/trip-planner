@@ -25,7 +25,7 @@ function money(amount, currency, t) {
 /* ---------- Waiting for a plan ---------- */
 export function waitingCard(t, ctx) {
   const o = liveChoice(t); const name = o ? o.name : "this destination";
-  if (ctx.busyTrips?.has(t.id)) return `<section class="card"><p class="msg app busy" aria-live="polite">Writing the plan… this can take a few minutes</p></section>`;
+  if (ctx.busyTrips?.has(t.id)) return `<section class="card"><p class="msg app busy" aria-live="polite">Writing the plan… this can take a few minutes. Keep this tab open.</p></section>`;
   if (ctx.liveStatus === "unlocked") return `<section class="card">${empty("No plan yet.", `Ask Claude to write the days, bookings, gear and to-dos for ${esc(name)}.`, `<button type="button" data-act="ask-plan">Write the plan</button>`)}</section>`;
   return `<section class="card">${empty("No plan yet.", `<a href="#setup">Unlock live search in Setup to get the plan</a> for ${esc(name)}.`)}</section>`;
 }
@@ -59,7 +59,7 @@ export function daysCard(t) {
 export function gearCard(t) {
   const p = currentPlan(t); if (!p) return "";
   const people = t.travellers || [];
-  const rows = (p.gear || []).map((g, i) => `<tr><td><strong>${esc(g.name)}</strong>${g.note ? `<br><span class="muted small">${esc(g.note)}</span>` : ""}</td>${people.map(pp => `<td><input type="text" data-bind="livePlan.gear.${i}.per.${esc(pp.id)}" value="${esc(g.per?.[pp.id] || "")}" placeholder="has / brings / buys" aria-label="${esc(g.name)}: ${esc(pp.name || "traveller")}"></td>`).join("")}</tr>`).join("");
+  const rows = (p.gear || []).map((g, i) => `<tr><td><strong>${esc(g.name)}</strong>${g.note ? `<br><span class="muted small">${esc(g.note)}</span>` : ""}</td>${people.map(pp => `<td><input type="text" data-bind="livePlan.gear.#${esc(g.id)}.per.${esc(pp.id)}" value="${esc(g.per?.[pp.id] || "")}" placeholder="has / brings / buys" aria-label="${esc(g.name)}: ${esc(pp.name || "traveller")}"></td>`).join("")}</tr>`).join("");
   return `<section class="card"><h3>Gear</h3>
     <p class="muted small">Write who has, brings or buys each thing.</p>
     ${rows ? `<div class="scroller"><table class="itin geartable"><thead><tr><th>Gear</th>${people.map(pp => `<th>${esc(pp.name || "Traveller")}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div>` : `<p class="muted">No gear listed yet.</p>`}
@@ -76,8 +76,8 @@ export function bookingsCard(t) {
     <td class="num">${n(b.price) !== null ? money(b.price, b.currency, t) : `<span class="muted">no price</span>`}${b.seenOn && n(b.price) !== null ? `<br><span class="muted small">seen ${esc(fmtDate(b.seenOn))}</span>` : ""}${b.source ? `<br><span class="small">${link(b.source.url, b.source.name)}</span>` : ""}</td>
     <td class="small">${b.bookBy ? esc(fmtDate(b.bookBy)) : ""}</td>
     <td>${link(b.link, "Book →")}</td>
-    <td><select data-bind="livePlan.bookings.${i}.status" aria-label="Status of ${esc(b.what)}">${BOOKING_STATUSES.map(s => `<option value="${s}" ${b.status === s ? "selected" : ""}>${STATUS_LABEL[s]}</option>`).join("")}</select></td>
-    <td><input type="text" data-bind="livePlan.bookings.${i}.confirmation" value="${esc(b.confirmation || "")}" placeholder="confirmation no." aria-label="Confirmation for ${esc(b.what)}"></td></tr>`).join("");
+    <td><select data-bind="livePlan.bookings.#${esc(b.id)}.status" aria-label="Status of ${esc(b.what)}">${BOOKING_STATUSES.map(s => `<option value="${s}" ${b.status === s ? "selected" : ""}>${STATUS_LABEL[s]}</option>`).join("")}</select></td>
+    <td><input type="text" data-bind="livePlan.bookings.#${esc(b.id)}.confirmation" value="${esc(b.confirmation || "")}" placeholder="confirmation no." aria-label="Confirmation for ${esc(b.what)}"></td></tr>`).join("");
   return `<section class="card"><h3>Bookings</h3>
     <p class="muted small">Prices are for the whole group, from the page linked on the date shown. Links open the booking site prefilled where it allows; nothing is booked from here.</p>
     ${rows ? `<div class="scroller"><table class="itin booktable"><thead><tr><th>What</th><th>Price</th><th>Book by</th><th>Link</th><th>Status</th><th>Confirmation</th></tr></thead><tbody>${rows}</tbody></table></div>` : `<p class="muted">Nothing to book yet.</p>`}
@@ -99,7 +99,7 @@ export function todoCard(t) {
   const p = currentPlan(t); if (!p) return "";
   const own = new Map((p.todo || []).map((x, i) => [x.id, i]));
   const items = planTodo(p).map(x => `<li class="${x.done ? "done" : ""}">${x.from === "todo"
-    ? `<label class="chk"><input type="checkbox" data-bind="livePlan.todo.${own.get(x.id)}.done" data-type="bool" ${x.done ? "checked" : ""}> <span>${esc(x.what)}</span></label>`
+    ? `<label class="chk"><input type="checkbox" data-bind="livePlan.todo.#${esc(x.id)}.done" data-type="bool" ${x.done ? "checked" : ""}> <span>${esc(x.what)}</span></label>`
     : `<span>${x.done ? "✓ " : ""}${esc(x.what)} <span class="muted small">(${x.from === "booking" ? "status in Bookings above" : "permit above"})</span></span>`}
     ${x.date ? ` <span class="muted small">by ${esc(fmtDate(x.date))}</span>` : ""}</li>`).join("");
   return `<section class="card"><h3>To do</h3>${items ? `<ul class="steps todolist">${items}</ul>` : `<p class="muted">Nothing to do yet.</p>`}</section>`;

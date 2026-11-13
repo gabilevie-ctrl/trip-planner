@@ -131,3 +131,19 @@ test("only the last three replaced plans are kept", async () => {
   for (let i = 0; i < 5; i++) { const { ask } = fakeAsk(planCall("write_plan", planInput({ food: "round " + i }))); await liveTurn(t, "again", opts(ask)); }
   assert.equal(t._local.planHistory.length, 3); assert.equal(t.livePlan.food, "round 4"); assert.equal(t._local.planHistory.at(-1).plan.food, "round 3");
 });
+
+test("final I1: new options in a plan turn keep the chosen option, so the plan stays visible and the update applies", async () => {
+  const t = chosenTrip(); t.livePlan = normalizePlan(planInput(), t, { today: TODAY, optionId: "o_lp" });
+  const res = { ok: true, text: "", searches: 1, toolCalls: [
+    { name: "propose_options", input: { options: [option("La Palma"), option("Gran Canaria")], rates: [] } },
+    { name: "update_plan", input: nullsBut({ food: "new food" }) }] };
+  const { ask } = fakeAsk(res);
+  await liveTurn(t, "Situ can't go above 1500 m", opts(ask));
+  assert.equal(t.chosen, "o_lp"); assert.ok(t.options.some(o => o.id === "o_lp" && o.name === "La Palma"));
+  assert.equal(t.livePlan.food, "new food");
+  const u = chosenTrip(); u.livePlan = normalizePlan(planInput(), u, { today: TODAY, optionId: "o_lp" });
+  const { ask: ask2 } = fakeAsk({ ok: true, text: "", searches: 1, toolCalls: [{ name: "propose_options", input: { options: [option("Gran Canaria")], rates: [] } }] });
+  await liveTurn(u, "other ideas?", opts(ask2));
+  assert.ok(u.options.some(o => o.id === "o_lp"), "the chosen option stays in the list even when Claude leaves it out");
+  assert.equal(u.options.length, 2);
+});

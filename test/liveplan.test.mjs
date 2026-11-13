@@ -155,3 +155,30 @@ test("to-do: own items, 'Book …' for unbooked bookings with a book-by date, 'A
   assert.equal(items.find(x => x.what.startsWith("Book Ferry")).from, "booking");
   assert.equal(items.find(x => x.what.startsWith("Book Ferry")).date, "2026-12-01");
 });
+
+/* ---------- Final review fixes ---------- */
+test("final I3: a rewrite with new ids keeps people's work on matching items and counts a booked booking once", () => {
+  const t = situTrip(); t.rates = { EUR: { toTrip: 0.86, seenOn: TODAY, source: null } };
+  const existing = normalizePlan(planInput(), t, { today: TODAY, optionId: "o_lp" });
+  const ferry = existing.bookings.find(b => b.id === "b_ferry"); ferry.status = "booked"; ferry.confirmation = "ABC123";
+  existing.bookings.find(b => b.id === "b_camp").confirmation = "HOLD-7";
+  existing.gear[0].per.s = "has one"; existing.todo[0].done = true; existing.admin.s[0].status = "done";
+  const input = planInput();
+  input.bookings = input.bookings.map(b => Object.assign({}, b, { id: b.id.replace("b_", "b_new_") }));
+  input.days[0].legs[0].bookingId = "b_new_ferry"; input.days[0].night.bookingId = "b_new_camp";
+  input.gear = [{ id: "g_1", name: "tent", note: "" }]; input.todo = [{ id: "t_9", date: null, what: "Print the permit" }];
+  input.admin = [{ id: "a_9", traveller: "Situ", what: "Travel insurance", note: "" }];
+  const { plan } = mergePlan(existing, input, t, { today: TODAY, partial: false });
+  const ferries = plan.bookings.filter(b => /Ferry/.test(b.what));
+  assert.equal(ferries.length, 1, "one ferry, not two"); assert.equal(ferries[0].status, "booked"); assert.equal(ferries[0].confirmation, "ABC123");
+  assert.equal(plan.bookings.find(b => /campsite/.test(b.what)).confirmation, "HOLD-7");
+  assert.equal(plan.gear[0].per.s, "has one"); assert.equal(plan.todo[0].done, true); assert.equal(plan.admin.s[0].status, "done");
+  assert.equal(plan.days[0].legs[0].bookingId, ferries[0].id, "the day still points at the ferry");
+  assert.equal(planTotals(plan, t).total, Math.round(72 * 0.86) + Math.round(20 * 0.86) + Math.round(100 * 0.86));
+});
+test("final M3: Claude can't mark a booking booked; only people can", () => {
+  const t = situTrip(); const input = planInput(); input.bookings[0].status = "booked";
+  assert.equal(normalizePlan(input, t, { today: TODAY, optionId: "o_lp" }).bookings[0].status, "decided");
+  const own = normalizePlan(input, t, { today: TODAY, optionId: "o_lp", keepIds: true });
+  assert.equal(own.bookings[0].status, "booked", "a stored or imported plan keeps it");
+});

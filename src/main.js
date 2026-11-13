@@ -58,7 +58,10 @@ const ctx = {
     let r = null;
     try { r = await pending; } finally { ctx.busyTrips.delete(trip.id); saveTrip(); }
     if (r && r.error === "auth") await ctx.vault.forget();
-    render();
+    // Someone may be typing in the plan while Claude worked: redraw once they leave the field, not under their fingers.
+    const f = document.activeElement;
+    if (f && f.matches && f.matches("#app [data-bind]")) f.addEventListener("blur", () => setTimeout(render, 0), { once: true });
+    else render();
   }
 };
 
@@ -107,7 +110,20 @@ async function render() {
 }
 
 /* ---------- Event delegation ---------- */
-function setPath(obj, path, value) { const parts = path.split("."); let o = obj; for (let i = 0; i < parts.length - 1; i++) { const k = parts[i]; if (o[k] === undefined || o[k] === null) o[k] = /^\d+$/.test(parts[i + 1]) ? [] : {}; o = o[k]; } o[parts[parts.length - 1]] = value; }
+/* data-bind paths: dotted keys, array indexes, and "#id" for the array item with that id (the plan's rows, so an
+   edit lands on the right item even if the plan changed since the page was drawn). Prototype keys are refused. */
+const UNSAFE = new Set(["__proto__", "constructor", "prototype"]);
+function setPath(obj, path, value) {
+  const parts = path.split("."); if (parts.some(p => UNSAFE.has(p))) return;
+  let o = obj;
+  for (let i = 0; i < parts.length - 1; i++) {
+    const k = parts[i];
+    if (k.startsWith("#")) { if (!Array.isArray(o)) return; o = o.find(x => x && x.id === k.slice(1)); if (!o) return; continue; }
+    if (o[k] === undefined || o[k] === null) o[k] = /^(\d+|#.*)$/.test(parts[i + 1]) ? [] : {};
+    o = o[k];
+  }
+  const last = parts[parts.length - 1]; if (!last.startsWith("#")) o[last] = value;
+}
 function bound(el) { const t = ctx.trip; if (!t) return; let v = el.value; if (el.dataset.type === "number") v = el.value === "" ? undefined : +el.value; if (el.dataset.type === "bool") v = el.checked; setPath(t, el.dataset.bind, v); }
 
 document.addEventListener("click", e => {

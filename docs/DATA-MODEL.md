@@ -125,18 +125,24 @@ Written by the live chat (Claude with web search, see `docs/LIVE-SETUP.md`). Eve
       "sources": [ { "name": "…", "url": "https://…", "seenOn": "2026-11-09" } ] }
   ],
   "rates": { "EUR": { "toTrip": 0.86, "seenOn": "2026-11-09", "source": { … } } },   // trip-currency units for 1 unit of that currency
-  "livePlan": null,                // filled once a live option is chosen (stage 3); shape fixed now:
-  // { "optionId", "days": [ { "id": "d_…", "date", "move", "km", "ascentM", "descentM", "hours",
-  //     "night": { "name", "type", "bookingId" }, "fallback",
-  //     "legs": [ { "id": "l_…", "mode", "from", "to", "time", "bookingId", "note" } ],
-  //     "points": [ { "name", "lat", "lon", "kind" } ] } ],
-  //   "bookings": [ { "id": "b_…", "what", "pick", "alternative", "price", "currency", "seenOn",
-  //     "status": "idea" | "decided" | "booked" | "not-needed", "confirmation", "link", "bookBy", "details" } ],
-  //   "permits": [ { "id", "what", "who", "how", "leadTime", "bookBy", "note" } ],
-  //   "admin": { "<travellerId>": [ { "id", "what", "status", "note" } ] },
-  //   "gear": [ { "id", "name", "note", "per": { "<travellerId>": "…" } } ],
-  //   "food": "…", "todo": [ { "id", "date", "what", "done" } ], "sources": [ … ] }
-  "_local": { "optionHistory": [ { "at": "<ISO time>", "options": [ … ] } ], "lastSynced": null }
-  // device only: the last 3 replaced option sets; stripped from share links
+  "livePlan": null,                // null until Claude writes the plan for the chosen live option (src/liveplan.js)
+  // { "optionId": "o_…",           // the plan shows only while trip.chosen === optionId
+  //   "days": [ { "id": "d_…", "date", "move", "km", "ascentM", "descentM", "hours",
+  //     "night": { "name", "type", "bookingId" }, "fallback",          // type: a lodging type or "none"; bookingId null when unknown
+  //     "legs": [ { "id": "l_…", "mode", "from", "to", "time", "bookingId", "note" } ],   // mode: flight | train | ferry | drive | bus | walk
+  //     "points": [ { "name", "lat", "lon", "kind" } ] } ],                // kind: night | start | end | sight | transport
+  //   "bookings": [ { "id": "b_…", "what", "category", "pick", "alternative", "price", "currency", "seenOn",
+  //     "status": "idea" | "decided" | "booked" | "not-needed", "confirmation", "link", "bookBy", "details", "source" } ],
+  //     // category: transport | lodging | permit | activity | gear | other; price is for the whole group in its own currency
+  //   "permits": [ { "id": "p_…", "what", "who": ["<name>" | "all"], "how", "leadTime", "bookBy", "note" } ],
+  //   "admin": { "<travellerId>" | "group": [ { "id": "a_…", "what", "status": "open" | "done", "note" } ] },
+  //   "gear": [ { "id": "g_…", "name", "note", "per": { "<travellerId>": "…" } } ],
+  //   "food": "…", "todo": [ { "id": "t_…", "date", "what", "done" } ],
+  //   "otherCosts": [ { "id": "c_…", "what", "amount", "currency", "seenOn" } ],   // food and local costs that aren't booked
+  //   "sources": [ … ] }
+  // People own a booking's status (once it isn't "idea") and confirmation, gear "per", to-do "done" and admin "status":
+  // Claude's rewrites keep them, and a booked booking is never dropped. Totals are computed, never stored.
+  "_local": { "optionHistory": [ { "at": "<ISO time>", "options": [ … ] } ], "planHistory": [ { "at": "<ISO time>", "plan": { … } } ], "lastSynced": null }
+  // device only: the last 3 replaced option sets and the last 3 replaced plans; stripped from share links
 }
 ```

@@ -4,18 +4,14 @@ import { strictestLimits, countriesOutside, COUNTRY_ZONE_LABEL, COUNTRY_GROUPS }
 import { andList, countryName } from "./compute.js";
 import { fmtMoney } from "./ui.js";
 import { uid } from "./state.js";
+import { MODES, LODGING_TYPES, obj, S, N, NN, B, SOURCE, MAYBE_SOURCE, isObj, str, num, day, cur, source, list } from "./clean.js";
+import { normalizePlan } from "./liveplan.js";
 
 const MAX_OPTIONS = 8;
-const MODES = ["flight", "train", "ferry", "drive", "bus"];
-const LODGING_TYPES = ["camping", "hut", "hostel", "guesthouse", "hotel", "apartment", "other"];
 // Europe for the "Europe" country limit: EU, Schengen, and the rest of the continent's states.
 const EUROPE = new Set([...COUNTRY_GROUPS.eu, ...COUNTRY_GROUPS.schengen, "GB", "IE", "AL", "BA", "ME", "MK", "RS", "MD", "UA", "AD", "MC", "SM", "VA", "GI"]);
 
 /* ---------- The tool Claude calls ---------- */
-const obj = properties => ({ type: "object", properties, required: Object.keys(properties), additionalProperties: false });
-const S = { type: "string" }, N = { type: "number" }, NN = { type: ["number", "null"] }, B = { type: "boolean" };
-const SOURCE = obj({ name: S, url: S, seenOn: S });
-const MAYBE_SOURCE = { anyOf: [SOURCE, { type: "null" }] };
 const OPTION = obj({
   name: S, region: S, countryCodes: { type: "array", items: S, description: "ISO 3166-1 alpha-2 codes" },
   lat: NN, lon: NN, why: S,
@@ -38,15 +34,6 @@ export const OPTIONS_TOOL = {
 };
 
 /* ---------- Cleaning Claude's input ---------- */
-const isObj = v => v && typeof v === "object" && !Array.isArray(v);
-const str = v => typeof v === "string" ? v.trim() : "";
-const num = v => { if (typeof v === "number" && Number.isFinite(v)) return v; if (typeof v === "string" && v.trim() !== "" && Number.isFinite(Number(v))) return Number(v); return null; };
-const day = (v, today) => /^\d{4}-\d{2}-\d{2}$/.test(str(v)) ? str(v) : today;
-const cur = v => /^[A-Za-z]{3}$/.test(str(v)) ? str(v).toUpperCase() : "";
-const https = v => { try { const u = new URL(str(v)); return u.protocol === "https:" ? u.toString() : null; } catch (e) { return null; } };
-function source(s, today) { if (!isObj(s)) return null; const url = https(s.url); if (!url) return null; return { name: str(s.name) || new URL(url).hostname, url, seenOn: day(s.seenOn, today) }; }
-const list = (v, f) => Array.isArray(v) ? v.map(f).filter(x => x !== null && x !== undefined && x !== "") : [];
-
 function cleanOption(o, today, keepIds) {
   if (!isObj(o) || !str(o.name)) return null;
   const w = isObj(o.weather) ? o.weather : {}, a = isObj(o.access) ? o.access : {}, e = isObj(o.estimate) ? o.estimate : {};
@@ -79,13 +66,15 @@ export function normalizeOptions(input, trip, { today = new Date().toISOString()
   return { options, rates };
 }
 
-/* A trip from a share link or a file is untrusted: re-clean its options, rates and budget currency in place
+/* A trip from a share link or a file is untrusted: re-clean its options, rates, live plan and budget currency in place
    (ids kept so a later plan still points at its option). */
 export function cleanImported(trip, { today = new Date().toISOString().slice(0, 10) } = {}) {
   trip.options = normalizeOptions({ options: Array.isArray(trip.options) ? trip.options : [] }, { rates: {} }, { today, keepIds: true }).options;
   const rates = {};
   for (const [k, r] of Object.entries(isObj(trip.rates) ? trip.rates : {})) { const c = cur(k), v = num(r?.toTrip); if (c && v && v > 0) rates[c] = { toTrip: v, seenOn: day(r.seenOn, today), source: source(r.source, today) }; }
   trip.rates = rates;
+  // The plan keeps what people wrote (statuses, confirmations, gear cells): an import is their own data.
+  trip.livePlan = isObj(trip.livePlan) ? normalizePlan(trip.livePlan, trip, { today, keepIds: true, optionId: str(trip.livePlan.optionId) || null }) : null;
   if (trip.budget && !/^[A-Z]{3}$/.test(String(trip.budget.currency || ""))) trip.budget.currency = "EUR";
   return trip;
 }

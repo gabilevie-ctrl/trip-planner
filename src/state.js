@@ -55,6 +55,9 @@ export function migrate(trip) {
   for (const k of Object.keys(fresh)) if (trip[k] === undefined) trip[k] = fresh[k];
   if (!trip.travel) trip.travel = { mode: "any" };
   if (!Array.isArray(trip.travellers)) trip.travellers = [];
+  // Device-only history (stripped from share links): replaced option sets and replaced plans.
+  trip._local = trip._local && typeof trip._local === "object" ? trip._local : { optionHistory: [], lastSynced: null };
+  if (!Array.isArray(trip._local.planHistory)) trip._local.planHistory = [];
   trip.schema = SCHEMA;
   return trip;
 }

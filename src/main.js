@@ -9,6 +9,7 @@ import { browserVault } from "./vault.js";
 import { ask } from "./claude.js";
 import { liveTurn } from "./livechat.js";
 import { cleanImported } from "./options.js";
+import { chosenName } from "./liveplan.js";
 import * as home from "./views/home.js";
 import * as setup from "./views/setup.js";
 import * as destinations from "./views/destinations.js";
@@ -85,7 +86,7 @@ async function render() {
   if (view === "new") view = "home";
   try {
     if (trip) await ensureDests(trip.kind);
-    if (view === "home" || view === "setup" || !VIEWS[view]) ctx.liveStatus = await ctx.vault.status();
+    ctx.liveStatus = await ctx.vault.status(); // every tab may offer a live action (the plan cards ask for the plan)
     let html;
     if (view === "home") html = home.render(ctx);
     else {
@@ -93,7 +94,7 @@ async function render() {
       const tabs = TABS.filter(([k]) => k !== "conditions" || trip.kind !== "explore");
       const head = `<header class="triphead">
         <div><a href="#home" class="back">← All trips</a><h1>${esc(trip.name || "Untitled trip")} <span class="kind">${esc(KINDS[trip.kind].label)}</span></h1>
-        <p class="muted">${trip.dates.start ? `${fmtDateY(trip.dates.start)} → ${fmtDateY(trip.dates.end)} · ${compute.tripLength(trip)} days` : "Dates not set"} · ${trip.travellers.length} traveller${trip.travellers.length === 1 ? "" : "s"} · from ${esc(trip.origin.city)}${trip.chosen ? ` · <strong>${esc(ctx.names[trip.chosen] || trip.chosen)}</strong>` : ""}</p></div>
+        <p class="muted">${trip.dates.start ? `${fmtDateY(trip.dates.start)} → ${fmtDateY(trip.dates.end)} · ${compute.tripLength(trip)} days` : "Dates not set"} · ${trip.travellers.length} traveller${trip.travellers.length === 1 ? "" : "s"} · from ${esc(trip.origin.city)}${trip.chosen ? ` · <strong>${esc(chosenName(trip, ctx.names))}</strong>` : ""}</p></div>
       </header>
       <nav class="tabs" aria-label="Trip steps" title="Every step is optional; go in any order">${tabs.map(([k, l], i) => `<a href="#${k}" aria-current="${k === view ? "page" : "false"}"><span class="n">${i + 1}</span> ${l}</a>`).join("")}</nav>`;
       html = head + `<main class="view view-${view}">${v.render(ctx)}</main>`;

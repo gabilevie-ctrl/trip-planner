@@ -5,6 +5,7 @@ import { tripLength, computePlan, isVisited } from "../compute.js";
 import { score } from "../scoring.js";
 import { describeTurn } from "../describe.js";
 import { uid } from "../state.js";
+import { liveChoice } from "../liveplan.js";
 
 
 export function render(ctx) {
@@ -74,10 +75,12 @@ function chat(t, ctx) {
     : ctx.liveStatus === "locked" ? `<p class="muted small">Unlock live search above for real options from the web.</p>` : "";
   return `<section class="card chat">
     <h2>Describe the trip</h2>${status}
-    ${msgs.length || busy ? `<ol class="thread">${msgs.map(m => `<li class="msg ${m.who === "app" ? "app" : "you"}${m.error ? " err" : ""}">${esc(m.text)}</li>`).join("")}${busy ? `<li class="msg app busy" aria-live="polite">Searching live… this can take a minute</li>` : ""}</ol>` : `<p class="muted">Tell the planner about the trip in your own words; it fills in the form below${live ? ", searches the web for options that fit," : ""} and asks about what is missing.</p>`}
+    ${msgs.length || busy ? `<ol class="thread">${msgs.map(m => `<li class="msg ${m.who === "app" ? "app" : "you"}${m.error ? " err" : ""}">${esc(m.text)}</li>`).join("")}${busy ? `<li class="msg app busy" aria-live="polite">${busyText(t)}</li>` : ""}</ol>` : `<p class="muted">Tell the planner about the trip in your own words; it fills in the form below${live ? ", searches the web for options that fit," : ""} and asks about what is missing.</p>`}
     <div class="chatin"><textarea id="chatText" rows="2" placeholder="${msgs.length ? "Add more: a limit for someone, a change of dates, what to skip…" : "e.g. Four of us, ten days in May, from London, about £1,500 each, love the coast"}"></textarea><button type="button" data-act="chat-send" ${busy ? "disabled aria-busy=\"true\"" : ""}>Send</button></div>
   </section>`;
 }
+/* What a running live turn is doing: a plan takes much longer than a shortlist. */
+export const busyText = t => liveChoice(t) ? "Writing the plan… this can take a few minutes" : "Searching live… this can take a minute";
 /* Shown only when a locked key is published and this device has not unlocked it. */
 function liveCard(ctx) {
   if (ctx.liveStatus !== "locked") return "";
@@ -116,6 +119,7 @@ function optionsCard(t) {
         ${o.tradeOff ? `<dt>Trade-off</dt><dd>${esc(o.tradeOff)}</dd>` : ""}
       </dl>
       ${o.sources?.length ? `<p class="small muted">Sources: ${o.sources.map(s => link(s) + seen(s.seenOn)).join(" · ")}</p>` : ""}
+      <footer class="row">${t.chosen === o.id ? `<span class="pill good">Chosen ✓</span> <a href="#build">See the plan →</a>` : `<button type="button" class="outline" data-act="choose-option" data-id="${esc(o.id)}">Choose</button>`}</footer>
     </article>`; };
   return `<section class="card">
     <h2>Options</h2>
@@ -175,6 +179,19 @@ export const actions = {
     ctx.rerender();
   },
   "live-forget": async (el, ctx) => { await ctx.vault.forget(); ctx.toast("Live search is locked again on this device."); ctx.rerender(); },
+  /* Choosing a live option asks Claude for its plan; a plan written for another option goes to this device's history. */
+  "choose-option": async (el, ctx) => {
+    const t = ctx.trip; const o = (t.options || []).find(x => x.id === el.dataset.id && !x.mention); if (!o) return;
+    if (ctx.busyTrips?.has(t.id)) { ctx.toast("Wait for the current answer first."); return; }
+    t.chosen = o.id;
+    if (t.livePlan && t.livePlan.optionId !== o.id) {
+      t._local = t._local || { optionHistory: [], lastSynced: null };
+      t._local.planHistory = (t._local.planHistory || []).concat([{ at: new Date().toISOString(), plan: t.livePlan }]).slice(-3);
+      t.livePlan = null;
+    }
+    ctx.commit(false); ctx.nav("build");
+    if (ctx.liveStatus === "unlocked" && !t.livePlan) await ctx.runLive(t, `Write the full plan for ${o.name}.`);
+  },
   "see-dest": (el, ctx) => { const t = ctx.trip; t._ui = Object.assign(t._ui || {}, { q: el.dataset.name }); ctx.save(); ctx.nav("destinations"); },
   "add-traveller": (el, ctx) => { ctx.trip.travellers.push({ id: uid("p"), name: "", limits: {} }); ctx.commit(); },
   "remove-traveller": (el, ctx) => { ctx.trip.travellers = ctx.trip.travellers.filter(p => p.id !== el.dataset.pid); ctx.commit(); },

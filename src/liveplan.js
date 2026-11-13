@@ -195,3 +195,10 @@ export function planTodo(plan) {
   for (const p of plan?.permits || []) items.push({ key: "permit:" + p.id, date: p.bookBy || null, what: "Apply: " + p.what, done: false, from: "permit", id: p.id });
   return items.map((x, i) => [x, i]).sort(([a, i], [b, j]) => (a.date ? 0 : 1) - (b.date ? 0 : 1) || (a.date && b.date ? a.date.localeCompare(b.date) : 0) || i - j).map(([x]) => x);
 }
+
+/* The chosen destination's name: the live option's, else the library's, else the raw id. */
+export function chosenName(trip, names = {}) {
+  if (!trip || !trip.chosen) return null;
+  const o = liveChoice(trip); if (o) return o.name;
+  return names[trip.chosen] || trip.chosen;
+}

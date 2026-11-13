@@ -267,3 +267,45 @@ test("describe with a chatbot: copy the prompt, a cut-off reply is refused, a go
   assert.match($(".thread").textContent, /mid-July/);
   await go("#home"); assert.ok(!$("#chatbotPrompt"), "panel closed after a trip was made");
 });
+
+/* ---------- The live plan ---------- */
+const liveOpt = (name, over = {}) => Object.assign({ name, region: "", countryCodes: ["ES"], lat: null, lon: null, why: "Warm and walkable", weather: { text: "20–22 °C", highC: 21, lowC: 14, source: null }, maxAltitudeM: null, activities: [], access: { from: "London", mode: "flight", time: "4h30", connections: "", pricePP: 36, currency: "GBP", seenOn: "2026-11-08", source: null }, lodging: [], estimate: { perPerson: 600, group: 1200, currency: "GBP", breakdown: [] }, tradeOff: "", pick: false, mention: false, mentionWhy: null, sources: [] }, over);
+const toolReply = (name, input, text = "") => ({ stop_reason: "end_turn", usage: {}, content: [...(text ? [{ type: "text", text }] : []), { type: "tool_use", id: "tu1", name, input }] });
+async function liveTripWithOptions() {
+  const { lockKey } = await import("../src/keylock.js");
+  fakeFiles.set("/data/claude-key.json", await lockKey("sk-ant-test", "correct horse battery staple long", { iterations: 1000 }));
+  fakeApi = async () => toolReply("propose_options", { rates: [{ currency: "EUR", toTrip: 0.86, seenOn: "2026-11-09", source: null }], options: [liveOpt("La Palma", { pick: true }), liveOpt("Southern Morocco", { countryCodes: ["MA"] }), liveOpt("Cape Verde", { mention: true, mentionWhy: "far" })] }, "Three ideas.");
+  await go("#home"); click($('[data-act="new-trip"][data-kind="hike"]')); await tick(150);
+  change($('[data-bind="travellers.0.name"]'), "Gabriel"); await tick(40);
+  click($('[data-act="add-traveller"]')); await tick(60); change($('[data-bind="travellers.1.name"]'), "Situ"); await tick(40);
+  change($('[data-bind="dates.start"]'), "2027-01-02"); change($('[data-bind="dates.end"]'), "2027-01-03"); await tick(40);
+  change($('[data-bind="budget.total"]'), "1500"); change($('[data-bind="budget.currency"]'), "GBP"); await tick(60);
+  if ($("#livePass")) { $("#livePass").value = "correct horse battery staple long"; click($('[data-act="live-unlock"]')); await tick(150); }
+  $("#chatText").value = "warm hiking in January"; click($('[data-act="chat-send"]')); await tick(250);
+}
+const chooseBtn = name => [...window.document.querySelectorAll(".optcard")].find(c => c.textContent.includes(name)).querySelector('[data-act="choose-option"]');
+const storedTrip = () => { const s = JSON.parse(window.localStorage.getItem("tripplanner.v1")); return s.trips[s.current]; };
+
+test("choose a live option: Claude writes the plan, the header names it, another choice hides it", async () => {
+  await import("../src/main.js");
+  const { planInput } = await import("./plan-fixtures.mjs");
+  await liveTripWithOptions();
+  assert.equal(window.document.querySelectorAll('.optcard [data-act="choose-option"]').length, 2, "a Choose button on each card, none for mentions");
+  let sent = null; fakeApi = async (url, init) => { sent = JSON.parse(init.body); return toolReply("write_plan", planInput(), "Here is your plan."); };
+  click(chooseBtn("La Palma")); await tick(300);
+  assert.equal(window.location.hash, "#build");
+  assert.match($(".triphead").textContent, /La Palma/);
+  assert.equal(sent.max_tokens, 32000); assert.match(JSON.stringify(sent.messages), /Write the full plan for La Palma\./);
+  assert.ok(storedTrip().brief.some(m => m.text === "Write the full plan for La Palma."));
+  assert.equal(storedTrip().livePlan.bookings.length, 3);
+  // Task 5: assert.ok($(".daytable"), "the days show on Build");
+  await go("#setup"); assert.match([...window.document.querySelectorAll(".optcard")].find(c => c.textContent.includes("La Palma")).textContent, /Chosen ✓/);
+  let release; fakeApi = () => new Promise(r => { release = r; });
+  click(chooseBtn("Southern Morocco")); await tick(200);
+  assert.equal(window.location.hash, "#build");
+  assert.equal($(".daytable"), null, "the first option's plan is hidden");
+  // Task 5: assert.match($(".view-build").textContent, /Writing the plan/);
+  assert.equal(storedTrip().livePlan, null); assert.equal(storedTrip()._local.planHistory.at(-1).plan.optionId.length > 0, true);
+  release({ stop_reason: "end_turn", usage: {}, content: [{ type: "text", text: "Morocco needs more thought." }] }); await tick(200);
+  await go("#home"); assert.match($('.tripcard[data-act="open-trip"]').textContent, /Southern Morocco/);
+});

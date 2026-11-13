@@ -36,7 +36,8 @@ export function flagsCard(t) {
   const o = liveChoice(t); if (!o) return "";
   const c = checkOption(o, t);
   return `<section class="card"><div class="row between"><div><span class="kind">${esc(o.region || "")}</span><h2>${esc(o.name)}</h2></div><a href="#setup" class="small">Other options →</a></div>
-    ${c.flags.length ? `<div class="alert crit"><strong>Limits broken:</strong> ${c.flags.map(esc).join("; ")}.</div>` : ""}</section>`;
+    ${c.flags.length ? `<div class="alert crit"><strong>Limits broken:</strong> ${c.flags.map(esc).join("; ")}.</div>` : ""}
+    ${(r => r ? `<div class="alert">The plan was priced for ${r.was} travellers; the trip now has ${r.now}. Ask below to update it.</div>` : "")(currentPlan(t) && planTotals(currentPlan(t), t).travellersChanged)}</section>`;
 }
 
 export function daysCard(t) {
@@ -72,7 +73,7 @@ export function gearCard(t) {
 export function bookingsCard(t) {
   const p = currentPlan(t); if (!p) return "";
   const rows = (p.bookings || []).map((b, i) => `<tr class="${b.status === "not-needed" ? "muted" : ""}">
-    <td><strong>${esc(b.what)}</strong> <span class="muted small">${esc(CATEGORY_LABEL[b.category] || "")}</span>${b.pick ? `<br><span class="small">${esc(b.pick)}</span>` : ""}${b.alternative ? `<br><span class="muted small">Or: ${esc(b.alternative)}</span>` : ""}${b.details ? `<br><span class="muted small">Enter: ${esc(b.details)}</span>` : ""}</td>
+    <td><strong>${esc(b.what)}</strong> <span class="muted small">${esc(CATEGORY_LABEL[b.category] || "")}</span>${b.dropped ? `<br><span class="pill warn">No longer in Claude's plan: keep it, or set it to Not needed (and cancel if booked)</span>` : ""}${b.pick ? `<br><span class="small">${esc(b.pick)}</span>` : ""}${b.alternative ? `<br><span class="muted small">Or: ${esc(b.alternative)}</span>` : ""}${b.details ? `<br><span class="muted small">Enter: ${esc(b.details)}</span>` : ""}</td>
     <td class="num">${n(b.price) !== null ? money(b.price, b.currency, t) : `<span class="muted">no price</span>`}${b.seenOn && n(b.price) !== null ? `<br><span class="muted small">seen ${esc(fmtDate(b.seenOn))}</span>` : ""}${b.source ? `<br><span class="small">${link(b.source.url, b.source.name)}</span>` : ""}</td>
     <td class="small">${b.bookBy ? esc(fmtDate(b.bookBy)) : ""}</td>
     <td>${link(b.link, "Book →")}</td>
@@ -86,12 +87,12 @@ export function bookingsCard(t) {
 
 export function permitsCard(t) {
   const p = currentPlan(t); if (!p) return "";
-  const permits = (p.permits || []).map(x => `<li><strong>${esc(x.what)}</strong>${x.who?.length ? ` <span class="muted small">for ${x.who.map(esc).join(", ")}</span>` : ""}${x.how ? `<br><span class="small">${esc(x.how)}</span>` : ""}${x.leadTime || x.bookBy ? `<br><span class="muted small">${x.leadTime ? esc(x.leadTime) + " ahead" : ""}${x.bookBy ? `${x.leadTime ? " · " : ""}apply by ${esc(fmtDate(x.bookBy))}` : ""}</span>` : ""}${x.note ? `<br><span class="muted small">${esc(x.note)}</span>` : ""}</li>`).join("");
+  const permits = (p.permits || []).map(x => `<li class="${x.done ? "done" : ""}"><label class="chk"><input type="checkbox" data-bind="livePlan.permits.#${esc(x.id)}.done" data-type="bool" ${x.done ? "checked" : ""} aria-label="${esc(x.what)} done"> <strong>${esc(x.what)}</strong></label>${x.who?.length ? ` <span class="muted small">for ${x.who.map(esc).join(", ")}</span>` : ""}${x.how ? `<br><span class="small">${esc(x.how)}</span>` : ""}${x.leadTime || x.bookBy ? `<br><span class="muted small">${x.leadTime ? esc(x.leadTime) + " ahead" : ""}${x.bookBy ? `${x.leadTime ? " · " : ""}apply by ${esc(fmtDate(x.bookBy))}` : ""}</span>` : ""}${x.note ? `<br><span class="muted small">${esc(x.note)}</span>` : ""}</li>`).join("");
   const admin = p.admin || {};
   const who = [...(t.travellers || []).map(pp => [pp.id, pp.name || "Traveller"]), ["group", "Everyone"]].filter(([id]) => (admin[id] || []).length);
   return `<section class="card"><h3>Permits and admin</h3>
     ${permits ? `<ul class="steps">${permits}</ul>` : `<p class="muted">No permits needed, as far as Claude found.</p>`}
-    ${who.map(([id, name]) => `<h4>${esc(name)}</h4><ul class="steps">${admin[id].map(a => `<li class="${a.status === "done" ? "done" : ""}">${esc(a.what)}${a.note ? ` <span class="muted small">${esc(a.note)}</span>` : ""}</li>`).join("")}</ul>`).join("")}
+    ${who.map(([id, name]) => `<h4>${esc(name)}</h4><ul class="steps">${admin[id].map(a => `<li class="${a.status === "done" ? "done" : ""}"><label class="chk"><input type="checkbox" data-act="admin-done" data-key="${esc(id)}" data-id="${esc(a.id)}" ${a.status === "done" ? "checked" : ""}> <span>${esc(a.what)}</span></label>${a.note ? ` <span class="muted small">${esc(a.note)}</span>` : ""}</li>`).join("")}</ul>`).join("")}
   </section>`;
 }
 
@@ -117,6 +118,7 @@ export function totalsFacts(t) {
   if (!p) return { fact: `<div class="fact"><span class="k">Plan total</span><span class="v num">no plan yet</span></div>`, notes: "", total: null };
   const r = planTotals(p, t);
   const notes = `${Object.keys(r.byCategory).length ? `<p class="small">${Object.entries(r.byCategory).map(([k, v]) => `${esc(k)} ${fmtMoney(v, cur)}`).join(" · ")}</p>` : ""}
+    ${r.travellersChanged ? `<p class="small alert">The plan was priced for ${r.travellersChanged.was} travellers; the trip now has ${r.travellersChanged.now}. The total and per-person figures are for ${r.travellersChanged.was}. Ask in the plan chat on Build to update it.</p>` : ""}
     ${r.missing.length ? `<p class="small alert">No exchange rate yet, so left out of the plan total: ${r.missing.map(m => `${esc(m.what)} (${esc(m.currency || "no currency")})`).join(", ")}.</p>` : ""}`;
   return { fact: `<div class="fact"><span class="k">Plan total (${esc(liveChoice(t)?.name || "")}, ${fmtMoney(r.perPerson, cur)} pp)</span><span class="v num ${r.overBudget ? "crit" : ""}">${fmtMoney(r.total, cur)}</span></div>`, notes, total: r.total };
 }
@@ -140,7 +142,11 @@ export function summaryLines(t) {
 /* ---------- Actions shared by the tabs that show the plan ---------- */
 export const actions = {
   "chat-send": setupActions["chat-send"],
-  "ask-plan": async (el, ctx) => { const o = liveChoice(ctx.trip); if (o && ctx.liveStatus === "unlocked") await ctx.runLive(ctx.trip, `Write the full plan for ${o.name}.`); }
+  "ask-plan": async (el, ctx) => { const o = liveChoice(ctx.trip); if (o && ctx.liveStatus === "unlocked") await ctx.runLive(ctx.trip, `Write the full plan for ${o.name}.`, { fromApp: true }); },
+};
+actions["admin-done"] = (el, ctx) => {
+  const p = currentPlan(ctx.trip); const list = p?.admin?.[el.dataset.key]; const a = Array.isArray(list) ? list.find(x => x.id === el.dataset.id) : null;
+  if (a) { a.status = el.checked ? "done" : "open"; ctx.commit(); }
 };
 export const forms = {
   "gear-add": (data, ctx) => {

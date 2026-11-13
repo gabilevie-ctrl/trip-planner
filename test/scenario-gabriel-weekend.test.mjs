@@ -165,22 +165,21 @@ test("(a) live: Claude is told the guessed 1–7 March week as fact; weekends ca
   await go("#setup");
 });
 
-test("(a) live: choosing the 9–11 April card writes a 3-day plan, but the trip dates jump to a guessed 1–7 April week", async () => {
+test("(a) live: choosing the 9–11 April card writes a 3-day plan, and the card's name no longer moves the trip dates", async () => {
   await import("../src/main.js");
+  const datesBefore = JSON.parse(JSON.stringify(storedTrip().dates));
   let sent = null; fakeApi = async (url, init) => { sent = JSON.parse(init.body); return toolReply("write_plan", nicePlan(), "Here is your Nice weekend."); };
   const pick = $$(".optcard").find(c => /9 – Sun 11 Apr/.test(c.textContent));
   click(pick.querySelector('[data-act="choose-option"]')); await tick(350);
   assert.equal(window.location.hash, "#build");
-  // The app's own message "Write the full plan for Nice, Fri 9 – Sun 11 Apr." goes through the rule-based reader too:
-  // "Apr" alone reads as a month, so the trip dates jump to a guessed 1–7 April week before Claude is asked
+  // Fixed (bug 1): the app's own message skips the rule-based reader, so "Apr" in the card's name can't move the dates
   assert.match(JSON.stringify(sent.messages), /Write the full plan for Nice, Fri 9 – Sun 11 Apr\./);
-  assert.match(JSON.stringify(sent.messages), /\\"dates\\":\{\\"start\\":\\"2027-04-01\\",\\"end\\":\\"2027-04-07\\"\}/, "the plan request carries a guessed April week");
-  assert.deepEqual(storedTrip().dates, { start: "2027-04-01", end: "2027-04-07" }, "choosing a card overwrote the trip dates with a guess");
+  assert.deepEqual(storedTrip().dates, datesBefore, "choosing a card leaves the trip dates alone");
   // The plan itself is fine: 3 days, with its own dates
   assert.equal($$(".daytable tbody tr").length, 3);
   assert.match($(".daytable").textContent, /9 Apr/);
-  // ...but the trip's dates are not the weekend he chose, and nothing flags the mismatch
-  assert.match($(".triphead").textContent, /1 Apr 2027 → 7 Apr 2027 · 7 days/);
+  // The trip keeps its own dates (no guessed 1–7 April week); choosing a dated card still doesn't set them, and nothing flags the mismatch
+  assert.doesNotMatch($(".triphead").textContent, /1 Apr 2027 → 7 Apr 2027/);
   assert.doesNotMatch($(".view-build").textContent, /dates? (don't|do not) match|outside the trip/i, "no flag for plan days outside the trip dates");
   // Money: the plan total is computed and within £600
   await go("#money");
@@ -212,7 +211,9 @@ test("(a) changing his mind after the plan: dates, people and mode change; the p
   click($('[data-act="add-traveller"]')); await tick(60);
   const after3 = planTotals(storedTrip().livePlan, storedTrip());
   assert.equal(after3.total, before.total, "the group total doesn't grow with a third person");
-  assert.equal(after3.perPerson, Math.round(before.total / 3), "per person now divides the 2-person prices by 3");
+  // Fixed (bug 8): per person stays on the 2 the plan was priced for, and the change is named
+  assert.equal(after3.perPerson, before.perPerson, "per person isn't silently divided by 3");
+  assert.deepEqual(after3.travellersChanged, { was: 2, now: 3 });
   assert.equal(storedTrip().budget.total, 600, "the £600 cap stays a group cap; nobody asks if it was per couple");
   // 3. He'd fly after all: the trains-only flag on the Seville idea goes away (checks are live), but the options
   //    and the plan were all researched for trains and nothing suggests asking again

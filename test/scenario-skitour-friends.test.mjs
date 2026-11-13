@@ -150,11 +150,10 @@ test("scenario: four friends with different limits plan a ski-touring week, from
   assert.ok($(".daytable"), "the plan days show");
   assert.match(text(".daytable"), /↗ 1400 m/);
   assert.doesNotMatch(text(".view-build"), /1,?000 m daily limit|above the 1,?000/, "the 1400 m Kudebi day is not flagged against Marc's 1000 m cap");
-  // Conditions with a live choice: the page falls back to a library destination instead of Gudauri.
+  // Fixed (bug 3): Conditions shows Gudauri and its plan days, not a library destination
   await go("#conditions");
   const condHead = text(".view-conditions h2");
-  assert.doesNotMatch(condHead, /Gudauri/, `Conditions shows "${condHead}" while Gudauri is chosen`);
-  assert.match(condHead, /Dolomites/, "the first library destination's bulletins and days, for a trip to Georgia");
+  assert.match(condHead, /Gudauri/); assert.doesNotMatch(condHead, /Dolomites/);
 
   /* 7. The group decides: a decision with the two options. There is no vote; the result is typed in by hand. */
   await go("#decisions");
@@ -225,15 +224,17 @@ test("scenario: four friends with different limits plan a ski-touring week, from
   assert.ok(sel().length >= 5, "a row per day on the mountain");
   change(sel()[1], "1"); await tick(60);
   assert.equal($$("tr.nogo").length, 0, "level 1 is fine for everyone");
+  // Fixed (bug 4): Léa's maximum is 2, so a level-2 day goes ahead; level 3 is a no-go (the log still doesn't name her).
   change(sel()[2], "2"); await tick(60);
-  assert.equal($$("tr.nogo").length, 1, "level 2 flags the day");
+  assert.equal($$("tr.nogo").length, 0, "level 2 is within the limit of 2");
+  change(sel()[2], "3"); await tick(60);
+  assert.equal($$("tr.nogo").length, 1, "level 3 flags the day");
   const nogo = text("tr.nogo");
-  assert.match(nogo, /at or above the group limit/);
-  // Setup says 2 is Léa's maximum (a no-go only ABOVE it); the log treats 2 itself as a no-go for the whole group, and doesn't name Léa.
+  assert.match(nogo, /above the group limit/);
   assert.doesNotMatch(nogo, /Léa/);
   change($$('select[data-k="decision"]')[2], "modified"); await tick(60);
   const note = $$('input[data-k="note"]')[2]; note.value = "Léa rested at the hut; three of us did the Pic du Glacier d'Arias under 30°"; note.dispatchEvent(new window.Event("change", { bubbles: true })); await tick(60);
-  const logged = storedTrip().log.find(l => l.danger === "2");
+  const logged = storedTrip().log.find(l => l.danger === "3");
   assert.equal(logged.decision, "modified"); assert.match(logged.note, /Léa rested/);
 
   /* 13. Money: fuel, huts, a guide only three of them used; different payers; settle-up. */
@@ -273,7 +274,7 @@ test.todo("Hold two candidate date ranges (13–19 or 20–26 March) and compare
 test.todo("A vote on a decision: each friend picks an option, the app tallies, and deciding on a destination option chooses it");
 test.todo("Live options sit next to library destinations in Destinations and the compare table, so Gudauri and the Écrins can be compared on the same rows");
 test.todo("Live options and live plan days are checked against ski grade, daily ascent and the 'we drive' travel mode, not only altitude, countries, heat and budget");
-test.todo("Conditions works for a live choice: Gudauri's plan days and its bulletin links, not a library destination's");
+test.todo("Conditions for a live choice lists Gudauri's bulletin pages (it now shows its days, with no bulletin links)");
 test.todo("Hut lead times become book-by dates from the trip start (2 months before 13 March = by 13 January) and land in a dated to-do list");
 test.todo("A booking reference entered for a hut ticks off (or counts toward) the 'Book hut nights' step");
 test.todo("Danger limit means the same in Setup and in the log (Setup: no-go above 2; log: no-go at 2), and the log says whose limit it is, allowing 'go for three, Léa rests'");

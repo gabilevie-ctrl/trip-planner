@@ -260,9 +260,11 @@ test("5. Gabriel books: ferry and flights booked with confirmations, gear cells,
   const lis = $$(".todolist li");
   assert.ok(lis.find(li => /Book Ferry/.test(li.textContent)).classList.contains("done"));
   assert.ok(lis.find(li => /Print both/.test(li.textContent)).classList.contains("done"));
-  // Permits and admin have no tick box: "Apply: Cabildo camping permit" can never be marked done.
-  assert.equal(lis.find(li => /Apply: Cabildo/.test(li.textContent)).querySelector("input"), null);
-  assert.equal($(".view-plan .steps:not(.todolist) input"), null, "admin items (Situ's visa check) have no tick box either");
+  // Fixed (bug 5): permits and admin items have tick boxes; the derived "Apply: …" to-do follows the permit
+  change($('input[data-bind="livePlan.permits.#p_pilar.done"]'), true); await tick(60);
+  assert.ok($$(".todolist li").find(li => /Apply: Cabildo/.test(li.textContent)).classList.contains("done"));
+  change($('input[data-act="admin-done"][data-id="a_situ_visa"]'), true); await tick(60);
+  assert.equal(storedTrip().livePlan.admin[situId].find(a => a.id === "a_situ_visa").status, "done");
   await go("#build");
   change($(`.geartable input[data-bind="livePlan.gear.#g_tent.per.${gabrielId}"]`), "has one (MSR Hubba)"); await tick(60);
   change($(`.geartable input[data-bind="livePlan.gear.#g_stove.per.${gabrielId}"]`), "brings, no gas"); await tick(60);
@@ -273,7 +275,6 @@ test("5. Gabriel books: ferry and flights booked with confirmations, gear cells,
   assert.equal(p.bookings.find(b => b.id === "b_ferry").confirmation, "FO-7731294");
 });
 
-test.todo("tick a permit as applied/granted and an admin item (Situ's visa check) as done");
 test.todo("record who marked a booking booked and when, so the other person can trust it");
 
 test("6. Plan chat: swap the El Pilar camping night for a hut and add a rest day; nothing they marked is lost", async () => {
@@ -297,16 +298,16 @@ test("6. Plan chat: swap the El Pilar camping night for a hut and add a rest day
   assert.ok(p.gear.some(g => g.name === "Head torches"), "Gabriel's own gear row stays");
   assert.equal(p.todo.find(x => x.id === "t_print").done, true, "the ticked to-do stays ticked");
   assert.equal(p.days[1].night.name, "Casa rural, El Paso"); assert.match(p.days[6].move, /Rest day/);
-  // The booked El Pilar permit is kept (good) but nothing in the app says it is no longer used by any night.
+  // Fixed (bug 6): the booked El Pilar permit Claude left out is kept, and its row asks to keep or cancel it.
   assert.equal(b("b_pilar").status, "booked");
   assert.ok(!p.days.some(d => d.night.bookingId === "b_pilar"));
   await go("#plan");
   const row = $$(".booktable tbody tr").find(tr => /El Pilar/.test(tr.textContent));
   assert.ok(row, "the orphaned booked row is still listed");
-  assert.doesNotMatch(row.textContent, /no longer|not used|cancel/i);
+  assert.match(row.textContent, /No longer in Claude's plan/);
 });
 
-test.todo("a booked booking that no night or leg uses any more is flagged ('cancel or keep?') and its price shown apart from the plan total");
+test.todo("a booked booking Claude keeps listing but no night or leg uses any more is flagged too, and a dropped booking's price is shown apart from the plan total");
 test.todo("when an update leaves out an item someone ticked or added (a done to-do, their own gear row), the app keeps it or asks, instead of dropping it");
 
 test("7. Money: plan total vs budget, real expenses, and the split", async () => {

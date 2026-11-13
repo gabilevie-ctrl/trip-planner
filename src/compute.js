@@ -188,8 +188,10 @@ export function stays(dest, trip) {
   for (const d of days) {
     if (!d.block) continue;
     const last = out[out.length - 1];
-    if (last && last.blockId === d.block.id) { last.nights++; last.checkout = dateToIso(addDays(isoToDate(d.date), 1)); }
-    else out.push({ blockId: d.block.id, name: d.block.name, place: d.block.place, hut: d.block.hut || null, checkin: d.date, checkout: dateToIso(addDays(isoToDate(d.date), 1)), nights: 1, note: d.block.note || "" });
+    // Without trip dates the days are "day-N": stays keep that as checkin and have no checkout.
+    const next = /^\d{4}-\d{2}-\d{2}$/.test(d.date) ? dateToIso(addDays(isoToDate(d.date), 1)) : null;
+    if (last && last.blockId === d.block.id) { last.nights++; last.checkout = next; }
+    else out.push({ blockId: d.block.id, name: d.block.name, place: d.block.place, hut: d.block.hut || null, checkin: d.date, checkout: next, nights: 1, note: d.block.note || "" });
   }
   return out;
 }

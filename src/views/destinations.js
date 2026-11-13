@@ -2,6 +2,7 @@ import { esc, fmtMoney, fmtDateY, chip, altClass, tempClass, hrsClass, CROWD, hr
 import { computePlan, climateFor, tripLength, isVisited } from "../compute.js";
 import { score, CRITERIA_BY_KIND, DEFAULT_WEIGHTS } from "../scoring.js";
 import { uid } from "../state.js";
+import { liveChoice } from "../liveplan.js";
 
 export function render(ctx) {
   const t = ctx.trip; const f = t._ui = Object.assign({ q: "", fit: false, mode: false, zone: "all", showVisited: false, compare: false }, t._ui || {});
@@ -17,7 +18,9 @@ export function render(ctx) {
   const labels = CRITERIA_BY_KIND[t.kind]; const w = Object.assign({}, DEFAULT_WEIGHTS[t.kind], t.weights || {});
   const zones = [...new Set(ctx.dests.map(d => d.zone))];
   const picked = t.chosen && ctx.dests.find(d => d.id === t.chosen);
-  const nextBar = picked ? `<section class="card alert ok row between nextbar"><span>Chosen: <strong>${esc(picked.name)}</strong></span><a href="#build" role="button" class="next-step small">Next: build the days →</a></section>` : "";
+  const live = liveChoice(t);
+  const nextBar = live ? `<section class="card alert ok row between nextbar"><span>Chosen: <strong>${esc(live.name)}</strong>, found by live search (its card is in <a href="#setup">Setup</a>). Choosing a library destination below replaces it.</span><a href="#build" role="button" class="next-step small">Next: build the days →</a></section>`
+    : picked ? `<section class="card alert ok row between nextbar"><span>Chosen: <strong>${esc(picked.name)}</strong></span><a href="#build" role="button" class="next-step small">Next: build the days →</a></section>` : "";
   return `${nextBar}${noDates}
   <section class="card toolbar">
     <input type="search" id="q" placeholder="Search a country, a region, a place, a hut…" value="${esc(f.q)}" data-ui="q" aria-label="Search destinations">

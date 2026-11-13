@@ -272,13 +272,11 @@ test("live: Mom opens the Japan link without the password and follows it with Ne
   assert.equal(window.location.hash, "#setup");
   assert.match(all(".optcard").find(c => /Japan Alps/.test(c.textContent)).textContent, /Chosen ✓/);
   assert.equal(hrefOfNext(), "#destinations"); await go("#destinations");
-  // On Destinations the library shows with no "Chosen" bar for a live choice: the only buttons choose a library place
-  const next = hrefOfNext();
-  assert.equal(next, undefined, "FINDING: no Next button on Destinations when the choice is a live option");
-  assert.ok($('[data-act="choose"]'), "only 'Choose this destination' buttons, which would replace Japan");
+  // Fixed (bug 7): Destinations names the live choice, offers Next, and says a library choice would replace it
+  assert.equal(hrefOfNext(), "#build", "a Next button on Destinations for a live choice");
+  assert.match($(".nextbar").textContent, /found by live search[\s\S]*replaces it/);
   await go("#build"); assert.equal(all(".daytable tbody tr").length, 15, "the plan travels in the link and shows without the password");
   for (const expected of ["#itinerary", "#plan", "#money", "#decisions", "#share"]) { assert.equal(hrefOfNext(), expected, `Next from ${window.location.hash}`); await go(expected); }
   await go("#plan"); assert.equal($('input[data-bind="livePlan.bookings.#b_taka.confirmation"]').value, "RYO-778");
   await go("#money"); assert.match(txt(".view-money"), /Plan total/); assert.match(txt(".view-money"), /Mom → /);
 });
-test.todo("live: Destinations shows the chosen live option (with a Next button) instead of only library cards that would replace it");

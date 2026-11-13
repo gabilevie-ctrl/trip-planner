@@ -1,6 +1,8 @@
 import { esc, fmtMoney, fmtDate, empty } from "../ui.js";
 import { computePlan } from "../compute.js";
 import { uid } from "../state.js";
+import { liveChoice } from "../liveplan.js";
+import { totalsFacts } from "./liveplan.js";
 
 const CATS = ["Transport", "Lodging", "Huts", "Food", "Guide", "Gear", "Permits & tickets", "Other"];
 
@@ -31,16 +33,19 @@ export function render(ctx) {
   const name = id => (t.travellers.find(p => p.id === id)?.name) || "?";
   const { bal, transfers } = settle(t);
   const budget = t.budget.total || 0;
+  // A live option's plan total replaces the library model's estimate.
+  const lt = liveChoice(t) ? totalsFacts(t) : null; const mark = lt ? lt.total : est ? est.total : null;
   return `
   <section class="card">
     <h2>Budget</h2>
     <div class="facts">
       <div class="fact"><span class="k">Budget</span><span class="v num">${budget ? fmtMoney(budget, cur) : "not set"}</span></div>
-      <div class="fact"><span class="k">Model estimate${d ? " (" + esc(d.name) + ")" : ""}</span><span class="v num">${est ? fmtMoney(est.total, cur) : "choose a destination"}</span></div>
+      ${lt ? lt.fact : `<div class="fact"><span class="k">Model estimate${d ? " (" + esc(d.name) + ")" : ""}</span><span class="v num">${est ? fmtMoney(est.total, cur) : "choose a destination"}</span></div>`}
       <div class="fact"><span class="k">Committed so far (paid + planned)</span><span class="v num">${fmtMoney(spent, cur)}</span></div>
       <div class="fact"><span class="k">${budget ? "Left in the budget" : "Paid so far"}</span><span class="v num ${budget && spent > budget ? "crit" : "good"}">${budget ? fmtMoney(budget - spent, cur) : fmtMoney(paid, cur)}</span></div>
     </div>
-    ${budget ? `<div class="track"><div class="fill ${spent > budget ? "over" : ""}" style="width:${Math.min(100, spent / budget * 100)}%"></div>${est ? `<div class="mark" style="left:${Math.min(100, est.total / budget * 100)}%" title="model estimate"></div>` : ""}</div><p class="muted small">Bar = committed; tick = model estimate.</p>` : ""}
+    ${budget ? `<div class="track"><div class="fill ${spent > budget ? "over" : ""}" style="width:${Math.min(100, spent / budget * 100)}%"></div>${mark !== null ? `<div class="mark" style="left:${Math.min(100, mark / budget * 100)}%" title="${lt ? "plan total" : "model estimate"}"></div>` : ""}</div><p class="muted small">Bar = committed; tick = ${lt ? "plan total" : "model estimate"}.</p>` : ""}
+    ${lt ? lt.notes : ""}
     ${Object.keys(byCat).length ? `<p class="small">${Object.entries(byCat).map(([k, v]) => `${esc(k)} ${fmtMoney(v, cur)}`).join(" · ")}</p>` : ""}
   </section>
   <section class="card">

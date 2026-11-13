@@ -2,6 +2,8 @@ import { esc, fmtMoney, chip, altClass, tempClass, CROWD, hrs, splitBar, step, e
 import { computePlan, rebalance, climateFor } from "../compute.js";
 import { KINDS, selectedBlocks, LODGING } from "../criteria.js";
 import { seasonFit } from "../scoring.js";
+import { liveChoice, currentPlan } from "../liveplan.js";
+import * as live from "./liveplan.js";
 
 export function currentDest(ctx) {
   const t = ctx.trip; const id = t._ui?.buildId || t.chosen || (ctx.dests[0] && ctx.dests[0].id);
@@ -9,6 +11,7 @@ export function currentDest(ctx) {
 }
 
 export function render(ctx) {
+  if (liveChoice(ctx.trip)) return renderLive(ctx);
   const t = ctx.trip; const d = currentDest(ctx);
   if (!d) return `<section class="card">${empty("No destinations for this kind yet", "Add one to the library.")}</section>`;
   const c = computePlan(d, t); const plan = c.plan; const cur = t.budget.currency; const kind = KINDS[t.kind];
@@ -118,7 +121,15 @@ function orderedList(d, plan, c, t) {
     </li>`; }).join("")}</ol>`;
 }
 
+/* A live option is chosen: the plan chat, the app's checks, then Claude's days and the gear table. */
+function renderLive(ctx) {
+  const t = ctx.trip;
+  return `${live.planChat(t, ctx)}${live.flagsCard(t)}${currentPlan(t) ? live.daysCard(t) + live.gearCard(t) : live.waitingCard(t, ctx)}
+  <p class="row"><a href="#itinerary" role="button">Next: itinerary →</a></p>`;
+}
+export const forms = { ...live.forms };
 export const actions = {
+  ...live.actions,
   "pick-dest": (el, ctx) => { ctx.trip._ui = ctx.trip._ui || {}; ctx.trip._ui.buildId = el.value; ctx.commit(); },
   "choose-here": (el, ctx) => { ctx.trip.chosen = el.dataset.id; ctx.commit(); },
   "fit-dates": (el, ctx) => { const d = currentDest(ctx); if (ctx.compute.fitToDates(d, ctx.trip)) { ctx.commit(); ctx.toast("Trimmed to fit your dates; adjust the days below."); } },

@@ -298,14 +298,79 @@ test("choose a live option: Claude writes the plan, the header names it, another
   assert.equal(sent.max_tokens, 32000); assert.match(JSON.stringify(sent.messages), /Write the full plan for La Palma\./);
   assert.ok(storedTrip().brief.some(m => m.text === "Write the full plan for La Palma."));
   assert.equal(storedTrip().livePlan.bookings.length, 3);
-  // Task 5: assert.ok($(".daytable"), "the days show on Build");
+  assert.ok($(".daytable"), "the days show on Build");
   await go("#setup"); assert.match([...window.document.querySelectorAll(".optcard")].find(c => c.textContent.includes("La Palma")).textContent, /Chosen ✓/);
   let release; fakeApi = () => new Promise(r => { release = r; });
   click(chooseBtn("Southern Morocco")); await tick(200);
   assert.equal(window.location.hash, "#build");
   assert.equal($(".daytable"), null, "the first option's plan is hidden");
-  // Task 5: assert.match($(".view-build").textContent, /Writing the plan/);
+  assert.match($(".view-build").textContent, /Writing the plan/);
   assert.equal(storedTrip().livePlan, null); assert.equal(storedTrip()._local.planHistory.at(-1).plan.optionId.length > 0, true);
   release({ stop_reason: "end_turn", usage: {}, content: [{ type: "text", text: "Morocco needs more thought." }] }); await tick(200);
   await go("#home"); assert.match($('.tripcard[data-act="open-trip"]').textContent, /Southern Morocco/);
+});
+
+test("the live plan in the tabs: edit a status, a gear cell, a to-do; Money totals follow; a plan chat change updates them", async () => {
+  await import("../src/main.js");
+  const { planInput } = await import("./plan-fixtures.mjs");
+  const { planTotals } = await import("../src/liveplan.js"); const { fmtMoney } = await import("../src/ui.js");
+  await liveTripWithOptions();
+  const input = planInput(); input.bookings.push({ id: "b_whale", what: "Whale trip", category: "activity", pick: "", alternative: "", price: 90, currency: "USD", seenOn: "2026-11-09", status: "idea", link: null, bookBy: null, details: "", source: null });
+  fakeApi = async () => toolReply("write_plan", input, "Here is your plan.");
+  click(chooseBtn("La Palma")); await tick(300);
+  // Build: the days and the gear, one column per traveller
+  assert.equal(window.document.querySelectorAll(".daytable tbody tr").length, 2);
+  const heads = [...window.document.querySelectorAll(".geartable thead th")].map(th => th.textContent);
+  assert.ok(heads.includes("Gabriel") && heads.includes("Situ"), heads.join("|"));
+  const situ = storedTrip().travellers.find(p => p.name === "Situ").id;
+  change($(`.geartable input[data-bind="livePlan.gear.0.per.${situ}"]`), "has one"); await tick(60);
+  assert.equal(storedTrip().livePlan.gear[0].per[situ], "has one");
+  assert.match($(".view-build").textContent, /Supermarket in Los Llanos/, "the food note shows under the gear");
+  // Plan & book: mark the ferry booked; its to-do shows done
+  await go("#plan");
+  const i = storedTrip().livePlan.bookings.findIndex(b => b.id === "b_ferry");
+  change($(`select[data-bind="livePlan.bookings.${i}.status"]`), "booked"); await tick(60);
+  change($(`input[data-bind="livePlan.bookings.${i}.confirmation"]`), "ABC123"); await tick(60);
+  const todo = [...window.document.querySelectorAll(".todolist li")].find(li => /Book Ferry/.test(li.textContent));
+  assert.ok(todo && todo.classList.contains("done"), "the ferry to-do is done");
+  assert.ok(/Caldera camping permit/.test($(".view-plan").textContent), "permits show");
+  assert.ok(/Travel insurance/.test($(".view-plan").textContent), "Situ's admin shows");
+  // Money: the plan total, and the USD booking named as missing
+  await go("#money");
+  const before = planTotals(storedTrip().livePlan, storedTrip()).total;
+  assert.match($(".view-money").textContent, /Plan total/);
+  assert.ok($(".view-money").textContent.includes(fmtMoney(before, "GBP")), "the plan total shows");
+  assert.match($(".view-money").textContent, /No exchange rate[^]*Whale trip/);
+  // Plan chat on Build: the campsite goes up to 40 EUR
+  await go("#build");
+  const nulls = Object.fromEntries(Object.keys(planInput()).map(k => [k, null]));
+  fakeApi = async () => toolReply("update_plan", Object.assign(nulls, { bookings: input.bookings.map(b => b.id === "b_camp" ? Object.assign({}, b, { price: 40 }) : b.id === "b_ferry" ? Object.assign({}, b, { status: "idea" }) : b) }), "Updated.");
+  $("#chatText").value = "the campsite is 40 now"; click($('[data-act="chat-send"]')); await tick(300);
+  const after = storedTrip();
+  assert.equal(planTotals(after.livePlan, after).total, before + Math.round(40 * 0.86) - Math.round(20 * 0.86));
+  const ferry = after.livePlan.bookings.find(b => b.id === "b_ferry"); assert.equal(ferry.status, "booked"); assert.equal(ferry.confirmation, "ABC123");
+  await go("#money"); assert.ok($(".view-money").textContent.includes(fmtMoney(planTotals(after.livePlan, after).total, "GBP")));
+  // A library trip still shows the library picker
+  await go("#home"); click($('[data-act="new-trip"][data-kind="hike"]')); await tick(150);
+  await go("#build"); assert.ok($('select[data-act-change="pick-dest"]'), "library Build is unchanged"); assert.equal($(".daytable"), null);
+});
+
+test("review: a crafted share link with a hostile livePlan injects nothing", async () => {
+  const { newTrip, encodeShare } = await import("../src/state.js");
+  const { planInput } = await import("./plan-fixtures.mjs");
+  const { normalizePlan } = await import("../src/liveplan.js");
+  const t = newTrip("hike"); t.name = "Crafted plan";
+  t.options = [{ id: "o_x", name: "<img id=pwn0 src=x>" }]; t.chosen = "o_x";
+  const p = normalizePlan(planInput(), t, { optionId: "o_x" });
+  p.bookings[0].what = "<img id=pwn1 src=x>"; p.days[0].move = "<img id=pwn2 src=x>"; p.days[0].night.name = "<img id=pwn3 src=x>";
+  p.gear[0].name = "<img id=pwn4 src=x>"; p.food = "<img id=pwn5 src=x>"; p.bookings[1].link = "javascript:alert(1)";
+  p.permits[0].what = "<img id=pwn6 src=x>"; p.todo[0].what = "<img id=pwn7 src=x>"; p.days[0].km = "<img id=pwn8 src=x>";
+  t.livePlan = p;
+  window.location.hash = "#" + encodeShare(t, window.LZString).replace(/^#/, ""); await tick(250);
+  for (const h of ["#build", "#itinerary", "#plan", "#money", "#share", "#home"]) {
+    await go(h); await tick(40);
+    for (let n = 0; n <= 8; n++) assert.equal(window.document.getElementById("pwn" + n), null, `pwn${n} must not be an element on ${h}`);
+    assert.equal(window.document.querySelector('a[href^="javascript"]'), null, h);
+  }
+  await go("#build"); assert.ok($(".daytable"), "the crafted plan still renders");
 });

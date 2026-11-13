@@ -180,6 +180,10 @@ pre.summary{white-space:pre-wrap;font-size:.82rem;background:var(--bg);padding:1
 .chatin{display:flex;gap:8px;align-items:flex-end}.chatin textarea{flex:1;margin:0}
 .msg.err{background:var(--crit-bg);color:var(--crit)}.msg.busy{font-style:italic;opacity:.8}
 .livestatus{margin:-4px 0 10px;color:var(--good)}.livecard .chk{margin-top:8px}
+/* live plan */
+table.daytable ul.legs{margin:4px 0 0;padding-left:1.1em}table.daytable ul.legs li{margin:0;list-style:disc}
+table.geartable input,table.booktable input,table.booktable select{font-size:.85rem;padding:.25rem .5rem;height:auto;margin:0;min-width:110px}
+ul.todolist li.done span{text-decoration:line-through;color:var(--ink-2)}
 .optcards{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr))}
 .optcard{border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-width:0}.optcard.pick{border-color:var(--pico-primary);box-shadow:0 0 0 1px var(--pico-primary)}
 .optcard h3{margin:0;font-size:1.05rem}.optcard header{margin-bottom:6px}.optcard p{margin:6px 0}
@@ -226,7 +230,7 @@ pre.summary{white-space:pre-wrap;font-size:.82rem;background:var(--bg);padding:1
   table.itin td::before,table.ledger td::before,table.log td::before,table.people td::before{content:attr(data-label);position:absolute;left:0;top:7px;width:7em;font-size:.72rem;line-height:1.25;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-2)}
   table.itin td:not([data-label]),table.ledger td:not([data-label]),table.log td:not([data-label]),table.people td:not([data-label]){padding-left:0}
   table.itin td:empty,table.ledger td:empty,table.log td:empty{display:none}
-  table.itin input,table.log input,table.people input,table.people select,table.ledger input{min-width:0;width:100%}
+  table.itin input,table.itin select,table.log input,table.people input,table.people select,table.ledger input{min-width:0;width:100%}
   tr.nogo{border-color:var(--crit)}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none !important}}

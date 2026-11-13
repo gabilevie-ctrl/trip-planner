@@ -69,14 +69,15 @@ export function render(ctx) {
   <p><a href="#destinations" role="button">Next: destinations →</a></p>`;
 }
 
-function chat(t, ctx) {
+/* The one thread with the planner. On Build it is the plan chat (plan: true): same thread, its own wording. */
+export function chat(t, ctx, title = "Describe the trip", { plan = false } = {}) {
   const msgs = t.brief || []; const live = ctx.liveStatus === "unlocked"; const busy = !!ctx.busyTrips?.has(t.id);
   const status = live ? `<p class="livestatus small">Live search is on: Claude searches the web for options. <button type="button" class="linklike" data-act="live-forget">Forget on this device</button></p>`
     : ctx.liveStatus === "locked" ? `<p class="muted small">Unlock live search above for real options from the web.</p>` : "";
   return `<section class="card chat">
-    <h2>Describe the trip</h2>${status}
-    ${msgs.length || busy ? `<ol class="thread">${msgs.map(m => `<li class="msg ${m.who === "app" ? "app" : "you"}${m.error ? " err" : ""}">${esc(m.text)}</li>`).join("")}${busy ? `<li class="msg app busy" aria-live="polite">${busyText(t)}</li>` : ""}</ol>` : `<p class="muted">Tell the planner about the trip in your own words; it fills in the form below${live ? ", searches the web for options that fit," : ""} and asks about what is missing.</p>`}
-    <div class="chatin"><textarea id="chatText" rows="2" placeholder="${msgs.length ? "Add more: a limit for someone, a change of dates, what to skip…" : "e.g. Four of us, ten days in May, from London, about £1,500 each, love the coast"}"></textarea><button type="button" data-act="chat-send" ${busy ? "disabled aria-busy=\"true\"" : ""}>Send</button></div>
+    <h2>${esc(title)}</h2>${status}
+    ${msgs.length || busy ? `<ol class="thread">${msgs.map(m => `<li class="msg ${m.who === "app" ? "app" : "you"}${m.error ? " err" : ""}">${esc(m.text)}</li>`).join("")}${busy ? `<li class="msg app busy" aria-live="polite">${busyText(t)}</li>` : ""}</ol>` : plan ? `<p class="muted">Ask for changes in your own words: another campsite, one more rest day, cheaper ferries. Claude updates the plan below and keeps what you marked booked.</p>` : `<p class="muted">Tell the planner about the trip in your own words; it fills in the form below${live ? ", searches the web for options that fit," : ""} and asks about what is missing.</p>`}
+    <div class="chatin"><textarea id="chatText" rows="2" placeholder="${plan ? "e.g. Swap the second night for a hut" : msgs.length ? "Add more: a limit for someone, a change of dates, what to skip…" : "e.g. Four of us, ten days in May, from London, about £1,500 each, love the coast"}"></textarea><button type="button" data-act="chat-send" ${busy ? "disabled aria-busy=\"true\"" : ""}>Send</button></div>
   </section>`;
 }
 /* What a running live turn is doing: a plan takes much longer than a shortlist. */

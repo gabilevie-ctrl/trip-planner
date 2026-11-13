@@ -75,3 +75,38 @@ test("the app asks the helper on its own page and gets the same result shape as 
   const down = await askHelper({ system: "s", messages: [], fetchImpl: async () => { throw new Error("refused"); } });
   assert.equal(down.ok, false); assert.equal(down.error, "helper-down"); assert.match(down.message, /npm run family/);
 });
+
+/* ---------- Review of the helper ---------- */
+test("review: Claude Code runs clean: web tools only, no personal settings, hooks, memory or CLAUDE.md, no API key from the environment", async () => {
+  const log = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "fam-")), "args.json");
+  Object.assign(process.env, { FAKE_CLAUDE_LOG: log, FAKE_CLAUDE_MODE: "ok", ANTHROPIC_API_KEY: "sk-ant-should-not-pass", CLAUDE_CODE_SIMPLE: "1", CLAUDECODE: "1" });
+  const srv = await startFamilyServer({ port: 0, root, claudeBin: [process.execPath, path.join(root, "test", "fixtures", "fake-claude.mjs")] });
+  try {
+    await (await fetch(srv.url + "/api/claude/ask", { method: "POST", headers: { "content-type": "application/json", origin: srv.url }, body: JSON.stringify(req) })).json();
+    const { args, env } = JSON.parse(fs.readFileSync(log, "utf8"));
+    const val = f => args[args.indexOf(f) + 1];
+    assert.equal(val("--tools"), "WebSearch,WebFetch");
+    assert.equal(val("--setting-sources"), "project");
+    assert.equal(JSON.parse(val("--settings")).disableAllHooks, true);
+    assert.equal(val("--permission-mode"), "dontAsk");
+    assert.equal(val("--effort"), "medium");
+    for (const f of ["--strict-mcp-config", "--disable-slash-commands", "--no-session-persistence"]) assert.ok(args.includes(f), f);
+    assert.ok(env.includes("CLAUDE_CODE_DISABLE_CLAUDE_MDS") && env.includes("CLAUDE_CODE_DISABLE_AUTO_MEMORY"));
+    for (const k of ["ANTHROPIC_API_KEY", "CLAUDE_CODE_SIMPLE", "CLAUDECODE"]) assert.ok(!env.includes(k), k + " must not reach Claude Code");
+  } finally { await srv.close(); for (const k of ["FAKE_CLAUDE_LOG", "FAKE_CLAUDE_MODE", "ANTHROPIC_API_KEY", "CLAUDE_CODE_SIMPLE", "CLAUDECODE"]) delete process.env[k]; }
+});
+test("review: the server survives Claude Code quitting early, and answers an oversized request", async () => {
+  process.env.FAKE_CLAUDE_MODE = "exit-early";
+  const srv = await startFamilyServer({ port: 0, root, claudeBin: [process.execPath, path.join(root, "test", "fixtures", "fake-claude.mjs")] });
+  try {
+    const big = Object.assign({}, req, { messages: [{ role: "user", content: "x".repeat(2 * 1024 * 1024) }] });
+    const post = body => fetch(srv.url + "/api/claude/ask", { method: "POST", headers: { "content-type": "application/json", origin: srv.url }, body });
+    const r = await (await post(JSON.stringify(big))).json(); assert.equal(r.ok, false);
+    assert.equal((await fetch(srv.url + "/api/claude/status")).status, 200, "still running");
+    const huge = await post(JSON.stringify({ messages: [{ role: "user", content: "x".repeat(4 * 1024 * 1024) }] }));
+    assert.equal(huge.status, 413); assert.equal((await huge.json()).ok, false);
+  } finally { await srv.close(); delete process.env.FAKE_CLAUDE_MODE; }
+});
+test("review: Claude Code's usage-limit wording reads as a usage limit", () => {
+  assert.equal(parseHelperResult(JSON.stringify({ is_error: true, result: "You've hit your limit · resets 3pm (Europe/Brussels)" })).error, "rate");
+});

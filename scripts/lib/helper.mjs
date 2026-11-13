@@ -38,7 +38,7 @@ export function parseHelperResult(stdout) {
   if (o.is_error) {
     const r = String(o.result || "");
     if (/authenticat|401|oauth|log ?in/i.test(r)) return fail("helper-auth");
-    if (/usage limit|rate limit|429|overloaded/i.test(r)) return fail("rate");
+    if (/usage limit|rate limit|hit your limit|429|overloaded/i.test(r)) return fail("rate");
     return fail("server");
   }
   const s = o.structured_output;
@@ -65,25 +65,46 @@ export function originAllowed(origin, port) {
 const TYPES = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".mjs": "text/javascript; charset=utf-8", ".json": "application/json; charset=utf-8", ".css": "text/css; charset=utf-8", ".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg", ".ico": "image/x-icon" };
 const MAX_BODY = 3 * 1024 * 1024;
 
-/* Run Claude Code once; resolves to the app's result shape, never rejects. */
-function runClaude(claudeBin, req, timeoutMs) {
+/* Claude Code runs clean: only web search and fetch exist, no personal settings, plugins, hooks, MCP servers, skills,
+   memory or CLAUDE.md, nothing saved, and never an API key or Claude Code session variables from this terminal. */
+export function claudeArgs(schema, systemPrompt) {
+  return ["-p", "--output-format", "json", "--json-schema", JSON.stringify(schema), "--system-prompt", systemPrompt,
+    "--tools", "WebSearch,WebFetch", "--allowedTools", "WebSearch WebFetch", "--disallowedTools", "Bash Edit Write NotebookEdit Task",
+    "--permission-mode", "dontAsk", "--setting-sources", "project", "--settings", JSON.stringify({ disableAllHooks: true }),
+    "--strict-mcp-config", "--disable-slash-commands", "--no-session-persistence", "--model", "opus", "--effort", "medium"];
+}
+export function claudeEnv(env) {
+  const out = {};
+  for (const [k, v] of Object.entries(env)) if (!/^(ANTHROPIC_|CLAUDE)/.test(k)) out[k] = v;
+  return Object.assign(out, { CLAUDE_CODE_DISABLE_CLAUDE_MDS: "1", CLAUDE_CODE_DISABLE_AUTO_MEMORY: "1" });
+}
+
+/* Run Claude Code once; resolves to the app's result shape, never rejects. onAbort lets the caller stop it. */
+function runClaude(claudeBin, req, timeoutMs, onAbort) {
   const { prompt, systemPrompt, schema } = buildHelperRequest(req);
-  const args = [...claudeBin.slice(1), "-p", "--output-format", "json", "--json-schema", JSON.stringify(schema), "--system-prompt", systemPrompt,
-    "--allowedTools", "WebSearch WebFetch", "--disallowedTools", "Bash Edit Write NotebookEdit Task", "--model", "opus"];
+  const args = [...claudeBin.slice(1), ...claudeArgs(schema, systemPrompt)];
   // An empty folder: Claude Code reads no project files and no CLAUDE.md from here.
   const cwd = fs.mkdtempSync(path.join(os.tmpdir(), "trip-claude-"));
   return new Promise(resolve => {
     let out = "", done = false;
     const finish = r => { if (done) return; done = true; clearTimeout(timer); fs.rm(cwd, { recursive: true, force: true }, () => {}); resolve(r); };
     let child;
-    try { child = spawn(claudeBin[0], args, { cwd, env: process.env, stdio: ["pipe", "pipe", "pipe"] }); }
+    try { child = spawn(claudeBin[0], args, { cwd, env: claudeEnv(process.env), stdio: ["pipe", "pipe", "pipe"] }); }
     catch (e) { return finish(fail("helper-missing")); }
     const timer = setTimeout(() => { child.kill("SIGTERM"); finish(fail("timeout")); }, timeoutMs);
     child.on("error", e => finish(fail(e.code === "ENOENT" ? "helper-missing" : "server")));
+    let err = "";
     child.stdout.on("data", c => { out += c; });
-    child.stderr.on("data", () => {});
-    child.on("close", () => finish(parseHelperResult(out)));
+    child.stderr.on("data", c => { err += c; });
+    child.on("close", () => {
+      const r = parseHelperResult(out);
+      if (!r.ok) console.error(`Claude Code: ${r.error}${err.trim() ? " — " + err.trim().slice(0, 300) : ""}`);
+      finish(r);
+    });
+    // Claude Code may quit before reading the whole prompt; that must not take the server down.
+    child.stdin.on("error", () => {});
     child.stdin.end(prompt);
+    if (onAbort) onAbort(() => { if (!done) { child.kill("SIGTERM"); finish(fail("server")); } });
   });
 }
 
@@ -98,11 +119,14 @@ export function startFamilyServer({ port = 8787, root, claudeBin = ["claude"], t
     if (url === "/api/claude/ask") {
       if (req.method !== "POST") return json(res, 405, { ok: false, error: "method" });
       if (!originAllowed(req.headers.origin, actualPort)) return json(res, 403, { ok: false, error: "origin" });
-      let body = "", size = 0;
-      req.on("data", c => { size += c.length; if (size > MAX_BODY) { req.destroy(); } else body += c; });
+      let body = "", size = 0, tooBig = false;
+      req.on("data", c => { size += c.length; if (size > MAX_BODY) tooBig = true; else body += c; });
       req.on("end", async () => {
+        if (tooBig) return json(res, 413, { ok: false, error: "bad-response", message: "That request is too large for live search." });
         let r; try { r = JSON.parse(body); } catch (e) { return json(res, 400, fail("bad-response")); }
-        json(res, 200, await runClaude(claudeBin, r || {}, timeoutMs));
+        // A closed tab stops its Claude Code run, so it doesn't keep using the plan's quota.
+        const result = await runClaude(claudeBin, r || {}, timeoutMs, stop => res.on("close", () => { if (!res.writableEnded) stop(); }));
+        if (!res.writableEnded && !res.destroyed) json(res, 200, result);
       });
       return;
     }

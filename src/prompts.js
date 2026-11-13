@@ -20,7 +20,7 @@ When the trip has a chosen option ("chosenOption" in the JSON) and no plan, or t
 - Bookings for everything that needs one (transport, lodging, permits, activities), each with a link prefilled for the dates and number of travellers where the site allows it, the exact details to enter, a bookBy date, and a price for the whole group in its own currency with its source.
 - Permits with lead times; admin per traveller by name (visa, insurance, health card); gear the nights need (a tent for camping nights); food; dated to-dos; other costs that aren't booked (food, local transport); sources.
 When a plan exists ("plan" in the JSON), call update_plan with only the collections that change, each in full: keep existing ids, and give new items a new id with the right prefix.
-Never write totals: the app computes them. Never change a booking people marked booked; if it should change, say so in your text instead.
+Never write totals: the app computes them. Set pricedFor to how many travellers your prices are for; when the group size changes, re-price the bookings and other costs and send the new pricedFor. Never change a booking people marked booked; if it should change, say so in your text instead.
 
 Your text reply is shown in the chat next to the cards, so keep it under 120 words: your pick in one sentence, anything surprising you found, and at most two questions that would sharpen the options. Do not repeat the card details in the text. Write in the traveller's language, plainly.`;
 

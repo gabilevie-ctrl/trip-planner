@@ -147,3 +147,11 @@ test("final I1: new options in a plan turn keep the chosen option, so the plan s
   assert.ok(u.options.some(o => o.id === "o_lp"), "the chosen option stays in the list even when Claude leaves it out");
   assert.equal(u.options.length, 2);
 });
+
+test("bug 1: the app's own plan request doesn't go through the reader, so an option name with a date can't move the trip dates", async () => {
+  const t = chosenTrip(); t.dates = { start: "2027-04-09", end: "2027-04-11" };
+  const { ask } = fakeAsk({ ok: true, text: "ok", toolCalls: [], searches: 0 });
+  await liveTurn(t, "Write the full plan for Nice, Fri 9 – Sun 11 Apr.", Object.assign(opts(ask), { fromApp: true }));
+  assert.deepEqual(t.dates, { start: "2027-04-09", end: "2027-04-11" });
+  assert.ok(t.brief.some(m => m.who === "you" && m.text === "Write the full plan for Nice, Fri 9 – Sun 11 Apr."), "the request still shows in the thread");
+});

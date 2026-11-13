@@ -39,9 +39,10 @@ const PROPS = {
   todo: arr(obj({ id: { type: "string", description: "t_ prefix" }, date: SN, what: S })),
   otherCosts: arr(obj({ id: { type: "string", description: "c_ prefix" }, what: S, amount: N, currency: S, seenOn: S })),
   sources: arr(SOURCE),
-  rates: arr(obj({ currency: S, toTrip: N, seenOn: S, source: MAYBE_SOURCE }))
+  rates: arr(obj({ currency: S, toTrip: N, seenOn: S, source: MAYBE_SOURCE })),
+  pricedFor: { type: "number", description: "how many travellers the booking prices and other costs are for" }
 };
-const MONEY_NOTE = "A booking price is for the whole group, in its own currency; give a rate to the trip currency for every other currency used. Never write totals: the app computes them.";
+const MONEY_NOTE = "Set pricedFor to the number of travellers the prices are for. A booking price is for the whole group, in its own currency; give a rate to the trip currency for every other currency used. Never write totals: the app computes them.";
 export const WRITE_PLAN_TOOL = {
   name: "write_plan",
   description: "Save the whole plan for the chosen option: days, bookings, permits, admin per traveller, gear, food, to-dos, other costs (food and local costs that aren't booked) and sources. The app shows it in its tabs and keeps what people marked. " + MONEY_NOTE + " Ids use a fixed prefix per collection: d_ day, l_ leg, b_ booking, p_ permit, a_ admin, g_ gear, t_ to-do, c_ other cost.",
@@ -88,7 +89,13 @@ export function normalizePlan(input, trip, { today = new Date().toISOString().sl
     status: own ? oneOf(b.status, BOOKING_STATUSES, "idea") : b.status === "booked" ? "decided" : oneOf(b.status, ["idea", "decided", "not-needed"], "idea"),
     confirmation: own ? str(b.confirmation) : "", link: https(b.link), bookBy: date(b.bookBy), details: str(b.details), source: source(b.source, today)
   } : null);
-  plan.permits = list(i.permits, p => isObj(p) && str(p.what) ? { id: ids.p(p.id), what: str(p.what), who: list(p.who, str), how: str(p.how), leadTime: str(p.leadTime), bookBy: date(p.bookBy), note: str(p.note) } : null);
+  plan.permits = list(i.permits, p => isObj(p) && str(p.what) ? { id: ids.p(p.id), what: str(p.what), who: list(p.who, str), how: str(p.how), leadTime: str(p.leadTime), bookBy: date(p.bookBy), note: str(p.note), done: own ? p.done === true : false } : null);
+  // Bookings Claude left out of its latest plan but people had worked on (set by mergePlan, kept on import).
+  if (own) (Array.isArray(i.bookings) ? i.bookings : []).forEach((b, n) => { if (isObj(b) && b.dropped === true) { const c = plan.bookings.find(x => x.id === str(b.id)); if (c) c.dropped = true; } });
+  // How many travellers the prices were for, so a change of group size shows instead of silently re-dividing.
+  // From Claude it is pricedFor; stored or shared plans carry forTravellers. Missing means the group as it is now.
+  const count = v => Number.isInteger(num(v)) && num(v) > 0 ? num(v) : null;
+  plan.forTravellers = (own ? count(i.forTravellers) : count(i.pricedFor)) || people.length || null;
   // Admin comes from Claude as a list keyed by traveller name, and from storage as { travellerId: [...] }.
   plan.admin = {};
   const adminItem = (a, key) => {
@@ -141,17 +148,37 @@ export function mergePlan(existing, input, trip, { today = new Date().toISOStrin
   const plan = { optionId: fresh.optionId };
   const old = (k, fallback) => JSON.parse(JSON.stringify(existing[k] ?? fallback));
   for (const k of COLLECTIONS) plan[k] = sent(k) ? fresh[k] : old(k, k === "admin" ? {} : k === "food" ? "" : []);
+  // An update that doesn't say what its prices are for keeps the old count, so a change of group size stays visible.
+  plan.forTravellers = partial && !(Number.isInteger(num(i.pricedFor)) && num(i.pricedFor) > 0) ? existing.forTravellers ?? fresh.forTravellers : fresh.forTravellers;
+  const copy = x => JSON.parse(JSON.stringify(x));
   if (sent("bookings")) {
     const m = pair(plan.bookings, existing.bookings, b => b.category + "|" + b.what);
     for (const [b, e] of m) { b.confirmation = e.confirmation || ""; if (e.status !== "idea") b.status = e.status; }
     const matched = new Set(m.values());
-    for (const e of existing.bookings || []) if (e.status === "booked" && !matched.has(e)) plan.bookings.push(JSON.parse(JSON.stringify(e)));
+    // People's work Claude left out stays, marked so the plan shows "no longer in Claude's plan: keep or cancel?".
+    for (const e of existing.bookings || []) if ((e.status === "booked" || e.status === "decided" || e.confirmation) && !matched.has(e)) plan.bookings.push(Object.assign(copy(e), { dropped: true }));
   }
-  if (sent("gear")) for (const [g, e] of pair(plan.gear, existing.gear, g => g.name)) g.per = Object.assign({}, e.per);
-  if (sent("todo")) for (const [x, e] of pair(plan.todo, existing.todo, x => x.what)) x.done = e.done === true;
+  if (sent("gear")) {
+    const m = pair(plan.gear, existing.gear, g => g.name); for (const [g, e] of m) g.per = Object.assign({}, e.per);
+    const matched = new Set(m.values());
+    for (const e of existing.gear || []) if (!matched.has(e) && Object.values(e.per || {}).some(v => String(v).trim())) plan.gear.push(copy(e));
+  }
+  if (sent("todo")) {
+    const m = pair(plan.todo, existing.todo, x => x.what); for (const [x, e] of m) x.done = e.done === true;
+    const matched = new Set(m.values());
+    for (const e of existing.todo || []) if (!matched.has(e) && e.done === true) plan.todo.push(copy(e));
+  }
+  if (sent("permits")) {
+    const m = pair(plan.permits, existing.permits, x => x.what); for (const [x, e] of m) x.done = e.done === true;
+    const matched = new Set(m.values());
+    for (const e of existing.permits || []) if (!matched.has(e) && e.done === true) plan.permits.push(copy(e));
+  }
   if (sent("admin")) {
     const flat = admin => Object.entries(isObj(admin) ? admin : {}).flatMap(([k, items]) => (Array.isArray(items) ? items : []).map(a => Object.assign(Object.create(null), { a, k })));
-    for (const [n, e] of pair(flat(plan.admin), flat(existing.admin), x => x.k + "|" + x.a.what, x => x.a.id)) n.a.status = e.a.status;
+    const m = pair(flat(plan.admin), flat(existing.admin), x => x.k + "|" + x.a.what, x => x.a.id);
+    for (const [n, e] of m) n.a.status = e.a.status;
+    const matched = new Set(m.values());
+    for (const e of flat(existing.admin)) if (!matched.has(e) && e.a.status === "done") (plan.admin[e.k] = plan.admin[e.k] || []).push(copy(e.a));
   }
   return { plan: fixRefs(plan), changed, rates: planRates(i, trip, { today }) };
 }
@@ -184,18 +211,22 @@ export const CATEGORY_LABEL = { transport: "Transport", lodging: "Lodging", perm
 /* Bookings that aren't "not needed" plus other costs, each converted to the trip currency. A price with no rate
    is named in `missing` and left out; `counted` is how many prices went into the total. */
 export function planTotals(plan, trip) {
-  const byCategory = {}; const missing = []; let total = 0, counted = 0;
+  const byCategory = {}; const missing = []; const setAside = []; let total = 0, counted = 0;
   const add = (what, amount, currency, label) => {
     if (amount === null || amount === undefined || !Number.isFinite(amount)) return;
     const v = toTripCurrency(amount, currency, trip);
     if (v === null) { missing.push({ what, currency }); return; }
     total += v; counted++; byCategory[label] = (byCategory[label] || 0) + v;
   };
-  for (const b of plan?.bookings || []) if (b.status !== "not-needed") add(b.what, b.price, b.currency, CATEGORY_LABEL[b.category] || CATEGORY_LABEL.other);
+  // A booking Claude left out of its plan counts only once booked (paid); otherwise it is named apart, not added.
+  for (const b of plan?.bookings || []) if (b.dropped && b.status !== "booked" && b.status !== "not-needed") setAside.push({ what: b.what });
+  else if (b.status !== "not-needed") add(b.what, b.price, b.currency, CATEGORY_LABEL[b.category] || CATEGORY_LABEL.other);
   for (const c of plan?.otherCosts || []) add(c.what, c.amount, c.currency, CATEGORY_LABEL.local);
   const people = Array.isArray(trip.travellers) ? trip.travellers.length : 0;
+  const priced = plan?.forTravellers || people || 1;
   const budget = trip.budget?.total || 0;
-  return { total, perPerson: Math.round(total / (people || 1)), byCategory, missing, overBudget: budget > 0 && total > budget, counted };
+  const travellersChanged = plan?.forTravellers && people && plan.forTravellers !== people ? { was: plan.forTravellers, now: people } : null;
+  return { total, perPerson: Math.round(total / priced), byCategory, missing, setAside, overBudget: budget > 0 && total > budget, counted, travellersChanged };
 }
 
 /* The plan's own to-dos, plus "Book …" for each booking with a book-by date and "Apply: …" for each permit,
@@ -204,7 +235,7 @@ export function planTodo(plan) {
   const items = [];
   for (const x of plan?.todo || []) items.push({ key: "todo:" + x.id, date: x.date || null, what: x.what, done: x.done === true, from: "todo", id: x.id });
   for (const b of plan?.bookings || []) if (b.bookBy && b.status !== "not-needed") items.push({ key: "booking:" + b.id, date: b.bookBy, what: "Book " + b.what, done: b.status === "booked", from: "booking", id: b.id });
-  for (const p of plan?.permits || []) items.push({ key: "permit:" + p.id, date: p.bookBy || null, what: "Apply: " + p.what, done: false, from: "permit", id: p.id });
+  for (const p of plan?.permits || []) items.push({ key: "permit:" + p.id, date: p.bookBy || null, what: "Apply: " + p.what, done: p.done === true, from: "permit", id: p.id });
   return items.map((x, i) => [x, i]).sort(([a, i], [b, j]) => (a.date ? 0 : 1) - (b.date ? 0 : 1) || (a.date && b.date ? a.date.localeCompare(b.date) : 0) || i - j).map(([x]) => x);
 }
 

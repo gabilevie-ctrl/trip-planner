@@ -41,7 +41,7 @@ test("end to end: create a ski trip, set it up, pick a destination, build, book,
   await go("#money"); const f = $('form[data-form="expense"]'); f.querySelector('[name=desc]').value = "Fuel"; f.querySelector('[name=amount]').value = "120"; f.dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true })); await tick(40);
   assert.ok($("table.ledger"), "ledger has the expense"); assert.ok(/→/.test($(".view-money").textContent), "settle-up shows a transfer");
   await go("#decisions"); const df = $('form[data-form="decision"]'); df.querySelector('[name=title]').value = "Guide or not?"; df.dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true })); await tick(40); assert.ok(/Guide or not\?/.test($(".view-decisions").textContent));
-  await go("#conditions"); const sel = $('select[data-k="danger"]'); change(sel, "3"); await tick(40); assert.ok($("tr.nogo"), "danger at the limit flags the day");
+  await go("#conditions"); const sel = $('select[data-k="danger"]'); change(sel, "3"); await tick(40); assert.equal($("tr.nogo"), null, "danger at the limit is allowed"); change($('select[data-k="danger"]'), "4"); await tick(40); assert.ok($("tr.nogo"), "danger above the limit flags the day");
   await go("#share"); const link = $("#shareLink").value; assert.match(link, /#s-[A-Za-z0-9-]+$/);
   // import the link as a new trip in the same browser → becomes a copy
   window.location.hash = link.split("#")[1]; await tick(120);

@@ -18,12 +18,16 @@ function historyMessages(brief) {
   return out;
 }
 
-export async function liveTurn(trip, text, { ask, apiKey, today = new Date().toISOString().slice(0, 10), countries = [] }) {
+export async function liveTurn(trip, text, { ask, apiKey, today = new Date().toISOString().slice(0, 10), countries = [], fromApp = false }) {
   const msg = String(text || "").trim(); if (!msg) return null;
   const before = (trip.brief || []).slice();
   // Library ideas would contradict live options, so the reader runs without them; its reply stays only when it filled something.
-  const r = describeTurn(trip, msg, { countries, today });
-  if (!r.changes.length && !(r.parsed.guesses || []).length) trip.brief.pop();
+  // The app's own requests ("Write the full plan for …") skip the reader: an option's name must never change the form.
+  if (fromApp) { trip.brief = trip.brief || []; trip.brief.push({ who: "you", text: msg }); }
+  else {
+    const r = describeTurn(trip, msg, { countries, today });
+    if (!r.changes.length && !(r.parsed.guesses || []).length) trip.brief.pop();
+  }
 
   const messages = historyMessages(before);
   const final = `Today is ${today}.\n\nCurrent trip:\n${tripContext(trip)}\n\nMessage:\n${msg}`;

@@ -2,14 +2,17 @@ import { esc, fmtDate, empty } from "../ui.js";
 import { itinerary } from "../compute.js";
 import { strictestLimits } from "../criteria.js";
 import { currentDest } from "./build.js";
+import { liveChoice, currentPlan } from "../liveplan.js";
 
 const DANGER = ["", "1 low", "2 moderate", "3 considerable", "4 high", "5 very high"];
 
 export function render(ctx) {
-  const t = ctx.trip; const d = ctx.dests.find(x => x.id === t.chosen) || currentDest(ctx);
+  const t = ctx.trip; const live = liveChoice(t);
+  // A live choice has no library entry: its days come from the plan (or the trip dates), with no recorded bulletins.
+  const d = live ? { name: live.name, bulletins: [] } : ctx.dests.find(x => x.id === t.chosen) || currentDest(ctx);
   if (!d) return `<section class="card">${empty("No destination", "Choose a destination first.")}</section>`;
   const lim = strictestLimits(t); const maxDanger = lim.maxDanger ? +lim.maxDanger : null;
-  const days = t.dates.start ? itinerary(d, t) : [];
+  const days = live ? liveDays(t) : t.dates.start ? itinerary(d, t) : [];
   const bulletins = d.bulletins || [];
   const byType = { avalanche: [], weather: [], conditions: [], huts: [], webcam: [] };
   for (const b of bulletins) (byType[b.type] || (byType[b.type] = [])).push(b);
@@ -20,7 +23,7 @@ export function render(ctx) {
     <h2>Conditions: ${esc(d.name)}</h2>
     <p class="muted">The app cannot fetch bulletins (cross-site requests are blocked where it runs), so these are the pages to open every evening. The log below is the group's record of what the bulletin said and what you decided.</p>
     <div class="grid3">
-      ${skitour ? `<div><h4>Avalanche bulletin</h4>${list(byType.avalanche)}${maxDanger ? `<p class="small">Group limit: danger level <strong>${maxDanger}</strong>. At or above it, the day is a no-go or needs terrain under 30° with no overhead hazard.</p>` : `<p class="small muted">No danger-level limit set in Setup.</p>`}</div>` : ""}
+      ${skitour ? `<div><h4>Avalanche bulletin</h4>${list(byType.avalanche)}${maxDanger ? `<p class="small">Group limit: danger level <strong>${maxDanger}</strong>. At that level the day goes ahead. Above it, the day is a no-go or needs terrain under 30° with no overhead hazard.</p>` : `<p class="small muted">No danger-level limit set in Setup.</p>`}</div>` : ""}
       <div><h4>Weather</h4>${list(byType.weather)}</div>
       <div><h4>${skitour || t.kind === "hike" ? "Huts and route conditions" : "Local conditions"}</h4>${list([...byType.conditions, ...byType.huts, ...byType.webcam])}</div>
     </div>
@@ -28,9 +31,9 @@ export function render(ctx) {
   <section class="card">
     <h3>Daily log</h3>
     ${days.length ? `<div class="scroller"><table class="log"><thead><tr><th>Day</th><th>Plan</th>${skitour ? "<th>Danger</th>" : ""}<th>Weather</th><th>Decision</th><th>Note</th></tr></thead><tbody>
-      ${days.filter(x => x.kind !== "travel").map(x => { const l = logByDate[x.date] || {}; const bad = skitour && maxDanger && l.danger && +l.danger >= maxDanger;
+      ${days.filter(x => x.kind !== "travel").map(x => { const l = logByDate[x.date] || {}; const bad = skitour && maxDanger && l.danger && +l.danger > maxDanger;
         return `<tr class="${bad ? "nogo" : ""}"><td class="small">${fmtDate(x.date)}</td><td class="small">${esc(x.label)}</td>
-          ${skitour ? `<td><select data-log="${x.date}" data-k="danger"><option value="">—</option>${[1, 2, 3, 4, 5].map(v => `<option value="${v}" ${String(l.danger) === String(v) ? "selected" : ""}>${DANGER[v]}</option>`).join("")}</select>${bad ? `<br><span class="pill crit">at or above the group limit</span>` : ""}</td>` : ""}
+          ${skitour ? `<td><select data-log="${x.date}" data-k="danger"><option value="">—</option>${[1, 2, 3, 4, 5].map(v => `<option value="${v}" ${String(l.danger) === String(v) ? "selected" : ""}>${DANGER[v]}</option>`).join("")}</select>${bad ? `<br><span class="pill crit">above the group limit</span>` : ""}</td>` : ""}
           <td><input type="text" data-log="${x.date}" data-k="weather" value="${esc(l.weather || "")}" placeholder="wind, temp, visibility"></td>
           <td><select data-log="${x.date}" data-k="decision"><option value="">—</option>${["go", "modified", "rest day", "no-go"].map(v => `<option ${l.decision === v ? "selected" : ""}>${v}</option>`).join("")}</select></td>
           <td><input type="text" data-log="${x.date}" data-k="note" value="${esc(l.note || "")}" placeholder="aspects avoided, who decided"></td></tr>`; }).join("")}
@@ -38,7 +41,16 @@ export function render(ctx) {
   </section>
   <p class="row"><a href="#share" role="button">Next: share →</a></p>`;
 }
-const list = arr => arr.length ? `<ul class="small">${arr.map(b => `<li><a href="${esc(b.url)}" target="_blank" rel="noopener">${esc(b.name)}</a></li>`).join("")}</ul>` : `<p class="muted small">None recorded for this destination.</p>`;
+/* Days for a live choice: the plan's dated days, else one per trip date. */
+function liveDays(t) {
+  const p = currentPlan(t);
+  const planned = (p?.days || []).filter(x => x.date).map(x => ({ date: x.date, label: x.move || "", kind: "day" }));
+  if (planned.length) return planned;
+  if (!t.dates.start || !t.dates.end) return [];
+  const out = []; for (let d = new Date(t.dates.start + "T00:00:00Z"); d <= new Date(t.dates.end + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() + 1)) out.push({ date: d.toISOString().slice(0, 10), label: "", kind: "day" });
+  return out;
+}
+const list = arr => arr.length ? `<ul class="small">${arr.map(b => `<li><a href="${esc(b.url)}" target="_blank" rel="noopener">${esc(b.name)}</a></li>`).join("")}</ul>` : `<p class="muted small">None recorded for this destination. For a destination found live, ask in the plan chat on Build for the bulletin pages.</p>`;
 
 export const actions = {};
 export function onLogChange(el, ctx) {

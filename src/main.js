@@ -49,10 +49,10 @@ const ctx = {
   vault: browserVault(), liveStatus: "none", busyTrips: new Set(),
   /* A live turn: the form fill and the typed message are saved and shown at once with "Searching live…" on that trip,
      then the answer. A key that no longer works locks live search again so the password card comes back. */
-  runLive: async (trip, text) => {
+  runLive: async (trip, text, { fromApp = false } = {}) => {
     if (ctx.busyTrips.has(trip.id)) return;
     const apiKey = await ctx.vault.apiKey();
-    const pending = liveTurn(trip, text, { ask, apiKey, countries }); // its synchronous part fills the form and the thread now
+    const pending = liveTurn(trip, text, { ask, apiKey, countries, fromApp }); // its synchronous part fills the form and the thread now
     const saveTrip = () => { state.touch(trip); state.save(store); savedFlash(); };
     ctx.busyTrips.add(trip.id); saveTrip(); render();
     let r = null;

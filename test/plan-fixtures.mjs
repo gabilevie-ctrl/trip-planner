@@ -20,6 +20,7 @@ export function planInput(over = {}) {
     todo: [{ id: "t_permit", date: null, what: "Print the permit" }],
     otherCosts: [{ id: "c_food", what: "Food", amount: 100, currency: "EUR", seenOn: TODAY }],
     sources: [{ name: "Fred Olsen", url: "https://www.fredolsen.es", seenOn: TODAY }],
-    rates: [{ currency: "EUR", toTrip: 0.86, seenOn: TODAY, source: null }]
+    rates: [{ currency: "EUR", toTrip: 0.86, seenOn: TODAY, source: null }],
+    pricedFor: 2
   }, over);
 }

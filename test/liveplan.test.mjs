@@ -182,3 +182,75 @@ test("final M3: Claude can't mark a booking booked; only people can", () => {
   const own = normalizePlan(input, t, { today: TODAY, optionId: "o_lp", keepIds: true });
   assert.equal(own.bookings[0].status, "booked", "a stored or imported plan keeps it");
 });
+
+/* ---------- Persona review bugs ---------- */
+test("bug 5: permits can be marked done; the derived 'Apply' to-do follows; a rewrite keeps it", () => {
+  const t = situTrip();
+  const existing = normalizePlan(planInput(), t, { today: TODAY, optionId: "o_lp" });
+  assert.equal(existing.permits[0].done, false);
+  existing.permits[0].done = true;
+  assert.equal(planTodo(existing).find(x => x.from === "permit").done, true);
+  const { plan } = mergePlan(existing, planInput(), t, { today: TODAY, partial: false });
+  assert.equal(plan.permits[0].done, true);
+  const fromClaude = planInput(); fromClaude.permits[0].done = true;
+  assert.equal(normalizePlan(fromClaude, t, { today: TODAY, optionId: "o_lp" }).permits[0].done, false, "Claude can't tick it");
+});
+test("bug 6: an update that leaves out people's work keeps it, and marks bookings Claude dropped", () => {
+  const t = situTrip();
+  const existing = normalizePlan(planInput(), t, { today: TODAY, optionId: "o_lp" });
+  existing.bookings.find(b => b.id === "b_camp").status = "decided";
+  existing.todo[0].done = true;
+  existing.gear.push({ id: "g_mine", name: "Head torches", note: "", per: { s: "has two" } });
+  const input = planInput(); input.bookings = input.bookings.filter(b => b.id !== "b_camp"); input.todo = []; input.gear = [];
+  const { plan } = mergePlan(existing, input, t, { today: TODAY, partial: false });
+  const camp = plan.bookings.find(b => b.id === "b_camp");
+  assert.ok(camp, "a decided booking is kept"); assert.equal(camp.dropped, true, "and marked as left out of Claude's plan");
+  assert.equal(plan.bookings.find(b => b.id === "b_ferry").dropped, undefined);
+  assert.ok(plan.todo.some(x => x.id === "t_permit" && x.done), "a done to-do is kept");
+  assert.ok(plan.gear.some(g => g.id === "g_mine" && g.per.s === "has two"), "a gear row with cells is kept");
+  const again = mergePlan(plan, planInput(), t, { today: TODAY, partial: false }).plan;
+  assert.equal(again.bookings.find(b => b.id === "b_camp").dropped, undefined, "back in the plan, the mark goes");
+  assert.equal(normalizePlan(Object.assign(planInput(), { bookings: [Object.assign(planInput().bookings[0], { dropped: true })] }), t, { today: TODAY }).bookings[0].dropped, undefined, "Claude can't set the mark");
+});
+test("bug 8: the plan remembers how many it was priced for; per person uses that and says when the group changed", () => {
+  const t = situTrip(); t.rates = { EUR: { toTrip: 0.86, seenOn: TODAY, source: null } };
+  const p = mergePlan(null, planInput(), t, { today: TODAY, optionId: "o_lp" }).plan;
+  assert.equal(p.forTravellers, 2);
+  const before = planTotals(p, t);
+  t.travellers.push({ id: "x", name: "Third", limits: {} });
+  const after = planTotals(p, t);
+  assert.equal(after.total, before.total); assert.equal(after.perPerson, before.perPerson, "not silently divided by three");
+  assert.deepEqual(after.travellersChanged, { was: 2, now: 3 });
+  assert.equal(before.travellersChanged, null);
+});
+
+/* ---------- Review of the persona fixes ---------- */
+test("review 1: the plan's head count changes only when Claude says what the prices are for", () => {
+  const t = situTrip();
+  const plan = mergePlan(null, planInput(), t, { today: TODAY, optionId: "o_lp" }).plan;
+  assert.equal(plan.forTravellers, 2);
+  t.travellers.push({ id: "x", name: "Third", limits: {} });
+  const nulls = Object.fromEntries(Object.keys(planInput()).map(k => [k, null]));
+  const food = mergePlan(plan, Object.assign({}, nulls, { otherCosts: planInput().otherCosts }), t, { today: TODAY, partial: true }).plan;
+  assert.equal(food.forTravellers, 2, "an update that doesn't say keeps the old count");
+  assert.deepEqual(planTotals(food, t).travellersChanged, { was: 2, now: 3 });
+  const repriced = mergePlan(food, Object.assign({}, nulls, { bookings: planInput().bookings, pricedFor: 3 }), t, { today: TODAY, partial: true }).plan;
+  assert.equal(repriced.forTravellers, 3); assert.equal(planTotals(repriced, t).travellersChanged, null);
+});
+test("review 2: a plan saved or shared before the head count existed is taken as priced for its group", () => {
+  const t = situTrip(); t.travellers.push({ id: "x", name: "Third", limits: {} });
+  const old = normalizePlan(planInput(), t, { today: TODAY, optionId: "o_lp" }); delete old.forTravellers;
+  assert.equal(normalizePlan(old, t, { today: TODAY, optionId: "o_lp", keepIds: true }).forTravellers, 3, "an import");
+  const stored = { kind: "hike", travellers: t.travellers, livePlan: old }; migrate(stored);
+  assert.equal(stored.livePlan.forTravellers, 3, "a trip already on this device");
+});
+test("review 3: a dropped booking that isn't booked is left out of the total and named apart", () => {
+  const t = situTrip(); t.rates = { EUR: { toTrip: 0.86, seenOn: TODAY, source: null } };
+  const p = normalizePlan(planInput(), t, { today: TODAY, optionId: "o_lp" });
+  const base = planTotals(p, t).total;
+  p.bookings.find(b => b.id === "b_camp").dropped = true; p.bookings.find(b => b.id === "b_camp").status = "decided";
+  const r = planTotals(p, t);
+  assert.equal(r.total, base - Math.round(20 * 0.86)); assert.deepEqual(r.setAside, [{ what: "Caldera campsite" }]);
+  p.bookings.find(b => b.id === "b_camp").status = "booked";
+  assert.equal(planTotals(p, t).total, base, "a booked one was paid, so it still counts"); assert.deepEqual(planTotals(p, t).setAside, []);
+});

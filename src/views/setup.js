@@ -200,7 +200,7 @@ export const actions = {
     if (back) { hist.splice(hist.findIndex(h => h.plan === back), 1); t.livePlan = back; }
     t._local.planHistory = hist.slice(-3);
     ctx.commit(false); ctx.nav("build");
-    if (ctx.liveStatus === "unlocked" && !t.livePlan) await ctx.runLive(t, `Write the full plan for ${o.name}.`);
+    if (ctx.liveStatus === "unlocked" && !t.livePlan) await ctx.runLive(t, `Write the full plan for ${o.name}.`, { fromApp: true });
   },
   "see-dest": (el, ctx) => { const t = ctx.trip; t._ui = Object.assign(t._ui || {}, { q: el.dataset.name }); ctx.save(); ctx.nav("destinations"); },
   "add-traveller": (el, ctx) => { ctx.trip.travellers.push({ id: uid("p"), name: "", limits: {} }); ctx.commit(); },

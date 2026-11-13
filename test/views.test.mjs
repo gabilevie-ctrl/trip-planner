@@ -70,3 +70,63 @@ test("live plan views render without a plan and without a trip budget", async ()
   for (const f of ["daysCard", "gearCard", "bookingsCard", "permitsCard", "todoCard", "sourcesCard"]) assert.equal(typeof lp[f](t, ctx), "string", f);
   for (const v of ["build", "itinerary", "plan", "money", "share"]) assert.equal(typeof views[v].render(ctx), "string", v);
 });
+
+/* ---------- Persona review bugs ---------- */
+test("bug 2: Itinerary and Plan & book render a chosen route with no dates", () => {
+  const t = familyTrip({ id: "t_nodates", kind: "hike", dates: { start: "", end: "" }, travellers: [{ id: "g", name: "Gabriel", limits: {} }], type: {} });
+  const ctx = ctxFor(t); t.chosen = ctx.dests[0].id;
+  assert.doesNotThrow(() => compute.stays(ctx.dests[0], t));
+  for (const v of ["itinerary", "plan"]) { const html = views[v].render(ctx); assert.ok(!/Invalid/.test(html), v); }
+  assert.match(views.itinerary.render(ctx), /No dates yet/);
+});
+test("bug 3: Conditions shows the live choice, not a library destination", async () => {
+  const { normalizePlan } = await import("../src/liveplan.js");
+  const t = skiTrip({ id: "t_live_ski", options: [{ id: "o_gud", name: "Gudauri", region: "Georgia" }], chosen: "o_gud", log: [] });
+  const ctx = ctxFor(t);
+  t.livePlan = normalizePlan({ days: [{ id: "d_1", date: "2027-03-20", move: "Tour to Sadzele" }, { id: "d_2", date: "2027-03-21", move: "Kudebi" }] }, t, { optionId: "o_gud" });
+  const html = views.conditions.render(ctx);
+  assert.match(html, /Conditions: Gudauri/); for (const d of ctx.dests) assert.ok(!html.includes("Conditions: " + d.name), d.name);
+  assert.match(html, /Tour to Sadzele/); assert.match(html, /data-log="2027-03-21"/);
+});
+test("bug 4: a day at the danger limit is allowed; only above it is a no-go", () => {
+  const t = skiTrip({ id: "t_danger", log: [{ date: "2027-03-21", danger: "2" }, { date: "2027-03-22", danger: "3" }] });
+  const ctx = ctxFor(t); t.chosen = ctx.dests[0].id; t.travellers[1].limits.maxDanger = "2";
+  const html = views.conditions.render(ctx);
+  const row = date => html.split("<tr").find(r => r.includes(`data-log="${date}"`)) || "";
+  assert.ok(!/nogo/.test(row("2027-03-21")), "level 2 with a limit of 2 is fine");
+  assert.match(row("2027-03-22"), /nogo/);
+  assert.match(html, /Above it, the day is a no-go/);
+});
+test("bug 5: permits and admin items have a tick box", async () => {
+  const lp = await import("../src/views/liveplan.js"); const { normalizePlan } = await import("../src/liveplan.js");
+  const { planInput } = await import("./plan-fixtures.mjs");
+  const t = familyTrip({ id: "t_tick", kind: "hike", options: [{ id: "o_lp", name: "La Palma" }], chosen: "o_lp", travellers: [{ id: "s", name: "Situ", limits: {} }] });
+  t.livePlan = normalizePlan(planInput(), t, { optionId: "o_lp" });
+  const html = lp.permitsCard(t);
+  assert.match(html, /data-bind="livePlan\.permits\.#p_caldera\.done" data-type="bool"/);
+  assert.match(html, /data-act="admin-done" data-key="s" data-id="a_ins"/);
+});
+test("bug 7: Destinations names the live choice and offers Next, and warns that choosing here replaces it", () => {
+  const t = familyTrip({ id: "t_live_dest", options: [{ id: "o_jp", name: "Kyoto and the Kumano Kodo" }], chosen: "o_jp" });
+  const html = views.destinations.render(ctxFor(t));
+  assert.match(html, /Chosen: <strong>Kyoto and the Kumano Kodo<\/strong>/); assert.match(html, /href="#build"/);
+  assert.match(html, /replaces? it/);
+});
+test("bug 8: Money says the plan was priced for fewer people", async () => {
+  const { normalizePlan } = await import("../src/liveplan.js"); const { planInput } = await import("./plan-fixtures.mjs");
+  const t = familyTrip({ id: "t_more", kind: "hike", options: [{ id: "o_lp", name: "La Palma" }], chosen: "o_lp", travellers: [{ id: "g", name: "G", limits: {} }, { id: "s", name: "S", limits: {} }, { id: "x", name: "X", limits: {} }], rates: { EUR: { toTrip: 1, seenOn: "2026-11-09", source: null } } });
+  t.livePlan = Object.assign(normalizePlan(planInput(), t, { optionId: "o_lp" }), { forTravellers: 2 });
+  assert.match(views.money.render(ctxFor(t)), /priced for 2 travellers; the trip now has 3/);
+});
+
+test("review 4 + 5: Share names a changed group and dropped bookings; the dropped note goes once it's Not needed", async () => {
+  const lp = await import("../src/views/liveplan.js"); const { normalizePlan } = await import("../src/liveplan.js");
+  const { planInput } = await import("./plan-fixtures.mjs");
+  const t = familyTrip({ id: "t_share", kind: "hike", options: [{ id: "o_lp", name: "La Palma" }], chosen: "o_lp", travellers: [{ id: "g", name: "G", limits: {} }, { id: "s", name: "S", limits: {} }, { id: "x", name: "X", limits: {} }], rates: { EUR: { toTrip: 1, seenOn: "2026-11-09", source: null } } });
+  t.livePlan = normalizePlan(planInput(), t, { optionId: "o_lp" }); t.livePlan.forTravellers = 2;
+  const camp = t.livePlan.bookings.find(b => b.id === "b_camp"); camp.dropped = true; camp.status = "decided";
+  const text = lp.summaryLines(t).join("\n");
+  assert.match(text, /priced for 2 travellers; the trip now has 3/); assert.match(text, /Caldera campsite.*no longer in Claude's plan/);
+  assert.match(lp.bookingsCard(t), /No longer in Claude's plan/);
+  camp.status = "not-needed"; assert.doesNotMatch(lp.bookingsCard(t), /No longer in Claude's plan/);
+});

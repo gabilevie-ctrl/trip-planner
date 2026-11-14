@@ -64,4 +64,4 @@ With the family password, the trip chat asks Claude (with web search) for real d
 - **Plan & book:** bookings with prefilled links, a status and a confirmation number, permits, admin per traveller, and a dated to-do list.
 - **Money:** the plan total, computed by the app in the trip currency; a price with no exchange rate is named and left out.
 
-What people mark (a booking booked, its confirmation, gear cells, done to-dos) is kept when Claude changes the plan. Only the current plan goes into a share link. One-time setup for the key owner: [docs/LIVE-SETUP.md](docs/LIVE-SETUP.md).
+What people mark (a booking booked, its confirmation, gear cells, done to-dos) is kept when Claude changes the plan. Only the current plan goes into a share link. One-time setup for the key owner: [docs/LIVE-SETUP.md](docs/LIVE-SETUP.md). On Gabriel's Mac, `npm run family` runs the app with live search through Claude Code and his Claude subscription instead, with no key or credits (same doc).

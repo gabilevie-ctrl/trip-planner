@@ -1,6 +1,7 @@
 import { esc, fmtDate, empty } from "../ui.js";
 import { itinerary } from "../compute.js";
 import { strictestLimits } from "../criteria.js";
+import { whose } from "../compute.js";
 import { currentDest } from "./build.js";
 import { liveChoice, currentPlan } from "../liveplan.js";
 
@@ -33,7 +34,7 @@ export function render(ctx) {
     ${days.length ? `<div class="scroller"><table class="log"><thead><tr><th>Day</th><th>Plan</th>${skitour ? "<th>Danger</th>" : ""}<th>Weather</th><th>Decision</th><th>Note</th></tr></thead><tbody>
       ${days.filter(x => x.kind !== "travel").map(x => { const l = logByDate[x.date] || {}; const bad = skitour && maxDanger && l.danger && +l.danger > maxDanger;
         return `<tr class="${bad ? "nogo" : ""}"><td class="small">${fmtDate(x.date)}</td><td class="small">${esc(x.label)}</td>
-          ${skitour ? `<td><select data-log="${x.date}" data-k="danger"><option value="">—</option>${[1, 2, 3, 4, 5].map(v => `<option value="${v}" ${String(l.danger) === String(v) ? "selected" : ""}>${DANGER[v]}</option>`).join("")}</select>${bad ? `<br><span class="pill crit">above the group limit</span>` : ""}</td>` : ""}
+          ${skitour ? `<td><select data-log="${x.date}" data-k="danger"><option value="">—</option>${[1, 2, 3, 4, 5].map(v => `<option value="${v}" ${String(l.danger) === String(v) ? "selected" : ""}>${DANGER[v]}</option>`).join("")}</select>${bad ? `<br><span class="pill crit">above the group limit${esc(whose(t, "maxDanger", String(maxDanger)))}</span>` : ""}</td>` : ""}
           <td><input type="text" data-log="${x.date}" data-k="weather" value="${esc(l.weather || "")}" placeholder="wind, temp, visibility"></td>
           <td><select data-log="${x.date}" data-k="decision"><option value="">—</option>${["go", "modified", "rest day", "no-go"].map(v => `<option ${l.decision === v ? "selected" : ""}>${v}</option>`).join("")}</select></td>
           <td><input type="text" data-log="${x.date}" data-k="note" value="${esc(l.note || "")}" placeholder="aspects avoided, who decided"></td></tr>`; }).join("")}

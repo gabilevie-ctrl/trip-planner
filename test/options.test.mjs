@@ -14,12 +14,12 @@ const opt = (over = {}) => Object.assign({ name: "La Palma", region: "Canaries",
 test("Morocco breaks Situ's Schengen limit; La Palma breaks nothing", () => {
   const t = situTrip();
   const ma = checkOption(opt({ name: "Southern Morocco", countryCodes: ["MA"], weather: { text: "", highC: 22, lowC: 8, source: null }, estimate: { perPerson: 550, group: 1100, currency: "GBP", breakdown: [] } }), t);
-  assert.ok(ma.flags.includes("Morocco is outside the Schengen area"), ma.flags.join(" | ")); assert.equal(ma.countryBreach, true);
+  assert.ok(ma.flags.includes("Morocco is outside the Schengen area (Situ's limit)"), ma.flags.join(" | ")); assert.equal(ma.countryBreach, true);
   const lp = checkOption(opt(), t); assert.deepEqual(lp.flags, []); assert.equal(lp.groupTotal, 1300); assert.equal(lp.overBudget, false);
 });
 test("a 17 °C place is flagged against an 18 °C warmth floor", () => {
   const c = checkOption(opt({ name: "Madeira", countryCodes: ["PT"], weather: { text: "", highC: 17, lowC: 12, source: null } }), situTrip());
-  assert.ok(c.flags.includes("Madeira: ~17°C in those months, below the 18°C floor"), c.flags.join(" | "));
+  assert.ok(c.flags.includes("Madeira: ~17°C in those months, below the 18°C floor (Situ's limit)"), c.flags.join(" | "));
 });
 test("an estimate in a currency with no rate is flagged and left out", () => {
   const c = checkOption(opt({ estimate: { perPerson: 1000, group: 2000, currency: "EUR", breakdown: [] } }), situTrip());
@@ -36,7 +36,7 @@ test("with a rate the total converts and an over-budget total is flagged", () =>
 test("altitude and trains-only flags use the library's wording", () => {
   const t = situTrip(); t.travellers[0].limits.maxAltitudeM = 2000; t.travel = { mode: "train" };
   const c = checkOption(opt(), t);
-  assert.ok(c.flags.includes("La Palma: 2,426 m is above the 2,000 m ceiling"), c.flags.join(" | "));
+  assert.ok(c.flags.includes("La Palma: 2,426 m is above the 2,000 m ceiling (Gabriel's limit)"), c.flags.join(" | "));
   assert.ok(c.flags.includes("Reaching this destination needs a flight; the trip is set to trains only"));
 });
 test("normalising cleans Claude's input field by field", () => {

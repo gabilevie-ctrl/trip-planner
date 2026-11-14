@@ -16,7 +16,7 @@ export function render(ctx) {
   const travellerRows = t.travellers.map((p, i) => `
     <tr data-pid="${p.id}">
       <td><input type="text" data-bind="travellers.${i}.name" value="${esc(p.name)}" placeholder="Name" aria-label="Traveller ${i + 1} name"></td>
-      ${crit.map(c => `<td>${critInput(c, p.limits?.[c.key], `travellers.${i}.limits.${c.key}`)}</td>`).join("")}
+      ${crit.map(c => `<td>${critInput(c, p.limits?.[c.key], `travellers.${i}.limits.${c.key}`, i)}</td>`).join("")}
       <td><button type="button" class="outline secondary small" data-act="remove-traveller" data-pid="${p.id}" aria-label="Remove traveller" ${t.travellers.length <= 1 ? "disabled" : ""}>✕</button></td>
     </tr>`).join("");
   const limitSummary = crit.map(c => lim[c.key] !== undefined ? `${c.label}: <strong>${fmtLimit(c, lim[c.key])}</strong>` : null).filter(Boolean).join(" · ") || "No limits set yet: everything will be offered, nothing flagged.";
@@ -72,7 +72,8 @@ export function render(ctx) {
 /* The one thread with the planner. On Build it is the plan chat (plan: true): same thread, its own wording. */
 export function chat(t, ctx, title = "Describe the trip", { plan = false } = {}) {
   const msgs = t.brief || []; const live = ctx.liveStatus === "unlocked"; const busy = !!ctx.busyTrips?.has(t.id);
-  const status = live ? `<p class="livestatus small">Live search is on: Claude searches the web for options. <button type="button" class="linklike" data-act="live-forget">Forget on this device</button></p>`
+  const status = live && ctx.liveVia === "helper" ? `<p class="livestatus small">Live search is on, through Claude Code on this Mac (your Claude plan): Claude searches the web for options.</p>`
+    : live ? `<p class="livestatus small">Live search is on: Claude searches the web for options. <button type="button" class="linklike" data-act="live-forget">Forget on this device</button></p>`
     : ctx.liveStatus === "locked" ? `<p class="muted small">Unlock live search above for real options from the web.</p>` : "";
   return `<section class="card chat">
     <h2>${esc(title)}</h2>${status}
@@ -158,12 +159,17 @@ function countryPicker(ctx, t) {
     ${picked.length ? `<p class="chips" style="margin:8px 0">${picked.map(c => `<button type="button" class="chip good" data-act="toggle-country" data-code="${c.code}" title="Remove">${esc(c.name)} ✕</button>`).join("")}</p>` : `<p class="muted small" style="margin:8px 0">None ticked yet.</p>`}
     <div class="countries">${list.map(c => `<label class="chk"><input type="checkbox" data-act="toggle-country" data-code="${c.code}" ${vc.includes(c.code) ? "checked" : ""}> ${esc(c.name)}</label>`).join("")}</div>`;
 }
-function critInput(c, value, bind) {
+/* A stored "several choices" limit as a list: older or chatbot-made trips may hold a single value. */
+const asList = v => Array.isArray(v) ? v.map(String) : v === undefined || v === null || v === "" ? [] : [String(v)];
+let openList = null;
+function critInput(c, value, bind, i) {
+  // Several choices per person: tick boxes, saved through the toggle-avoid action.
+  if (c.type === "multi") { const on = asList(value); return `<details class="multi"${openList === i ? " open" : ""}><summary class="small">${on.length ? esc(c.options.filter(([v]) => on.includes(v)).map(([, l]) => l).join(", ")) : "none"}</summary>${c.options.map(([v, l]) => `<label class="chk small"><input type="checkbox" data-act="toggle-avoid" data-i="${i}" data-v="${esc(v)}" ${on.includes(v) ? "checked" : ""}> ${esc(l)}</label>`).join("")}</details>`; }
   if (c.type === "number") return `<input type="number" data-bind="${bind}" data-type="number" value="${value ?? ""}" placeholder="${esc(c.placeholder || "")}" style="min-width:90px">`;
   if (c.type === "bool") return `<input type="checkbox" data-bind="${bind}" data-type="bool" ${value ? "checked" : ""}>`;
   return `<select data-bind="${bind}"><option value="">—</option>${c.options.map(([v, l]) => `<option value="${esc(v)}" ${String(value) === String(v) ? "selected" : ""}>${esc(l)}</option>`).join("")}</select>`;
 }
-function fmtLimit(c, v) { if (Array.isArray(v)) return v.map(x => fmtLimit(c, x)).join(" and "); if (c.type === "bool") return v ? "yes" : "no"; if (c.type === "select") { const o = c.options.find(([k]) => String(k) === String(v)); return o ? o[1] : v; } return `${Number(v).toLocaleString("en-GB")}${c.unit ? " " + c.unit : ""}`; }
+function fmtLimit(c, v) { if (Array.isArray(v)) return v.map(x => fmtLimit(c, x)).join(" and "); if (c.type === "bool") return v ? "yes" : "no"; if (c.type === "select" || c.type === "multi") { const o = c.options.find(([k]) => String(k) === String(v)); return o ? o[1] : v; } return `${Number(v).toLocaleString("en-GB")}${c.unit ? " " + c.unit : ""}`; }
 
 let unlocking = false;
 export const actions = {
@@ -203,6 +209,13 @@ export const actions = {
     if (ctx.liveStatus === "unlocked" && !t.livePlan) await ctx.runLive(t, `Write the full plan for ${o.name}.`, { fromApp: true });
   },
   "see-dest": (el, ctx) => { const t = ctx.trip; t._ui = Object.assign(t._ui || {}, { q: el.dataset.name }); ctx.save(); ctx.nav("destinations"); },
+  "toggle-avoid": (el, ctx) => {
+    const p = ctx.trip.travellers[Number(el.dataset.i)]; if (!p) return;
+    const lim = p.limits = p.limits || {}; const list = asList(lim.avoidRegions).filter(v => v !== el.dataset.v);
+    lim.avoidRegions = el.checked ? list.concat(el.dataset.v) : list;
+    openList = Number(el.dataset.i); // the redraw keeps this person's list open, so several regions are ticked in one go
+    ctx.commit();
+  },
   "add-traveller": (el, ctx) => { ctx.trip.travellers.push({ id: uid("p"), name: "", limits: {} }); ctx.commit(); },
   "remove-traveller": (el, ctx) => { ctx.trip.travellers = ctx.trip.travellers.filter(p => p.id !== el.dataset.pid); ctx.commit(); },
   "toggle-country": (el, ctx) => { const code = el.dataset.code; const v = ctx.trip.visitedCountries = ctx.trip.visitedCountries || []; const i = v.indexOf(code); const on = el.tagName === "INPUT" ? el.checked : false; if (on && i < 0) v.push(code); if (!on && i >= 0) v.splice(i, 1); ctx.commit(true); }

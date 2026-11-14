@@ -77,7 +77,10 @@ The 38 v1 destinations carry `"lastReviewed": "2026-11-08"` and `"sources": []`:
     // minDayHighC: warmth floor; the highest floor across travellers applies. countryZone: "any" | "europe" | "eu" | "schengen";
     // every traveller's country limit applies (lists in src/criteria.js COUNTRY_GROUPS). Both are flags, never exclusions.
     { "name": "Antoine", "limits": { "countryZone": "schengen" } },
-    { "name": "Antoine", "limits": { "maxHikeShare": 60 } }   // percent of planned days, 0–100
+    { "name": "Antoine", "limits": { "maxHikeShare": 60 } },  // percent of planned days, 0–100
+    { "name": "Mom", "limits": { "avoidRegions": ["balkans", "baltics", "centralAsia"] } }
+    // avoidRegions: any of "balkans" | "baltics" | "caucasus" | "centralAsia" (lists in src/criteria.js REGION_GROUPS);
+    // every traveller's regions apply. Flags name whose limit it is, e.g. "(Mom's limit)".
   ],
   "dates": { "start": "2027-07-12", "end": "2027-07-26" },      // or { "window": {...}, "lengthDays": 15 }
   "budget": { "total": 15000, "currency": "EUR", "perPerson": 3000 },   // perPerson only when the chat was given a per-person amount; the total follows the traveller count

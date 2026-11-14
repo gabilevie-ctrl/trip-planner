@@ -2,6 +2,18 @@
 
 Live search lets the trip chat ask Claude, which searches the web for real options and prices. It runs on your Anthropic account. Family members only type a password; they never see or store the key.
 
+## On your Mac, with your Claude subscription (no API key, no credits)
+`npm run family` serves the trip planner on your Mac and sends live search through Claude Code, signed in with your Claude account. It uses your plan's usage limits; nothing is billed separately. It only works on your Mac while that command runs, so it suits a session where you drive the app; the GitHub site and other devices stay without live search.
+
+1. **Sign Claude Code in, once.** In a terminal run `claude`, type `/login`, and sign in with your Claude account. Type `/exit` when done.
+2. **Start it.** In the project folder run `npm run family`. It prints the address (http://localhost:8787) and checks that Claude Code is signed in.
+3. **Open the address** in your browser. Setup says "Live search is on, through Claude Code on this Mac". No password is asked.
+4. **Keep the terminal window open** while you use it. Stop with Ctrl+C.
+
+What it can do: only web search and web fetch, run from an empty folder, and only for requests from the app's own page on your Mac. It never reads your files.
+
+## With an API key (any device, billed separately)
+
 ## Set it up
 1. **Create a key.** In the Anthropic Console (console.anthropic.com), go to API keys and create one named "trip planner".
 2. **Set a spend limit.** In the Console's limits settings, set a monthly spend limit. This is the real safety net: whatever happens, the bill can't go past it.
